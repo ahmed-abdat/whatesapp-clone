@@ -23,7 +23,7 @@ export default function signup() {
 
   const navigate = useNavigate();
 
-  const { setUser } = useUserContext();
+  // const { setUser } = useUserContext();
 
   // recapter form
   const requestRecaptcha = () => {
@@ -82,7 +82,7 @@ export default function signup() {
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
-        setUser(user);
+        // setUser(user);
         navigate("/");
 
         // IdP data available using getAdditionalUserInfo(result)

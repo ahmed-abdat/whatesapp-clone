@@ -8,7 +8,7 @@ export default function Otp({ confirmationResults }) {
   const firstInput = useRef(null);
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [isOtpVerifie, setIsotpVerifie] = useState(false);
-  const { setUser } = useUserContext();
+  // const { setUser } = useUserContext();
 
   const navigate = useNavigate();
 
@@ -39,7 +39,7 @@ export default function Otp({ confirmationResults }) {
       .confirm(otp.join(""))
       .then((result) => {
         toast.success("تمت المصادقة");
-        setUser(result.user);
+        // setUser(result.user);
         navigate("/");
         console.log(result.user);
         // ...
