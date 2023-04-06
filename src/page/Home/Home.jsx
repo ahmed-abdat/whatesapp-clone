@@ -14,6 +14,7 @@ export default function Home() {
         <img src={user?.photoURL} alt="avatar" />
         <p>{user?.uid}</p>
       </div>
+      <Link to="/login">Login</Link>
       {/* <NavBar /> */}
       <Outlet />
     </>
