@@ -39,7 +39,7 @@ export default function Otp({ confirmationResults }) {
         toast.success("تمت المصادقة");
         // setUser(result.user);
         navigate("/");
-        console.log(result.user);
+        // console.log(result.user);
         // ...
       })
       .catch((error) => {
