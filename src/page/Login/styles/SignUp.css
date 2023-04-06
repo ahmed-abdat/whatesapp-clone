@@ -1,0 +1,108 @@
+.signup--container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: #f5f5f5;
+}
+
+.signup--container .info {
+  margin-bottom: 1rem;
+  direction: rtl;
+  font-family: "Segoe UI", "Vazirmatn", Geneva, Verdana, sans-serif;
+}
+
+.signup--container .info h3 {
+  font-size: 1.25rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  color: var(--whatsapp-color-dark);
+}
+
+.signup--container .info p {
+  font-size: 0.95rem;
+  color: var(--text-color);
+}
+
+/* signup form */
+.signup--container .signup-form {
+  padding: 0.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem 0;
+}
+
+.signup--container .signup-form .btn {
+  box-shadow: 0 3px 13px 1px #1796526b;
+    border-radius: 0.2rem;
+    font-family: "Vazirmatn", sans-serif;
+    align-self: center;
+    width: 100px;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    color: #f5f5f5;
+    background-color: var(--whatsapp-color);
+    -webkit-border-radius: 0.2rem;
+    -moz-border-radius: 0.2rem;
+    -ms-border-radius: 0.2rem;
+    -o-border-radius: 0.2rem;
+}
+
+.signup--container .signup-form .btn:hover {
+  background-color: var(--whatsapp-color-dark);
+  box-shadow: 0 3px 10px 1px #068b445e;
+}
+
+/* signup with google */
+
+.signup--container .signup-google {
+  box-shadow: 0px 3px 13px 1px #4286f44e;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: #4285f4;
+  padding: 0.1rem;
+  width: 15rem;
+  margin-top: 1.5rem;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 0.2rem;
+  -webkit-border-radius: 0.2rem;
+  -moz-border-radius: 0.2rem;
+  -ms-border-radius: 0.2rem;
+  -o-border-radius: 0.2rem;
+}
+
+.signup--container .signup-google{
+    transition: all 0.3s ease-in;
+    -webkit-transition: all 0.3s ease-in;
+    -moz-transition: all 0.3s ease-in;
+    -ms-transition: all 0.3s ease-in;
+    -o-transition: all 0.3s ease-in;
+}
+
+.signup--container .google-icon {
+  background-color: #fff;
+  padding: 0.35rem;
+}
+
+.signup--container .signup-google .google-btn {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* font-family: "Vazirmatn", sans-serif; */
+  margin-left: 1.4rem;
+  font-size: 0.94rem;
+  color: #f5f5f5;
+}
+
+
+.signup--container .signup-google:hover {
+    background-color: #2563c5;
+    box-shadow: 0px 3px 13px 3px #2259b15b;
+}
+
+
+/* otp-input */
+

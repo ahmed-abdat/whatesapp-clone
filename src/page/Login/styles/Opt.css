@@ -1,0 +1,146 @@
+.otp {
+  max-width: 95vw;
+  text-align: center;
+  background-color: #fff;
+  box-shadow: 0 10px 40px -20px rgba(0, 0, 0, 0.5);
+  padding: 3rem 2rem;
+  border-radius: 0.4rem;
+  -webkit-border-radius: 0.4rem;
+  -moz-border-radius: 0.4rem;
+  -ms-border-radius: 0.4rem;
+  -o-border-radius: 0.4rem;
+}
+
+.otp h1 {
+  font-size: 1.4rem;
+  font-family: "Vazirmatn";
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: #444;
+}
+
+.otp > p {
+  color: var(--text-color);
+  font-size: 1rem;
+  font-family: "Vazirmatn", sans-serif;
+  gap: 0 0.4rem;
+}
+
+.otp .otp-inputs {
+  width: 100%;
+  padding-block: 2rem;
+  display: grid;
+  gap: 0 1.5rem;
+  justify-content: center;
+  grid-template-columns: repeat(6, minmax(2.5rem, 3.5rem));
+  overflow-x: auto;
+}
+
+@media screen and (max-width: 600px) {
+  .otp {
+    padding: 2rem 1rem;
+  }
+  .otp .otp-inputs {
+    gap: 0 1rem;
+    padding-inline: 0.5rem;
+  }
+
+  .otp .otp-inputs::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+}
+
+.otp .otp-inputs input {
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  font-size: 1.2rem;
+  min-height: 3.5rem;
+  max-height: 4rem;
+  text-align: center;
+  outline: none;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 0.8rem;
+  transition: all 0.3s ease-in-out;
+  -webkit-border-radius: 0.8rem;
+  -moz-border-radius: 0.8rem;
+  -ms-border-radius: 0.8rem;
+  -o-border-radius: 0.8rem;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -ms-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+}
+
+.otp .otp-inputs input:focus {
+  border: 1px solid var(--whatsapp-color);
+}
+
+/* ? resend otp */
+.otp .resend-otp {
+    font-size: 0.95rem;
+    font-family: "Vazirmatn", sans-serif;
+    font-weight: 400;
+    color: var(--text-color);
+}
+
+.otp .resend-otp a {
+    margin-right: 0.2rem;
+}
+
+/* ? otp button */
+
+.otp .btns {
+    padding: 1rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    justify-content: center;
+    gap: 0 1rem;
+}
+
+.otp .btns .otp-confiramtion {
+  letter-spacing: 1px;
+  box-shadow: 0 3px 13px 1px #1796526b;
+    padding: 0.5rem 2rem;
+    background-color: var(--whatsapp-color);
+    color: #f8f8f8;
+    font-size: 1.1rem;
+    border-radius: 0.3rem;
+    -webkit-border-radius: 0.3rem;
+    -moz-border-radius: 0.3rem;
+    -ms-border-radius: 0.3rem;
+    -o-border-radius: 0.3rem;
+}
+
+.otp .btns .otp-confiramtion:hover {
+    background-color: var(--whatsapp-color-dark);
+    box-shadow: 0 3px 10px 1px #068b445e;
+}
+
+.otp .btns .otp-clear {
+  letter-spacing: 1px;
+    padding: 0.5rem 2rem;
+    background-color: #fff;
+    color: var(--whatsapp-color-dark);
+    font-size: 1.1rem;
+    border-radius: 0.3rem;
+    -webkit-border-radius: 0.3rem;
+    -moz-border-radius: 0.3rem;
+    -ms-border-radius: 0.3rem;
+    -o-border-radius: 0.3rem;
+    border: 1px solid var(--whatsapp-color);
+}
+
+.otp .btns .otp-clear:hover {
+    border-color: transparent;
+    /* background color warning */
+    background-color: #d81313;
+    color: #fff;
+}
+
+.btn[disabled] {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}

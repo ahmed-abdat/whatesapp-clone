@@ -1,0 +1,129 @@
+.loading--container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+.loading--container .img {
+  width: 250px;
+  font-size: 3.2rem;
+  margin-bottom: 1rem;
+}
+
+.loading--container .text {
+  gap: 1rem 0;
+  margin-top: 1rem;
+  color: var(--text-color);
+  flex-direction: column;
+  font-family: "Segoe UI", "Helvetica Neue", Helvetica, "Lucida Grande", Arial,
+    Ubuntu, Cantarell, "Fira Sans", sans-serif;
+}
+
+.loading--container .text h3 {
+  font-size: 1.15rem;
+  font-weight: normal;
+}
+.loading--container .info {
+  gap: 0 0.5rem;
+  color: #8696a0;
+}
+
+.loading--container .text .info p {
+  font-size: 0.85rem;
+}
+
+.loading--container .info svg {
+  font-size: 0.7rem;
+}
+
+/* whatsapp icon style color */
+.whatsapp-icon {
+  color: #25d366;
+}
+
+/* ? loding text */
+.loading {
+  --speed-of-animation: 0.9s;
+  --gap: 6px;
+  --first-color: #4c86f9;
+  --second-color: #49a84c;
+  --third-color: #f6bb02;
+  --fourth-color: #f6bb02;
+  --fifth-color: #2196f3;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: 100px;
+  gap: 6px;
+  height: 100px;
+}
+
+.loading span {
+  width: 4px;
+  height: 25px;
+  background: var(--first-color);
+  -webkit-animation: scale var(--speed-of-animation) ease-in-out infinite;
+  animation: scale var(--speed-of-animation) ease-in-out infinite;
+}
+
+.loading span:nth-child(2) {
+  background: var(--second-color);
+  -webkit-animation-delay: -0.8s;
+  animation-delay: -0.8s;
+}
+
+.loading span:nth-child(3) {
+  background: var(--third-color);
+  -webkit-animation-delay: -0.7s;
+  animation-delay: -0.7s;
+}
+
+.loading span:nth-child(4) {
+  background: var(--fourth-color);
+  -webkit-animation-delay: -0.6s;
+  animation-delay: -0.6s;
+}
+
+.loading span:nth-child(5) {
+  background: var(--fifth-color);
+  -webkit-animation-delay: -0.5s;
+  animation-delay: -0.5s;
+}
+
+@-webkit-keyframes scale {
+  0%,
+  40%,
+  100% {
+    -webkit-transform: scaleY(0.05);
+    transform: scaleY(0.05);
+  }
+
+  20% {
+    -webkit-transform: scaleY(1);
+    transform: scaleY(1);
+  }
+}
+
+@keyframes scale {
+  0%,
+  40%,
+  100% {
+    -webkit-transform: scaleY(0.05);
+    transform: scaleY(0.05);
+  }
+
+  20% {
+    -webkit-transform: scaleY(1);
+    transform: scaleY(1);
+  }
+}

@@ -1,0 +1,74 @@
+/*  ?font */
+/* Tajawal */
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+/* Amiri */
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+/* Roboto  */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+/* Vazirmatn */
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap');
+
+
+/* ? css variabele */
+:root {
+  /* color */
+  --color-gray : #bbc5cb;
+  --icon-color : #54656f;
+  --icon-color-light : #bbc5cb;
+  --main-bgc : #f0f2f5;
+  --white-color-light : #f8f8f8;
+  --text-color : #325871;
+  --text-color-light : #3b4a54;
+  --whatsapp-color-light : #25d366;
+  --whatsapp-color : #179652;
+  --whatsapp-color-dark : #077139;
+}
+
+/*? css reset */
+* , *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Amiri' , sans-serif;
+  background-color: var(--main-bgc);
+
+}
+
+.light-icon {
+  color: var(--icon-color-light);
+}
+
+/*? custome class */
+
+.d-f {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn {
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -ms-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+}
+
+
+::selection {
+  background-color: var(--whatsapp-color);
+  color : var(--white-color-light);
+
+}
+
+.btn[disabled] {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}

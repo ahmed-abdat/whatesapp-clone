@@ -1,0 +1,28 @@
+/* Here is an example of a basic CSS styling for a not found page. You can modify it to fit your desired design */
+
+.not-found-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+
+.not-found-text {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+
+.not-found-image {
+  width: 50%;
+  max-width: 400px;
+  margin-bottom: 2rem;
+}
+
+.not-found-link {
+  color: blue;
+  text-decoration: underline;
+}
+
