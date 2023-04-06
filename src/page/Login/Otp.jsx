@@ -2,13 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import "./styles/Opt.css";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { useUserContext } from "../../context/store";
 
 export default function Otp({ confirmationResults }) {
   const firstInput = useRef(null);
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [isOtpVerifie, setIsotpVerifie] = useState(false);
-  // const { setUser } = useUserContext();
 
   const navigate = useNavigate();
 

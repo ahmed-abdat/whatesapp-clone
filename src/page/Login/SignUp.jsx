@@ -12,7 +12,6 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import toast, { Toaster } from "react-hot-toast";
-import { useUserContext } from "../../context/store";
 import { useNavigate } from "react-router-dom";
 
 export default function signup() {
@@ -82,18 +81,15 @@ export default function signup() {
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
+        console.log(user);
         // setUser(user);
         navigate("/");
-
-        // IdP data available using getAdditionalUserInfo(result)
-        // ...
       })
       .catch((error) => {
         // Handle Errors here.
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log(errorMessage);
-        // ...
       });
   };
 
