@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./SignUp.css";
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
 import ar from "react-phone-input-2/lang/ar.json";
 import { auth } from "../../config/firebase";
 import {
@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
 
 export default function SignUp() {
-  // const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState("");
   // const [isLoading, setIsLoding] = useState(false);
 
   // const navigate = useNavigate();
@@ -72,23 +72,23 @@ export default function SignUp() {
   // };
 
   // sign up with google
-  // const signInWithGoogle = () => {
-  //   const provider = new GoogleAuthProvider();
-  //   signInWithPopup(auth, provider)
-  //     .then((result) => {
-  //       const user = result.user;
-  //       console.log(user);
-  //       toast.success("تم تسجيل الدخول بنجاح");
-  //       navigate("/");
-  //     })
-  //     .catch((error) => {
-  //       toast.error("حدث خطأ أثناء تسجيل الدخول");
-  //       // Handle Errors here.
-  //       const errorCode = error.code;
-  //       const errorMessage = error.message;
-  //       console.log(errorMessage);
-  //     });
-  // };
+  const signInWithGoogle = () => {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const user = result.user;
+        console.log(user);
+        toast.success("تم تسجيل الدخول بنجاح");
+        navigate("/");
+      })
+      .catch((error) => {
+        toast.error("حدث خطأ أثناء تسجيل الدخول");
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorMessage);
+      });
+  };
 
   return (
     <div className="signup--container">
@@ -97,27 +97,27 @@ export default function SignUp() {
             <p>سيحتاج واتساب إلى التحقق من رقم هاتفك.</p>
           </div>
           <form className="signup-form" >
-            {/* <PhoneInput
-              containerClass="phone-input-container"
-              inputClass="phone-input"
-              placeholder="رقم الهاتف"
-              searchPlaceholder="ابحث"
-              searchNotFound="لا يوجد نتائج"
-              masks={{ mr: ".. .. .. .." }}
-              regions={"africa"}
-              enableLongNumbers={false}
-              localization={ar}
-              country={"mr"}
-              // value={phone}
-              // onChange={(phone) => setPhone(phone)}
-            /> */}
+            <PhoneInput
+              // containerClass="phone-input-container"
+              // inputClass="phone-input"
+              // placeholder="رقم الهاتف"
+              // searchPlaceholder="ابحث"
+              // searchNotFound="لا يوجد نتائج"
+              // masks={{ mr: ".. .. .. .." }}
+              // regions={"africa"}
+              // enableLongNumbers={false}
+              // localization={ar}
+              // country={"mr"}
+              value={phone}
+              onChange={(phone) => setPhone(phone)}
+            />
             <button type="submit" className="btn" >
               التالي
             </button>
           </form>
           <div id="sign-in-recaptcha"></div>
           {/* signup from google */}
-          <div className="signup-google" >
+          <div className="signup-google" onClick={signInWithGoogle}>
             <img
               className="google-icon"
               src="https://img.icons8.com/color/24/000000/google-logo.png"
