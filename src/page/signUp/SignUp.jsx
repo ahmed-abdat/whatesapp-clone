@@ -44,6 +44,7 @@ export default function SignUp() {
   // send otp to phone number
   const sendOtp = () => {
     console.log("send otp");
+
   
     const appVerifier = window.recaptchaVerifier;
     signInWithPhoneNumber(auth, phone, appVerifier)
