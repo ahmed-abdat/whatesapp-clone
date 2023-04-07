@@ -21,7 +21,7 @@ export default function ({ }) {
         </p>
       </div>
       <div className="btn">
-        <button onClick={()=> navigate('/')}>الموافقة و المتابعة</button>
+        <button onClick={()=> navigate('/signUp')}>الموافقة و المتابعة</button>
       </div>
     </div>
   );

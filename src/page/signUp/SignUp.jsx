@@ -14,7 +14,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
 
-export default function signup() {
+export default function SignUp() {
   const [phone, setPhone] = useState("");
   const [isLoading, setIsLoding] = useState(false);
 
