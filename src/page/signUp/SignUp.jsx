@@ -112,11 +112,7 @@ export default function SignUp() {
           onChange={(phone) => setPhone(phone)}
         /> */}
         <div className="phoneInput">
-          <PhoneInput
-            country={"us"}
-            value={phone}
-            onChange={(phone) => setPhone(phone)}
-          />
+          <input type="text" />
         </div>
         <button type="submit" className="btn">
           التالي
