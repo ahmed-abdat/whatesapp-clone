@@ -15,7 +15,7 @@
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.0",
     "react-icons": "^4.8.0",
-    "react-phone-input-2": "^2.15.1",
+    "react-phone-number-input": "^3.2.19",
     "react-router-dom": "^6.10.0",
     "zustand": "^4.3.7"
   },

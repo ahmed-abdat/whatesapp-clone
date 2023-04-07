@@ -1,8 +1,7 @@
 import { useState } from "react";
 import "./SignUp.css";
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
-import ar from "react-phone-input-2/lang/ar.json";
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 import { auth } from "../../config/firebase";
 import {
   RecaptchaVerifier,
@@ -97,22 +96,16 @@ export default function SignUp() {
         <p>سيحتاج واتساب إلى التحقق من رقم هاتفك.</p>
       </div>
       <form className="signup-form">
-        {/* <PhoneInput
-          // containerClass="phone-input-container"
-          // inputClass="phone-input"
-          // placeholder="رقم الهاتف"
-          // searchPlaceholder="ابحث"
-          // searchNotFound="لا يوجد نتائج"
-          // masks={{ mr: ".. .. .. .." }}
-          // regions={"africa"}
-          // enableLongNumbers={false}
-          // localization={ar}
-          // country={"mr"}
-          value={phone}
-          onChange={(phone) => setPhone(phone)}
-        /> */}
-        <div className="phoneInput">
-          <input type="text" />
+        <div className="phoneNumber">
+        <PhoneInput className="phoneInput"
+        value={phone}
+        onChange={setPhone}
+        placeholder="رقم الهاتف"
+        defaultCountry="MR"
+        international
+        limitMaxLength
+        />
+
         </div>
         <button type="submit" className="btn">
           التالي
