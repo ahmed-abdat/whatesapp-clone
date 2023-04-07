@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./styles/SignUp.css";
+import "./SignUp.css";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import ar from "react-phone-input-2/lang/ar.json";
