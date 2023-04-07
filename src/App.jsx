@@ -11,6 +11,7 @@ import Home from "./page/Home/Home";
 import Welcoome from "./page/welcome/Welcoome";
 import Otp from "./page/otp/Otp";
 import SignUp from "./page/signUp/SignUp";
+import User from "./components/User";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/welcoome" element={<Welcoome />} />
         <Route path="/signUp" element={<SignUp />} />
         <Route path="/otp" element={<Otp />} />
+        <Route path="/user" element={<User />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

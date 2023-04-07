@@ -3,11 +3,12 @@ import "./Opt.css";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
+import useUser from "../../store/useUser";
 
 export default function Otp({  }) {
 
   const confirmationResult = useSignUp((state) => state.confirmationResult);
- 
+ const setUsers = useUser((state) => state.setUsers);
 
 
   const firstInput = useRef(null);
@@ -39,10 +40,10 @@ export default function Otp({  }) {
 
   const handelSubmit = (e) => {
     e.preventDefault();
-    console.log(confirmationResult);
     confirmationResult
       .confirm(otp.join(""))
       .then((result) => {
+      setUsers(result.user)
         toast.success("تمت المصادقة");
         setTimeout(() => {
           navigate("/");

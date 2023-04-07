@@ -12,6 +12,7 @@ import {
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
+import useUser from "../../store/useUser";
 import "./SignUp.css";
 
 export default function SignUp() {
@@ -19,6 +20,8 @@ export default function SignUp() {
   const [isLoading, setIsLoding] = useState(false);
 
   const navigate = useNavigate();
+
+  const setUsers = useUser((state) => state.setUsers);
 
   const setconfirmationResult = useSignUp((state) => state.setconfirmationResult);
 
@@ -31,7 +34,6 @@ export default function SignUp() {
         callback: (response) => {
           // reCAPTCHA solved, allow signInWithPhoneNumber.
           sendOtp();
-          console.log(response);
         },
         "expired-callback": () => {
           // Response expired. Ask user to solve reCAPTCHA again.
@@ -43,21 +45,18 @@ export default function SignUp() {
   };
   // send otp to phone number
   const sendOtp = () => {
-    console.log("send otp");
-
-  
     const appVerifier = window.recaptchaVerifier;
     signInWithPhoneNumber(auth, phone, appVerifier)
       .then((confirmationResult) => {
         window.confirmationResult = confirmationResult;
         setconfirmationResult(confirmationResult);
         navigate('/otp')
-        toast.success(`تم إرسال رمز التحقق إلى الرقم +${phone}`);
+        toast.success(`تم إرسال رمز التحقق إلى الرقم ${phone}`);
         setIsLoding(false);
       })
       .catch((error) => {
         setIsLoding(false);
-        toast.error("حدث خطأ أثناء إرسال الرسالة");
+        // toast.error("حدث خطأ أثناء إرسال الرسالة");
         console.error(error);
       });
   };
@@ -79,9 +78,11 @@ export default function SignUp() {
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
-        console.log(user);
+        setUsers(user)
         toast.success("تم تسجيل الدخول بنجاح");
-        navigate("/");
+        setTimeout(() => {
+          navigate("/user");
+        }, 1000);
       })
       .catch((error) => {
         toast.error("حدث خطأ أثناء تسجيل الدخول");
