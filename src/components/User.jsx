@@ -1,17 +1,24 @@
+import {auth} from '../config/firebase'
 import useUser from "../store/useUser"
 
 export default function User() {
-    const users = useUser((state) => state.users)
-    console.log(users);
+  // const user = auth.currentUser;
+    const currentUser = useUser((state) => state.currentUser)
+    const savedUser = JSON.parse(localStorage.getItem('currentUser'))
+    const user = currentUser.email ? currentUser : savedUser
+    console.log(user);
+
+    // console.log({displayName , email , uid , phoneNumber , photoURL});
+
   return (
+    // show the user data 
     <div className="signup--container">
         <h1>user</h1>
-        <p>{users.phoneNumber}</p>
-        <p>{'hi'}</p>
-        <p>{users.email}</p>
-        <p>{users.uid}</p>
-        <p>{users.displayName}</p>
-        <img src={users.photoURL} alt="" />
+        <p>{user.phoneNumber}</p>
+        <p>{user.email}</p>
+        <p>{user.uid}</p>
+        <p>{user.displayName}</p>
+        <img src={user.photoURL} alt="" />
     </div>
   )
 }

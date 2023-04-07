@@ -1,7 +1,7 @@
 import { useState } from "react";
-import PhoneInput from 'react-phone-number-input'
-import 'react-phone-number-input/style.css'
-import ar from 'react-phone-number-input/locale/ar.json'
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+import ar from "react-phone-number-input/locale/ar.json";
 import { auth } from "../../config/firebase";
 import {
   RecaptchaVerifier,
@@ -21,16 +21,21 @@ export default function SignUp() {
 
   const navigate = useNavigate();
 
-  const setUsers = useUser((state) => state.setUsers);
+  const setPhones = useSignUp((state) => state.setPhones);
 
-  const setconfirmationResult = useSignUp((state) => state.setconfirmationResult);
+  const setCurrentUser = useUser((state) => state.setCurrentUser);
+
+  const setconfirmationResult = useSignUp(
+    (state) => state.setconfirmationResult
+  );
 
   // recapter form
   const requestRecaptcha = () => {
+    // window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {}, auth);
     window.recaptchaVerifier = new RecaptchaVerifier(
       "sign-in-recaptcha",
       {
-        size: "invisible",
+        size: "normal",
         callback: (response) => {
           // reCAPTCHA solved, allow signInWithPhoneNumber.
           sendOtp();
@@ -45,14 +50,16 @@ export default function SignUp() {
   };
   // send otp to phone number
   const sendOtp = () => {
+    console.log("send otp ");
     const appVerifier = window.recaptchaVerifier;
     signInWithPhoneNumber(auth, phone, appVerifier)
       .then((confirmationResult) => {
         window.confirmationResult = confirmationResult;
         setconfirmationResult(confirmationResult);
-        navigate('/otp')
-        toast.success(`تم إرسال رمز التحقق إلى الرقم ${phone}`);
-        setIsLoding(false);
+        setPhones(phone);
+        console.log('message sent');
+          setIsLoding(false);
+          navigate("/otp");
       })
       .catch((error) => {
         setIsLoding(false);
@@ -60,7 +67,6 @@ export default function SignUp() {
         console.error(error);
       });
   };
-
 
   // handel submit form
   const handelSumbit = (e) => {
@@ -78,7 +84,7 @@ export default function SignUp() {
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
-        setUsers(user)
+        setCurrentUser(user);
         toast.success("تم تسجيل الدخول بنجاح");
         setTimeout(() => {
           navigate("/user");
@@ -88,11 +94,13 @@ export default function SignUp() {
         toast.error("حدث خطأ أثناء تسجيل الدخول");
         // Handle Errors here.
         const errorCode = error.code;
-        console.error(error)
+        console.error(error);
         const errorMessage = error.message;
         console.error(errorMessage);
       });
   };
+
+  // save the user in firestore
 
   return (
     <div className="signup--container">
@@ -101,24 +109,16 @@ export default function SignUp() {
         <p>سيحتاج واتساب إلى التحقق من رقم هاتفك.</p>
       </div>
       <form className="signup-form" onSubmit={handelSumbit}>
-        <PhoneInput className={`phoneInput`}
-        value={phone}
-        onChange={setPhone}
-        placeholder="رقم هاتفك هنا ..."
-        defaultCountry="MR"
-        international
-        limitMaxLength
-        // countries={[
-        //   "MR",
-        //   "MA",
-        //   "TN",
-        //   "DZ",
-        //   "LY",
-        //   "EG",
-        //   "SD",
-        //   'SA',
-        // ]}
-        labels={ar}
+        <PhoneInput
+          className={`phoneInput`}
+          value={phone}
+          onChange={setPhone}
+          placeholder="رقم هاتفك هنا ..."
+          defaultCountry="MR"
+          international
+          limitMaxLength
+          countries={["MR", "MA", "TN", "DZ", "LY", "EG", "SD", "SA"]}
+          labels={ar}
         />
         <button type="submit" className="btn" disabled={isLoading}>
           التالي
