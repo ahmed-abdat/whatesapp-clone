@@ -22,7 +22,7 @@ export default function signup() {
 
   const navigate = useNavigate();
 
-  // const { setUser } = useUserContext();
+  console.log('sign up page');
 
   // recapter form
   const requestRecaptcha = () => {
@@ -82,10 +82,11 @@ export default function signup() {
       .then((result) => {
         const user = result.user;
         console.log(user);
-        // setUser(user);
+        toast.success("تم تسجيل الدخول بنجاح");
         navigate("/");
       })
       .catch((error) => {
+        toast.error("حدث خطأ أثناء تسجيل الدخول");
         // Handle Errors here.
         const errorCode = error.code;
         const errorMessage = error.message;
