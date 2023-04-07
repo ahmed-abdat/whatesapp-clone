@@ -1,7 +1,7 @@
 import { useState } from "react";
-import "./SignUp.css";
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
+import ar from 'react-phone-number-input/locale/ar.json'
 import { auth } from "../../config/firebase";
 import {
   RecaptchaVerifier,
@@ -12,63 +12,65 @@ import {
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
+import "./SignUp.css";
 
 export default function SignUp() {
   const [phone, setPhone] = useState("");
-  // const [isLoading, setIsLoding] = useState(false);
+  const [isLoading, setIsLoding] = useState(false);
 
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  // const setconfirmationResult = useSignUp((state) => state.setconfirmationResult);
+  const setconfirmationResult = useSignUp((state) => state.setconfirmationResult);
 
-  // // recapter form
-  // const requestRecaptcha = () => {
-  //   window.recaptchaVerifier = new RecaptchaVerifier(
-  //     "sign-in-recaptcha",
-  //     {
-  //       size: "invisible",
-  //       callback: (response) => {
-  //         // reCAPTCHA solved, allow signInWithPhoneNumber.
-  //         sendOtp();
-  //         console.log(response);
-  //       },
-  //       "expired-callback": () => {
-  //         // Response expired. Ask user to solve reCAPTCHA again.
-  //         toast.error("حاول مرة أخرى");
-  //       },
-  //     },
-  //     auth
-  //   );
-  // };
-  // // send otp to phone number
-  // const sendOtp = () => {
-  //   console.log("send otp");
-  //   const phoneNumber = `+${phone}`;
-  //   const appVerifier = window.recaptchaVerifier;
-  //   signInWithPhoneNumber(auth, phoneNumber, appVerifier)
-  //     .then((confirmationResult) => {
-  //       window.confirmationResult = confirmationResult;
-  //       setconfirmationResult(confirmationResult);
-  //       navigate('/otp')
-  //       toast.success(`تم إرسال رمز التحقق إلى الرقم +${phone}`);
-  //       setIsLoding(false);
-  //     })
-  //     .catch((error) => {
-  //       setIsLoding(false);
-  //       toast.error("حدث خطأ أثناء إرسال الرسالة");
-  //       console.error(error);
-  //     });
-  // };
+  // recapter form
+  const requestRecaptcha = () => {
+    window.recaptchaVerifier = new RecaptchaVerifier(
+      "sign-in-recaptcha",
+      {
+        size: "invisible",
+        callback: (response) => {
+          // reCAPTCHA solved, allow signInWithPhoneNumber.
+          sendOtp();
+          console.log(response);
+        },
+        "expired-callback": () => {
+          // Response expired. Ask user to solve reCAPTCHA again.
+          toast.error("حاول مرة أخرى");
+        },
+      },
+      auth
+    );
+  };
+  // send otp to phone number
+  const sendOtp = () => {
+    console.log("send otp");
+    const phoneNumber = `+${phone}`;
+    const appVerifier = window.recaptchaVerifier;
+    signInWithPhoneNumber(auth, phoneNumber, appVerifier)
+      .then((confirmationResult) => {
+        window.confirmationResult = confirmationResult;
+        setconfirmationResult(confirmationResult);
+        navigate('/otp')
+        toast.success(`تم إرسال رمز التحقق إلى الرقم +${phone}`);
+        setIsLoding(false);
+      })
+      .catch((error) => {
+        setIsLoding(false);
+        toast.error("حدث خطأ أثناء إرسال الرسالة");
+        console.error(error);
+      });
+  };
 
-  // // handel submit form
-  // const handelSumbit = (e) => {
-  //   e.preventDefault();
-  //   if (phone.length >= 11) {
-  //     setIsLoding(true);
-  //     requestRecaptcha();
-  //     sendOtp();
-  //   }
-  // };
+
+  // handel submit form
+  const handelSumbit = (e) => {
+    e.preventDefault();
+    if (phone.length >= 11) {
+      setIsLoding(true);
+      requestRecaptcha();
+      sendOtp();
+    }
+  };
 
   // sign up with google
   const signInWithGoogle = () => {
@@ -96,17 +98,25 @@ export default function SignUp() {
         <p>سيحتاج واتساب إلى التحقق من رقم هاتفك.</p>
       </div>
       <form className="signup-form">
-        <div className="phoneNumber">
-        <PhoneInput className="phoneInput"
+        <PhoneInput className={`phoneInput`}
         value={phone}
         onChange={setPhone}
-        placeholder="رقم الهاتف"
+        placeholder="رقم هاتفك هنا ..."
         defaultCountry="MR"
         international
         limitMaxLength
+        // countries={[
+        //   "MR",
+        //   "MA",
+        //   "TN",
+        //   "DZ",
+        //   "LY",
+        //   "EG",
+        //   "SD",
+        //   'SA',
+        // ]}
+        labels={ar}
         />
-
-        </div>
         <button type="submit" className="btn">
           التالي
         </button>
