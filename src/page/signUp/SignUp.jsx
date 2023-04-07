@@ -87,8 +87,9 @@ export default function SignUp() {
         toast.error("حدث خطأ أثناء تسجيل الدخول");
         // Handle Errors here.
         const errorCode = error.code;
+        console.error(error)
         const errorMessage = error.message;
-        console.log(errorMessage);
+        console.error(errorMessage);
       });
   };
 
