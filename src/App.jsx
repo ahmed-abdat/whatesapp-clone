@@ -8,7 +8,6 @@ import {
 import Loading from "./components/Loading";
 import NotFound from "./components/NotFound";
 import Home from "./page/Home/Home";
-import Navbar from "./components/NavBar";
 import Welcoome from "./page/welcome/Welcoome";
 import Otp from "./page/otp/Otp";
 import SignUp from "./page/signUp/SignUp";
