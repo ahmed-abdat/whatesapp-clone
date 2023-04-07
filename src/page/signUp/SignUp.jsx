@@ -97,7 +97,7 @@ export default function SignUp() {
         <h3>أدخل رقم هاتفك</h3>
         <p>سيحتاج واتساب إلى التحقق من رقم هاتفك.</p>
       </div>
-      <form className="signup-form">
+      <form className="signup-form" onSubmit={handelSumbit}>
         <PhoneInput className={`phoneInput`}
         value={phone}
         onChange={setPhone}
@@ -117,7 +117,7 @@ export default function SignUp() {
         // ]}
         labels={ar}
         />
-        <button type="submit" className="btn">
+        <button type="submit" className="btn" disabled={isLoading}>
           التالي
         </button>
       </form>
