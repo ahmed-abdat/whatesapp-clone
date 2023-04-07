@@ -3,7 +3,6 @@ import "./styles/SignUp.css";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import ar from "react-phone-input-2/lang/ar.json";
-import Otp from "./Otp";
 import { auth } from "../../config/firebase";
 import {
   RecaptchaVerifier,
@@ -13,16 +12,15 @@ import {
 } from "firebase/auth";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import useSignUp from "../../store/useSignUp";
 
 export default function signup() {
   const [phone, setPhone] = useState("");
-  const [confirmationResults, setConfirmationResults] = useState(null);
-  const [isOtpSend, setIsOtpSend] = useState(false);
   const [isLoading, setIsLoding] = useState(false);
 
   const navigate = useNavigate();
 
-  console.log('sign up page');
+  const setconfirmationResult = useSignUp((state) => state.setconfirmationResult);
 
   // recapter form
   const requestRecaptcha = () => {
@@ -51,14 +49,13 @@ export default function signup() {
     signInWithPhoneNumber(auth, phoneNumber, appVerifier)
       .then((confirmationResult) => {
         window.confirmationResult = confirmationResult;
-        setConfirmationResults(confirmationResult);
+        setconfirmationResult(confirmationResult);
+        navigate('/otp')
         toast.success(`تم إرسال رمز التحقق إلى الرقم +${phone}`);
         setIsLoding(false);
-        setIsOtpSend(true);
       })
       .catch((error) => {
         setIsLoding(false);
-        setIsOtpSend(false);
         toast.error("حدث خطأ أثناء إرسال الرسالة");
         console.error(error);
       });
@@ -67,7 +64,6 @@ export default function signup() {
   // handel submit form
   const handelSumbit = (e) => {
     e.preventDefault();
-    // setIsOtpSend(true)
     if (phone.length >= 11) {
       setIsLoding(true);
       requestRecaptcha();
@@ -96,10 +92,7 @@ export default function signup() {
 
   return (
     <div className="signup--container">
-      {isOtpSend ? (
-        <Otp confirmationResults={confirmationResults} />
-      ) : (
-        <>
+     
           <div className="info">
             <h3>أدخل رقم هاتفك</h3>
             <p>سيحتاج واتساب إلى التحقق من رقم هاتفك.</p>
@@ -133,8 +126,6 @@ export default function signup() {
             <p className="btn google-btn"> Sign In with Google</p>
           </div>
           <Toaster />
-        </>
-      )}
     </div>
   );
 }

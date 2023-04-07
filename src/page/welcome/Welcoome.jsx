@@ -1,10 +1,11 @@
 import whatsappWelcomeImg from "../../assets/img/whatsapp-welcome.png";
-import "./styles/Login.css";
+import "./welcoome.css";
 import { useContext } from "react";
 import { StateContext } from "../../context";
+import { useNavigate } from "react-router-dom";
 
 export default function ({ }) {
-  const [, setIsWelcomePage] = useContext(StateContext);
+  const navigate = useNavigate()
   return (
     <div className="welcome-page">
       <div className="img">
@@ -22,7 +23,7 @@ export default function ({ }) {
         </p>
       </div>
       <div className="btn">
-        <button onClick={()=> setIsWelcomePage(false)}>الموافقة و المتابعة</button>
+        <button onClick={()=> navigate('/signUp')}>الموافقة و المتابعة</button>
       </div>
     </div>
   );

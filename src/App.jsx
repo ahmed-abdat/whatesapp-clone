@@ -7,9 +7,11 @@ import {
 
 import Loading from "./components/Loading";
 import NotFound from "./components/NotFound";
-import Login from "./page/Login";
 import Home from "./page/Home/Home";
 import Navbar from "./components/NavBar";
+import Welcoome from "./page/welcome/Welcoome";
+import Otp from "./page/otp/Otp";
+import SignUp from "./page/signUp/SignUp";
 
 function App() {
   return (
@@ -18,7 +20,9 @@ function App() {
         <Route path="/" element={<Home />}>
           <Route path="/" element={<Loading />} />
         </Route>
-        <Route path="/login" element={<Login />} />
+        <Route path="/welcoome" element={<Welcoome />} />
+        <Route path="/signUp" element={<SignUp />} />
+        <Route path="/otp" element={<Otp />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

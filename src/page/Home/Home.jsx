@@ -6,7 +6,7 @@ export default function Home() {
 
   return (
     <>
-      <Link to="/login">Login</Link>
+      <Link to="/welcoome">Login</Link>
       {/* <NavBar /> */}
       <Outlet />
     </>

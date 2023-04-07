@@ -1,9 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import "./styles/Opt.css";
+import "./Opt.css";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import useSignUp from "../../store/useSignUp";
 
-export default function Otp({ confirmationResults }) {
+export default function Otp({  }) {
+
+  const confirmationResult = useSignUp((state) => state.confirmationResult);
+ 
+
+
   const firstInput = useRef(null);
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [isOtpVerifie, setIsotpVerifie] = useState(false);
@@ -33,14 +39,14 @@ export default function Otp({ confirmationResults }) {
 
   const handelSubmit = (e) => {
     e.preventDefault();
-    confirmationResults
+    console.log(confirmationResult);
+    confirmationResult
       .confirm(otp.join(""))
       .then((result) => {
         toast.success("تمت المصادقة");
-        // setUser(result.user);
-        navigate("/");
-        // console.log(result.user);
-        // ...
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
       })
       .catch((error) => {
         toast.error("رمز تأكيد ليس صحيح!");
@@ -54,7 +60,8 @@ export default function Otp({ confirmationResults }) {
   }, [isOtpVerifie]);
 
   return (
-    <div className="otp">
+    <div className="signup--container">
+      <div className="otp">
       <h1>التحقق من رقمك</h1>
       <p className="d-f">
         <span>+222 37928327</span>
@@ -94,6 +101,7 @@ export default function Otp({ confirmationResults }) {
         </div>
       </form>
       <Toaster />
+    </div>
     </div>
   );
 }
