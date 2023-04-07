@@ -1,7 +1,10 @@
 import whatsappWelcomeImg from "../../assets/img/whatsapp-welcome.png";
 import "./styles/Login.css";
+import { useContext } from "react";
+import { StateContext } from "../../context";
 
-export default function ({ setIsWelcomePage}) {
+export default function ({ }) {
+  const [, setIsWelcomePage] = useContext(StateContext);
   return (
     <div className="welcome-page">
       <div className="img">
