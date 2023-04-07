@@ -4,14 +4,17 @@ import {getAuth} from 'firebase/auth'
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDovIL5sAI8QmBzM8MLbzLnFWqwNenV6Cs",
-  authDomain: "whatsapp-clone-b5e50.firebaseapp.com",
-  projectId: "whatsapp-clone-b5e50",
-  storageBucket: "whatsapp-clone-b5e50.appspot.com",
-  messagingSenderId: "861285190246",
-  appId: "1:861285190246:web:b2dcb99285a2e169b7fba7",
-  measurementId: "G-P7C98YGM1F"
+
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
+
+console.log(JSON.stringify(import.meta.env.VITE_FIREBASE_API_KEY));
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
