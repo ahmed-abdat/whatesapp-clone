@@ -72,23 +72,23 @@ export default function SignUp() {
   // };
 
   // sign up with google
-  const signInWithGoogle = () => {
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const user = result.user;
-        console.log(user);
-        toast.success("تم تسجيل الدخول بنجاح");
-        navigate("/");
-      })
-      .catch((error) => {
-        toast.error("حدث خطأ أثناء تسجيل الدخول");
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorMessage);
-      });
-  };
+  // const signInWithGoogle = () => {
+  //   const provider = new GoogleAuthProvider();
+  //   signInWithPopup(auth, provider)
+  //     .then((result) => {
+  //       const user = result.user;
+  //       console.log(user);
+  //       toast.success("تم تسجيل الدخول بنجاح");
+  //       navigate("/");
+  //     })
+  //     .catch((error) => {
+  //       toast.error("حدث خطأ أثناء تسجيل الدخول");
+  //       // Handle Errors here.
+  //       const errorCode = error.code;
+  //       const errorMessage = error.message;
+  //       console.log(errorMessage);
+  //     });
+  // };
 
   return (
     <div className="signup--container">
@@ -96,8 +96,8 @@ export default function SignUp() {
             <h3>أدخل رقم هاتفك</h3>
             <p>سيحتاج واتساب إلى التحقق من رقم هاتفك.</p>
           </div>
-          <form className="signup-form" onSubmit={handelSumbit}>
-            <PhoneInput
+          <form className="signup-form" >
+            {/* <PhoneInput
               containerClass="phone-input-container"
               inputClass="phone-input"
               placeholder="رقم الهاتف"
@@ -108,16 +108,16 @@ export default function SignUp() {
               enableLongNumbers={false}
               localization={ar}
               country={"mr"}
-              value={phone}
-              onChange={(phone) => setPhone(phone)}
-            />
-            <button type="submit" className="btn" disabled={isLoading}>
+              // value={phone}
+              // onChange={(phone) => setPhone(phone)}
+            /> */}
+            <button type="submit" className="btn" >
               التالي
             </button>
           </form>
           <div id="sign-in-recaptcha"></div>
           {/* signup from google */}
-          <div className="signup-google" onClick={signInWithGoogle}>
+          <div className="signup-google" >
             <img
               className="google-icon"
               src="https://img.icons8.com/color/24/000000/google-logo.png"
