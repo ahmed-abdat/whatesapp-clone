@@ -92,7 +92,6 @@ export default function signup() {
 
   return (
     <div className="signup--container">
-     
           <div className="info">
             <h3>أدخل رقم هاتفك</h3>
             <p>سيحتاج واتساب إلى التحقق من رقم هاتفك.</p>
