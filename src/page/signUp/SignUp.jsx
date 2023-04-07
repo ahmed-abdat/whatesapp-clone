@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./SignUp.css";
-import PhoneInput from 'react-phone-input-2'
-import 'react-phone-input-2/lib/style.css'
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 import ar from "react-phone-input-2/lang/ar.json";
 import { auth } from "../../config/firebase";
 import {
@@ -92,39 +92,46 @@ export default function SignUp() {
 
   return (
     <div className="signup--container">
-          <div className="info">
-            <h3>أدخل رقم هاتفك</h3>
-            <p>سيحتاج واتساب إلى التحقق من رقم هاتفك.</p>
-          </div>
-          <form className="signup-form" >
-            <PhoneInput
-              // containerClass="phone-input-container"
-              // inputClass="phone-input"
-              // placeholder="رقم الهاتف"
-              // searchPlaceholder="ابحث"
-              // searchNotFound="لا يوجد نتائج"
-              // masks={{ mr: ".. .. .. .." }}
-              // regions={"africa"}
-              // enableLongNumbers={false}
-              // localization={ar}
-              // country={"mr"}
-              value={phone}
-              onChange={(phone) => setPhone(phone)}
-            />
-            <button type="submit" className="btn" >
-              التالي
-            </button>
-          </form>
-          <div id="sign-in-recaptcha"></div>
-          {/* signup from google */}
-          <div className="signup-google" onClick={signInWithGoogle}>
-            <img
-              className="google-icon"
-              src="https://img.icons8.com/color/24/000000/google-logo.png"
-            />
-            <p className="btn google-btn"> Sign In with Google</p>
-          </div>
-          <Toaster />
+      <div className="info">
+        <h3>أدخل رقم هاتفك</h3>
+        <p>سيحتاج واتساب إلى التحقق من رقم هاتفك.</p>
+      </div>
+      <form className="signup-form">
+        {/* <PhoneInput
+          // containerClass="phone-input-container"
+          // inputClass="phone-input"
+          // placeholder="رقم الهاتف"
+          // searchPlaceholder="ابحث"
+          // searchNotFound="لا يوجد نتائج"
+          // masks={{ mr: ".. .. .. .." }}
+          // regions={"africa"}
+          // enableLongNumbers={false}
+          // localization={ar}
+          // country={"mr"}
+          value={phone}
+          onChange={(phone) => setPhone(phone)}
+        /> */}
+        <div className="phoneInput">
+          <PhoneInput
+            country={"us"}
+            value={phone}
+            onChange={(phone) => setPhone(phone)}
+          />
+        </div>
+        <button type="submit" className="btn">
+          التالي
+        </button>
+      </form>
+      <div id="sign-in-recaptcha"></div>
+      {/* signup from google */}
+      <div className="signup-google" onClick={signInWithGoogle}>
+        <img
+          className="google-icon"
+          src="https://img.icons8.com/color/24/000000/google-logo.png"
+        />
+        <p className="btn google-btn"> Sign In with Google</p>
+      </div>
+      <Toaster />
     </div>
   );
 }
