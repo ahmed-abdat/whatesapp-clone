@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import ar from "react-phone-number-input/locale/ar.json";
-import { auth } from "../../config/firebase";
+import { auth, db } from "../../config/firebase";
 import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
+import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
@@ -18,6 +19,12 @@ import "./SignUp.css";
 export default function SignUp() {
   const [phone, setPhone] = useState("");
   const [isLoading, setIsLoding] = useState(false);
+  const [data, setData] = useState([]);
+
+  // get curentUser
+  const getCurrentUser = useUser((state) => state.getCurrentUser);
+
+  const user = getCurrentUser();
 
   const navigate = useNavigate();
 
@@ -57,13 +64,14 @@ export default function SignUp() {
         window.confirmationResult = confirmationResult;
         setconfirmationResult(confirmationResult);
         setPhones(phone);
-        console.log('message sent');
-          setIsLoding(false);
-          navigate("/otp");
+        console.log("message sent");
+        setIsLoding(false);
+        navigate("/otp");
       })
       .catch((error) => {
         setIsLoding(false);
-        // toast.error("حدث خطأ أثناء إرسال الرسالة");
+        console.log(error.code);
+        toast.error("حدث خطأ أثناء إرسال الرسالة");
         console.error(error);
       });
   };
@@ -73,8 +81,45 @@ export default function SignUp() {
     e.preventDefault();
     if (phone.length >= 11) {
       setIsLoding(true);
-      requestRecaptcha();
-      sendOtp();
+      const isUserExiste = data.find((user) => user.phoneNumber === phone);
+      if (isUserExiste) {
+        setCurrentUser(isUserExiste);
+        toast.success("مرحبا بعودتك ");
+        setTimeout(() => {
+          navigate("/user");
+        }, 2000);
+      } else {
+        requestRecaptcha();
+        sendOtp();
+      }
+    }
+  };
+
+  // get the user that sign in with phone in firestore
+  const getPhoneUsers = async () => {
+    const q = query(collection(db, "users"), where("phoneNumber", "!=", null));
+    const querySnapshot = await getDocs(q);
+    let AllDocs = [];
+    querySnapshot.forEach((doc) => {
+      AllDocs.push({ id: doc.id, ...doc.data() });
+    });
+    setData(AllDocs);
+  };
+
+  // get the cuurent user that sign in with google
+  const getGoogleUser = async (id) => {
+    try {
+      const docRef = doc(db, "users", id);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setCurrentUser(docSnap.data())
+        navigate('/user')
+      } else {
+        navigate("/userInfo");
+        console.log("No such document!");
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -84,11 +129,10 @@ export default function SignUp() {
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
+        getGoogleUser(user.uid)
         setCurrentUser(user);
         toast.success("تم تسجيل الدخول بنجاح");
-        setTimeout(() => {
-          navigate("/user");
-        }, 1000);
+
       })
       .catch((error) => {
         toast.error("حدث خطأ أثناء تسجيل الدخول");
@@ -99,6 +143,14 @@ export default function SignUp() {
         console.error(errorMessage);
       });
   };
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    } else {
+      getPhoneUsers();
+    }
+  }, []);
 
   // save the user in firestore
 

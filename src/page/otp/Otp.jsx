@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./Opt.css";
 import toast, { Toaster } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
 import useUser from "../../store/useUser";
 
@@ -11,7 +11,6 @@ export default function Otp({}) {
 
   const phone = useSignUp((state) => state.phone);
 
-  const firstInput = useRef(null);
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [isOtpVerifie, setIsotpVerifie] = useState(false);
 
@@ -50,23 +49,29 @@ export default function Otp({}) {
         setCurrentUser(result.user);
         toast.success("تمت المصادقة");
         setTimeout(() => {
-          navigate("/user");
-        }, 2000);
+          navigate("/userInfo");
+        }, 2500);
       })
       .catch((error) => {
-        toast.error("رمز تأكيد ليس صحيح!");
-        console.error(error);
+        console.log(error.code);
+        console.log(error.message);
+        if (error.code === "auth/code-expired") {
+          toast.error("لقد إنتهت صلاحية رمز التأكيد");
+          return;
+        }
+        toast.error("! رمز تأكيد ليس صحيح");
+        // console.error(error);
       });
   };
 
-  // focus the first input when the component is mounted
-  useEffect(() => {
-    firstInput.current.focus();
-  }, [isOtpVerifie]);
+
+
   // submit otp
   useEffect(() => {
-    if (confirmationResult) {
-      toast.success(`تم إرسال رمز التحقق إلى الرقم ${phone}`);
+    if (confirmationResult.hasOwnProperty("verificationId")) {
+      toast.success(`تم إرسال رمز التحقق إلى الرقم ${phone}`, {
+        duration: 4000,
+      });
     }
   }, []);
 
@@ -75,7 +80,7 @@ export default function Otp({}) {
       <div className="otp">
         <h1>التحقق من رقمك</h1>
         <p className="d-f">
-          <span>+222 37928327</span>
+          <span>{phone}</span>
           تم إرسال رمز التحقق إلى الرقم
         </p>
         <form onSubmit={handelSubmit}>
@@ -83,7 +88,6 @@ export default function Otp({}) {
             {otp.map((data, index) => {
               return (
                 <input
-                  ref={index === 0 ? firstInput : null}
                   type="text"
                   key={index}
                   value={data}
@@ -96,7 +100,7 @@ export default function Otp({}) {
           </div>
           {/* didnt get otp */}
           <p className="resend-otp">
-            لم تصلك رسالة؟ <a href="">إعادة الإرسال</a>
+            ليس رقمي ؟ <Link to="/signup"> تغيير رقمك </Link>
           </p>
           <div className="btns">
             <button className="btn otp-confiramtion" disabled={!isOtpVerifie}>

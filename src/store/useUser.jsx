@@ -1,22 +1,18 @@
-import { doc, setDoc } from "firebase/firestore";
 import { create } from "zustand";
-import { db } from "../config/firebase";
 
-const useUser = create((set) => ({
+const useUser = create((set , get) => ({
   currentUser: {},
-  setCurrentUser: async (user) => {
+  setCurrentUser: (user) => {
     localStorage.setItem("currentUser", JSON.stringify(user));
     set(() => ({ currentUser: user }));
-    const { displayName, email, uid, phoneNumber, photoURL } = user;
-    await setDoc(doc(db, "users", uid), {
-      email,
-      displayName,
-      uid,
-      phoneNumber,
-      photoURL,
-      isOnline: false,
-    });
   },
+  getCurrentUser : ()=> {
+    const savedUser = JSON.parse(localStorage.getItem('currentUser'))
+    const curentUser = get().currentUser
+    const user = curentUser?.email ? curentUser : savedUser
+    return user
+  },
+
 }));
 
 export default useUser;

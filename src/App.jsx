@@ -12,17 +12,29 @@ import Welcoome from "./page/welcome/Welcoome";
 import Otp from "./page/otp/Otp";
 import SignUp from "./page/signUp/SignUp";
 import User from "./components/User";
+import useUser from "./store/useUser";
+import UserInfo from "./page/userInfo/UserInfo";
 
 function App() {
+   // get curentUser
+   const getCurrentUser = useUser(state => state.getCurrentUser)
+
+   const user = getCurrentUser()
+
+
+  const RequireAuth = ({ children }) => {
+    return user  ? children : <Navigate to={"/welcoome"} />;
+  };
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />}>
+        <Route path="/" element={<RequireAuth><Home /></RequireAuth>}>
           <Route path="/" element={<Loading />} />
         </Route>
         <Route path="/welcoome" element={<Welcoome />} />
         <Route path="/signUp" element={<SignUp />} />
         <Route path="/otp" element={<Otp />} />
+        <Route path="/userInfo" element={<UserInfo />} />
         <Route path="/user" element={<User />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

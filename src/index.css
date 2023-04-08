@@ -13,6 +13,7 @@
 :root {
   /* color */
   --color-gray : #bbc5cb;
+  --white-color-light: #f6f5ff;
   --icon-color : #54656f;
   --icon-color-light : #bbc5cb;
   --main-bgc : #f0f2f5;
@@ -22,6 +23,12 @@
   --whatsapp-color-light : #25d366;
   --whatsapp-color : #179652;
   --whatsapp-color-dark : #077139;
+
+  /* trasition */
+  --tran-02: all 0.2s ease;
+  --tran-03: all 0.3s ease;
+  --tran-04: all 0.4s ease;
+  --tran-05: all 0.5s ease;
 }
 
 /*? css reset */
@@ -67,7 +74,7 @@ body {
 
 }
 
-.btn[disabled] {
+.btn[disabled] , button[disabled]{
   opacity: 0.5;
   pointer-events: none;
   cursor: not-allowed;

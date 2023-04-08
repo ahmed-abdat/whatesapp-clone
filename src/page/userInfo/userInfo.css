@@ -1,0 +1,164 @@
+
+.userInfo {
+  display: flex;
+  font-family: "Roboto", sans-serif;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: #f5f5f5;
+  overflow: hidden;
+}
+
+.userInfo label , .userInfo input::placeholder , .userInfo .header {
+  font-family: "Vazirmatn", sans-serif;
+}
+
+/* header */
+.userInfo .header h2{
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--whatsapp-color);
+  margin-bottom: 0.5rem;
+}
+ .userInfo .header p {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text-color-light);
+ }
+
+.userInfo form .img {
+  cursor: pointer;
+}
+
+.userInfo form .img img {
+  width: 6rem;
+  object-fit: contain;
+  border-radius: 50%;
+  max-width: 100%;
+}
+
+.userInfo form {
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+  padding-inline: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem 0;
+  background-color: #fff;
+  width: 450px;
+  min-width: 250px;
+  max-width: 96%;
+  max-height: calc(100vh - 0px);
+  box-shadow: 0 10px 40px -20px rgba(0, 0, 0, 0.5);
+  border-radius: 6px;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  -o-border-radius: 6px;
+}
+
+.userInfo form .header {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+  /* margin-bottom: 0.5rem; */
+  color: #444;
+}
+
+.userInfo form .input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem 0;
+}
+
+.userInfo form .input label {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.userInfo form .input input {
+  height: 2.4rem;
+  padding-inline: 1rem;
+  outline: none;
+  border: none;
+  border: 1px solid #e5e7eb;
+  color: #333;
+  font-size: 1.18rem;
+  /* font-weight: 500; */
+  border-radius: 6px;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  -o-border-radius: 6px;
+}
+
+.userInfo form input[disabled] {
+  pointer-events: none;
+  cursor: not-allowed;
+  background-color: #eee;
+}
+
+.userInfo form .input.name input {
+  font-size: 1.1rem;
+}
+.userInfo form .input.phone input::placeholder {
+  font-size: 1.05rem;
+}
+
+.userInfo form .input.phone input,
+.userInfo form .input.time input {
+  font-family: "Roboto", sans-serif;
+}
+
+.userInfo form .category {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem 0;
+}
+
+.userInfo .btnes {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-around;
+}
+
+.userInfo .btnes button {
+  cursor: pointer;
+  outline: none;
+  border: none;
+  font-size: 1.15rem;
+  font-weight: 500;
+  padding: 0.6rem 1rem;
+  transition: var(--tran-04);
+  border-radius: 6px;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  -o-border-radius: 6px;
+  -webkit-transition: var(--tran-04);
+  -moz-transition: var(--tran-04);
+  -ms-transition: var(--tran-04);
+  -o-transition: var(--tran-04);
+}
+
+.userInfo button.cancel {
+  background-color: transparent;
+  font-size: 1.25rem;
+  color: var(--text-color);
+}
+
+.userInfo .cancel:hover {
+  color: #333;
+}
+
+.userInfo button.send {
+  background: var(--whatsapp-color);
+  color: var(--white-color-light);
+}
+
+.userInfo button.send:hover {
+  background-color: var(--whatsapp-color-dark);
+}

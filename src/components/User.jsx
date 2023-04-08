@@ -1,24 +1,33 @@
-import {auth} from '../config/firebase'
-import useUser from "../store/useUser"
+import { useNavigate } from "react-router-dom";
+import { auth } from "../config/firebase";
+import useUser from "../store/useUser";
 
 export default function User() {
-  // const user = auth.currentUser;
-    const currentUser = useUser((state) => state.currentUser)
-    const savedUser = JSON.parse(localStorage.getItem('currentUser'))
-    const user = currentUser.email ? currentUser : savedUser
-    console.log(user);
+  // get current user
+  const getCurrentUser = useUser((state) => state.getCurrentUser);
+  const user = getCurrentUser();
 
-    // console.log({displayName , email , uid , phoneNumber , photoURL});
+  const setCurrentUser = useUser((state) => state.setCurrentUser);
+
+  const navigate = useNavigate()
+
+  // signout user
+  const signOut = () => {
+    setCurrentUser(null)
+    navigate('/welcoome')
+
+  };
 
   return (
-    // show the user data 
+    // show the user data
     <div className="signup--container">
-        <h1>user</h1>
-        <p>{user.phoneNumber}</p>
-        <p>{user.email}</p>
-        <p>{user.uid}</p>
-        <p>{user.displayName}</p>
-        <img src={user.photoURL} alt="" />
+      <h1>user</h1>
+      <p>{user.phoneNumber}</p>
+      <p>{user.email}</p>
+      <p>{user.uid}</p>
+      <p>{user.displayName}</p>
+      <img src={user.photoURL} alt="" />
+      <button onClick={signOut}>sig out</button>
     </div>
-  )
+  );
 }

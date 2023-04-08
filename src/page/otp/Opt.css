@@ -4,11 +4,11 @@
   background-color: #fff;
   box-shadow: 0 10px 40px -20px rgba(0, 0, 0, 0.5);
   padding: 3rem 2rem;
-  border-radius: 0.4rem;
-  -webkit-border-radius: 0.4rem;
-  -moz-border-radius: 0.4rem;
-  -ms-border-radius: 0.4rem;
-  -o-border-radius: 0.4rem;
+  border-radius: 0.5rem;
+  -webkit-border-radius: 0.5rem;
+  -moz-border-radius: 0.5rem;
+  -ms-border-radius: 0.5rem;
+  -o-border-radius: 0.5rem;
 }
 
 .otp h1 {
@@ -59,21 +59,23 @@
   text-align: center;
   outline: none;
   background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 0.8rem;
+  outline: none;
+  border: none;
+  border-bottom: 2px solid #ccc;
+  border-radius: 0.15rem;
   transition: all 0.3s ease-in-out;
-  -webkit-border-radius: 0.8rem;
-  -moz-border-radius: 0.8rem;
-  -ms-border-radius: 0.8rem;
-  -o-border-radius: 0.8rem;
+  -moz-border-radius: 0.15rem;
+  -ms-border-radius: 0.15rem;
+  -o-border-radius: 0.15rem;
   -webkit-transition: all 0.3s ease-in-out;
   -moz-transition: all 0.3s ease-in-out;
   -ms-transition: all 0.3s ease-in-out;
   -o-transition: all 0.3s ease-in-out;
+  -webkit-border-radius: 0.15rem;
 }
 
 .otp .otp-inputs input:focus {
-  border: 1px solid var(--whatsapp-color);
+  border-bottom-color : var(--whatsapp-color);
 }
 
 /* ? resend otp */
