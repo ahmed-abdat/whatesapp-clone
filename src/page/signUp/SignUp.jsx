@@ -9,8 +9,15 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
-import toast, { Toaster } from "react-hot-toast";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  getDoc,
+} from "firebase/firestore";
+import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
 import useUser from "../../store/useUser";
@@ -25,8 +32,7 @@ export default function SignUp() {
   const getCurrentUser = useUser((state) => state.getCurrentUser);
   const user = getCurrentUser();
 
-
-  const setIsEmailUser = useUser(state => state.setIsEmailUser)
+  const setIsEmailUser = useUser((state) => state.setIsEmailUser);
 
   const navigate = useNavigate();
 
@@ -51,7 +57,16 @@ export default function SignUp() {
         },
         "expired-callback": () => {
           // Response expired. Ask user to solve reCAPTCHA again.
-          toast.error("حاول مرة أخرى");
+          toast.error("حاول مرة أخرى", {
+            position: "top-center",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            });
         },
       },
       auth
@@ -66,16 +81,36 @@ export default function SignUp() {
         window.confirmationResult = confirmationResult;
         setconfirmationResult(confirmationResult);
         setPhones(phone);
-        setIsEmailUser(false)
-        console.log("message sent");
+        setIsEmailUser(false);
         setIsLoding(false);
         navigate("/otp");
       })
       .catch((error) => {
         setIsLoding(false);
         console.log(error.code);
-        toast.error("حدث خطأ أثناء إرسال الرسالة");
-        console.error(error);
+        if(error.code === "auth/too-many-requests") {
+          toast.error('! عذرا لقد قمت بالكثير من طلبات في وقت قصير', {
+            position: "top-center",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            });
+            return
+        }
+        toast.error("حدث خطأ أثناء إرسال الرسالة", {
+          position: "top-center",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          });
       });
   };
 
@@ -87,7 +122,16 @@ export default function SignUp() {
       const isUserExiste = data.find((user) => user.phoneNumber === phone);
       if (isUserExiste) {
         setCurrentUser(isUserExiste);
-        toast.success("مرحبا بعودتك ");
+        toast.success("مرحبا بعودتك ", {
+          position: "top-center",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
         setTimeout(() => {
           navigate("/user");
         }, 1500);
@@ -115,8 +159,8 @@ export default function SignUp() {
       const docRef = doc(db, "users", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        setCurrentUser(docSnap.data())
-        navigate('/user')
+        setCurrentUser(docSnap.data());
+        navigate("/user");
       } else {
         navigate("/userInfo");
         console.log("No such document!");
@@ -132,13 +176,31 @@ export default function SignUp() {
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
-        getGoogleUser(user.uid)
+        getGoogleUser(user.uid);
         setCurrentUser(user);
-        toast.success("تم تسجيل الدخول بنجاح");
-        setIsEmailUser(true)
+        toast.success("تم تسجيل الدخول بنجاح", {
+          position: "top-center",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        setIsEmailUser(true);
       })
       .catch((error) => {
-        toast.error("حدث خطأ أثناء تسجيل الدخول");
+        toast.error("حدث خطأ أثناء تسجيل الدخول", {
+          position: "top-center",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          });
         // Handle Errors here.
         const errorCode = error.code;
         console.error(error);
@@ -188,7 +250,19 @@ export default function SignUp() {
         />
         <p className="btn google-btn"> Sign In with Google</p>
       </div>
-      <Toaster />
+      <ToastContainer
+        position="top-center"
+        autoClose={4000}
+        limit={2}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 }

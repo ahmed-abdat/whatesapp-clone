@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import "./Opt.css";
-import toast, { Toaster } from "react-hot-toast";
+import { ToastContainer, toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
 import useUser from "../../store/useUser";
@@ -9,7 +9,9 @@ export default function Otp({}) {
   const confirmationResult = useSignUp((state) => state.confirmationResult);
   const setCurrentUser = useUser((state) => state.setCurrentUser);
 
-  const phone = useSignUp((state) => state.phone);
+  console.log(confirmationResult);
+
+  const getPhone = useSignUp((state) => state.getPhone);
 
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [isOtpVerifie, setIsotpVerifie] = useState(false);
@@ -44,10 +46,19 @@ export default function Otp({}) {
   const handelSubmit = (e) => {
     e.preventDefault();
     confirmationResult
-      .confirm(otp.join(""))
+      .confirm(otp.join(''))
       .then((result) => {
         setCurrentUser(result.user);
-        toast.success("تمت المصادقة");
+        toast.success("تمت المصادقة", {
+          position: "top-center",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
         setTimeout(() => {
           navigate("/userInfo");
         }, 2000);
@@ -56,22 +67,47 @@ export default function Otp({}) {
         console.log(error.code);
         console.log(error.message);
         if (error.code === "auth/code-expired") {
-          toast.error("لقد إنتهت صلاحية رمز التأكيد");
+          toast.error("لقد إنتهت صلاحية رمز التأكيد", {
+            position: "top-center",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            });
           return;
         }
-        toast.error("! رمز تأكيد ليس صحيح");
+        toast.error("! رمز تأكيد ليس صحيح", {
+          position: "top-center",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          });
         // console.error(error);
       });
   };
 
-
-
+  let count = 0;
   // submit otp
   useEffect(() => {
-    if (confirmationResult.hasOwnProperty("verificationId")) {
-      toast.success(`تم إرسال رمز التحقق إلى الرقم ${phone.slice(0,1) + phone.slice(1)}`, {
-        duration: 4000,
-      });
+    if (confirmationResult.hasOwnProperty("verificationId") && count === 0) {
+      count++;
+      toast.success(`تم إرسال رمز التحقق إلى الرقم  ${getPhone()}`, {
+        position: "top-center",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
     }
   }, []);
 
@@ -80,7 +116,7 @@ export default function Otp({}) {
       <div className="otp">
         <h1>التحقق من رقمك</h1>
         <p className="d-f">
-          <span>{phone}</span>
+          <span>{getPhone()}</span>
           تم إرسال رمز التحقق إلى الرقم
         </p>
         <form onSubmit={handelSubmit}>
@@ -115,7 +151,19 @@ export default function Otp({}) {
             </button>
           </div>
         </form>
-        <Toaster />
+        <ToastContainer
+          position="top-center"
+          autoClose={4000}
+          limit={2}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </div>
     </div>
   );

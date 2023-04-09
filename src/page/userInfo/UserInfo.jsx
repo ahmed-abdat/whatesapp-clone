@@ -2,36 +2,35 @@ import { useNavigate } from "react-router-dom";
 import "./userInfo.css";
 import useUser from "../../store/useUser";
 import { useEffect, useState } from "react";
-import toast, { Toaster } from "react-hot-toast";;
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
-import { isValidPhoneNumber } from "react-phone-number-input";
+import { ToastContainer, toast } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
 
 export default function UserInfo() {
-
   // all Users
-  const [allUsers, setAllUsers] = useState([]); 
+  const [allUsers, setAllUsers] = useState([]);
 
   // get current user
   const getCurrentUser = useUser((state) => state.getCurrentUser);
   const user = getCurrentUser();
 
-
-
   const setCurrentUser = useUser((state) => state.setCurrentUser);
-  const getIsEmailUser = useUser(state => state.getIsEmailUser)
-
+  const getIsEmailUser = useUser((state) => state.getIsEmailUser);
 
   // state
   const [formData, setFormData] = useState({
-    email: getIsEmailUser() ? user.email : '',
+    email: getIsEmailUser() ? user.email : "",
     displayName: user.displayName || "",
   });
+  const [file, setFile] = useState(null);
 
+  const [phoneNumber, setPhoneNumber] = useState(
+    getIsEmailUser() ? "" : user.phoneNumber
+  );
 
-  const [phoneNumber, setPhoneNumber] = useState(getIsEmailUser() ? '' : user.phoneNumber);
-
-  const [isLoading , setIsLoding] = useState(false)
+  const [isLoading, setIsLoding] = useState(false);
 
   // navigate
   const navigate = useNavigate();
@@ -49,29 +48,46 @@ export default function UserInfo() {
 
   // update the user Data
   const updateUser = async (user) => {
-    setIsLoding(true)
+    setIsLoding(true);
     try {
       const { displayName, email, uid, phoneNumber, photoURL } = user;
       const userData = {
-        email : email ? email : null,
+        email: email ? email : null,
         displayName,
         uid,
-        phoneNumber : phoneNumber ? phoneNumber : null,
-        photoURL :  photoURL ? photoURL : null,
+        phoneNumber: phoneNumber ? phoneNumber : null,
+        photoURL: photoURL ? photoURL : null,
         isOnline: false,
       };
       await setDoc(doc(db, "users", uid), userData);
-      setCurrentUser(userData)
-      toast.success("تم تحديث البيانات ", { duration: 4000 });
+      setCurrentUser(userData);
+      toast.success("تم تحديث البيانات ", {
+        position: "top-center",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
       setTimeout(() => {
         navigate("/user");
-        setIsLoding(false)
+        setIsLoding(false);
       }, 2500);
- 
     } catch (error) {
-      setIsLoding(false)
+      setIsLoding(false);
       console.error(error);
-      toast.error("لم تتم العملية بنجاح حاول مرة أخرى");
+      toast.error("لم تتم العملية بنجاح حاول مرة أخرى", {
+        position: "top-center",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
     }
   };
 
@@ -82,17 +98,51 @@ export default function UserInfo() {
       setPhoneNumber(value);
     }
   };
+  // handel file
+  const handleFile = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    // Check if the file type is an image
+    if (!file.type.startsWith("image/")) {
+      toast.warn('رجاءا قم بإخيار صورة صالحة', {
+        position: "top-center",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        isLoading: false,
+        });
+      return;
+    }
+    setFile(file);
+  };
 
   // handelSubmit
   const handelSubmit = async (e) => {
-    e.preventDefault(); 
-    const valid = getIsEmailUser() ? isValideNumber(phoneNumber) : isValideEmail(formData.email)
+    e.preventDefault();
+    const valid = getIsEmailUser()
+      ? isValideNumber(phoneNumber)
+      : isValideEmail(formData.email);
 
-    if(formData.displayName.length >= 2 && valid){
-      const updatedUserData = { ...user, ...formData, phoneNumber };
-      updateUser(updatedUserData)
-    }else {
-      toast.error("الإسم يجب أن يكون أكثر من حرفين", { duration: 4000 });
+    if (valid) {
+      if(formData.displayName.length >= 2 ){
+        const updatedUserData = { ...user, ...formData, phoneNumber };
+        updateUser(updatedUserData);
+      }else {
+        toast.error("الإسم يجب أن يكون أكثر من حرفين", {
+          position: "top-center",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          });
+      }
     }
   };
 
@@ -101,34 +151,52 @@ export default function UserInfo() {
     const users = [];
     const querySnapshot = await getDocs(collection(db, "users"));
     querySnapshot.forEach((doc) => {
-      users.push({...doc.data() , id : doc.id});
+      users.push({ ...doc.data(), id: doc.id });
     });
-    setAllUsers(users)
+    setAllUsers(users);
   };
 
-  // is valide number 
+  // is valide number
   const isValideNumber = (number) => {
-    const validNumver = allUsers.find(user => user.phoneNumber === number)
-    if(validNumver){
-      toast.error("رقم الهاتف مستخدم من قبل", { duration: 4000 });
-      return false
+    const validNumver = allUsers.find((user) => user.phoneNumber === number);
+    if (validNumver) {
+      toast.error("رقم الهاتف مستخدم من قبل", {
+        position: "top-center",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
+      return false;
     }
-    return true
-  }
+    return true;
+  };
 
   // is valide email
   const isValideEmail = (email) => {
-    const validEmail = allUsers.find(user => user.email === email)
-    if(validEmail){
-      toast.error("البريد الإلكتروني مستخدم من قبل", { duration: 4000 });
-      return false
+    const validEmail = allUsers.find((user) => user.email === email);
+    if (validEmail) {
+      toast.error("البريد الإلكتروني مستخدم من قبل", {
+        position: "top-center",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
+      return false;
     }
-    return true
-  }
+    return true;
+  };
 
-  useEffect(()=> {
-   getAllUsers()
-  },[])
+  useEffect(() => {
+    getAllUsers();
+  }, []);
 
   return (
     <div className="userInfo dr-ar">
@@ -146,9 +214,10 @@ export default function UserInfo() {
           </div>
         </label>
         <input
+          onChange={handleFile}
           id="file-input"
           type="file"
-          name=""
+          name="file"
           style={{ display: "none" }}
         />
 
@@ -187,7 +256,19 @@ export default function UserInfo() {
             disabled={getIsEmailUser() ? false : true}
           />
         </div>
-        <Toaster />
+        <ToastContainer
+          position="top-center"
+          autoClose={4000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={true}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+          limit={2}
+        />
         <div className="btnes">
           <button
             type="button"
@@ -197,7 +278,10 @@ export default function UserInfo() {
           >
             تخطي
           </button>
-          <button className="send" disabled={isLoading}> تحديث البيانات </button>
+          <button className="send" disabled={isLoading}>
+            {" "}
+            تحديث البيانات{" "}
+          </button>
         </div>
         {/* {connection ? (
             ""
