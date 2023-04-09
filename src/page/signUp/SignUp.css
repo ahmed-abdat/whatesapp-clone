@@ -37,18 +37,18 @@
 
 .signup--container .signup-form .btn {
   box-shadow: 0 3px 13px 1px #1796526b;
-    border-radius: 0.2rem;
-    font-family: "Vazirmatn", sans-serif;
-    align-self: center;
-    width: 100px;
-    padding: 0.5rem;
-    font-size: 0.9rem;
-    color: #f5f5f5;
-    background-color: var(--whatsapp-color);
-    -webkit-border-radius: 0.2rem;
-    -moz-border-radius: 0.2rem;
-    -ms-border-radius: 0.2rem;
-    -o-border-radius: 0.2rem;
+  border-radius: 0.2rem;
+  font-family: "Vazirmatn", sans-serif;
+  align-self: center;
+  width: 100px;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  color: #f5f5f5;
+  background-color: var(--whatsapp-color);
+  -webkit-border-radius: 0.2rem;
+  -moz-border-radius: 0.2rem;
+  -ms-border-radius: 0.2rem;
+  -o-border-radius: 0.2rem;
 }
 
 .signup--container .signup-form .btn:hover {
@@ -58,55 +58,79 @@
 
 /* signup with google */
 
-.signup--container .signup-google {
-  box-shadow: 0px 3px 13px 1px #4286f44e;
+.signup--container .signup-google,
+.signup--container .signup-facebook {
+  box-shadow: 0px 2px 10px 2px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  background-color: #4285f4;
-  padding: 0.1rem;
-  width: 15rem;
+  background-color: #fff;
+  padding: 0.25rem;
+  width: 17rem;
   margin-top: 1.5rem;
+  margin-bottom: 1rem;
   cursor: pointer;
   overflow: hidden;
-  border-radius: 0.2rem;
-  -webkit-border-radius: 0.2rem;
-  -moz-border-radius: 0.2rem;
-  -ms-border-radius: 0.2rem;
-  -o-border-radius: 0.2rem;
+  border-radius: 0.3rem;
+  -webkit-border-radius: 0.3rem;
+  -moz-border-radius: 0.3rem;
+  -ms-border-radius: 0.3rem;
+  -o-border-radius: 0.3rem;
 }
 
-.signup--container .signup-google{
-    transition: all 0.3s ease-in;
-    -webkit-transition: all 0.3s ease-in;
-    -moz-transition: all 0.3s ease-in;
-    -ms-transition: all 0.3s ease-in;
-    -o-transition: all 0.3s ease-in;
+.signup--container .signup-google,
+.signup--container .signup-facebook {
+  transition: all 0.3s ease-in;
+  -webkit-transition: all 0.3s ease-in;
+  -moz-transition: all 0.3s ease-in;
+  -ms-transition: all 0.3s ease-in;
+  -o-transition: all 0.3s ease-in;
 }
 
-.signup--container .google-icon {
-  background-color: #fff;
+.signup--container .google-icon , .signup--container .facebook-icon{
+  background-color: inherit;
   padding: 0.35rem;
 }
 
-.signup--container .signup-google .google-btn {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  /* font-family: "Vazirmatn", sans-serif; */
+.signup--container .signup-google .google-btn , .signup--container .signup-facebook .facebook-btn {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 23px;
+  color: #0000008a;
   margin-left: 1.4rem;
-  font-size: 0.94rem;
-  color: #f5f5f5;
+  font-size: 1rem;
 }
-
 
 .signup--container .signup-google:hover {
-    background-color: #2563c5;
-    box-shadow: 0px 3px 13px 3px #2259b15b;
+  background-color: #f6f6f6;
+  box-shadow: 0px 2px 15px 2px rgba(0, 0, 0, 0.16);
 }
 
+/* facebook login */
+.signup--container .signup-facebook {
+  margin-top: 0;
+  background-color: #1877f2;
+}
+.signup--container .facebook-icon {
+  background-color: inherit;
+  width: 2rem;
+  padding: 0.25rem;
+}
+
+.signup--container .signup-facebook .facebook-btn {
+  color: #fff;
+}
+
+.signup--container .signup-facebook:hover {
+  background-color: #2e7de6;
+  box-shadow: 0px 2px 15px 2px rgba(0, 0, 0, 0.16);
+}
 
 /* phone-number-input */
 
-.phoneInput{
+.phoneInput {
   /* background-color: #e0e0e0; */
   box-shadow: 0 2px 6px -5px var(--whatsapp-color);
   border: 1px solid #11b24c2a;
@@ -118,7 +142,7 @@
   -o-border-radius: 0.2rem;
 }
 
-.phoneInput input{
+.phoneInput input {
   background-color: inherit;
   border: none;
   padding: 0.5rem 1rem;
@@ -128,7 +152,6 @@
   outline: none;
   font-size: 1rem;
 }
-
 
 .phoneInput > *:not(input) > * > * {
   font-size: 1rem;

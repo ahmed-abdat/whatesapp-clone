@@ -8,6 +8,7 @@ import {
   signInWithPhoneNumber,
   GoogleAuthProvider,
   signInWithPopup,
+  FacebookAuthProvider,
 } from "firebase/auth";
 import {
   collection,
@@ -89,7 +90,7 @@ export default function SignUp() {
         setIsLoding(false);
         console.log(error.code);
         if(error.code === "auth/too-many-requests") {
-          toast.error('! عذرا لقد قمت بالكثير من طلبات في وقت قصير', {
+          toast.error('! عذرا لقد قمت بالكثير من طلبات في وقت قصير حاول مرة أخرى في وقت لاحق', {
             position: "top-center",
             autoClose: 4000,
             hideProgressBar: false,
@@ -209,6 +210,44 @@ export default function SignUp() {
       });
   };
 
+  // sign up with facebook
+  const signInWithFacebook = () => {
+    const provider = new FacebookAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const user = result.user;
+        console.log(user);
+        toast.success("تم تسجيل الدخول بنجاح", {
+          position: "top-center",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        setIsEmailUser(true);
+      })
+      .catch((error) => {
+        toast.error("حدث خطأ أثناء تسجيل الدخول", {
+          position: "top-center",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          });
+        // Handle Errors here.
+        const errorCode = error.code;
+        console.error(error);
+        const errorMessage = error.message;
+        console.error(errorMessage);
+      });
+  };
+
   useEffect(() => {
     if (user) {
       navigate("/");
@@ -249,6 +288,11 @@ export default function SignUp() {
           src="https://img.icons8.com/color/24/000000/google-logo.png"
         />
         <p className="btn google-btn"> Sign In with Google</p>
+      </div>
+      {/* signup with facebook */}
+      <div className="signup-facebook" onClick={signInWithFacebook}>
+        <img className="facebook-icon" src="/Facebook-logo.png" />
+        <p className="btn facebook-btn"> Sign In with Facebook</p>
       </div>
       <ToastContainer
         position="top-center"
