@@ -1,25 +1,35 @@
 import { useNavigate } from "react-router-dom";
 import "./userInfo.css";
 import useUser from "../../store/useUser";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";;
-import { doc, setDoc } from "firebase/firestore";
+import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
+import { isValidPhoneNumber } from "react-phone-number-input";
 
 export default function UserInfo() {
+
+  // all Users
+  const [allUsers, setAllUsers] = useState([]); 
+
   // get current user
   const getCurrentUser = useUser((state) => state.getCurrentUser);
   const user = getCurrentUser();
 
+
+
   const setCurrentUser = useUser((state) => state.setCurrentUser);
+  const getIsEmailUser = useUser(state => state.getIsEmailUser)
+
 
   // state
   const [formData, setFormData] = useState({
-    email: user.email,
+    email: getIsEmailUser() ? user.email : '',
     displayName: user.displayName || "",
   });
 
-  const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber || '');
+
+  const [phoneNumber, setPhoneNumber] = useState(getIsEmailUser() ? '' : user.phoneNumber);
 
   const [isLoading , setIsLoding] = useState(false)
 
@@ -43,11 +53,11 @@ export default function UserInfo() {
     try {
       const { displayName, email, uid, phoneNumber, photoURL } = user;
       const userData = {
-        email,
+        email : email ? email : null,
         displayName,
         uid,
-        phoneNumber,
-        photoURL,
+        phoneNumber : phoneNumber ? phoneNumber : null,
+        photoURL :  photoURL ? photoURL : null,
         isOnline: false,
       };
       await setDoc(doc(db, "users", uid), userData);
@@ -75,14 +85,50 @@ export default function UserInfo() {
 
   // handelSubmit
   const handelSubmit = async (e) => {
-    e.preventDefault();
-    const updatedUserData = { ...user, ...formData, phoneNumber };
-    updateUser(updatedUserData)
+    e.preventDefault(); 
+    const valid = getIsEmailUser() ? isValideNumber(phoneNumber) : isValideEmail(formData.email)
+
+    if(formData.displayName.length >= 2 && valid){
+      const updatedUserData = { ...user, ...formData, phoneNumber };
+      updateUser(updatedUserData)
+    }else {
+      toast.error("الإسم يجب أن يكون أكثر من حرفين", { duration: 4000 });
+    }
   };
 
-  
+  // get all user from firebase
+  const getAllUsers = async () => {
+    const users = [];
+    const querySnapshot = await getDocs(collection(db, "users"));
+    querySnapshot.forEach((doc) => {
+      users.push({...doc.data() , id : doc.id});
+    });
+    setAllUsers(users)
+  };
 
-  // initialize the data
+  // is valide number 
+  const isValideNumber = (number) => {
+    const validNumver = allUsers.find(user => user.phoneNumber === number)
+    if(validNumver){
+      toast.error("رقم الهاتف مستخدم من قبل", { duration: 4000 });
+      return false
+    }
+    return true
+  }
+
+  // is valide email
+  const isValideEmail = (email) => {
+    const validEmail = allUsers.find(user => user.email === email)
+    if(validEmail){
+      toast.error("البريد الإلكتروني مستخدم من قبل", { duration: 4000 });
+      return false
+    }
+    return true
+  }
+
+  useEffect(()=> {
+   getAllUsers()
+  },[])
 
   return (
     <div className="userInfo dr-ar">
@@ -120,7 +166,7 @@ export default function UserInfo() {
         <div className="input phone">
           <label htmlFor="email"> البريد الإلكتروني </label>
           <input
-            disabled={formData.email ? true : false}
+            disabled={getIsEmailUser() ? true : false}
             name="email"
             type="text"
             placeholder="أدخل بريدك الإلكتروني هنا"
@@ -138,6 +184,7 @@ export default function UserInfo() {
             name="phoneNumber"
             onChange={handelPhone}
             value={phoneNumber}
+            disabled={getIsEmailUser() ? false : true}
           />
         </div>
         <Toaster />

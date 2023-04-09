@@ -50,7 +50,7 @@ export default function Otp({}) {
         toast.success("تمت المصادقة");
         setTimeout(() => {
           navigate("/userInfo");
-        }, 2500);
+        }, 2000);
       })
       .catch((error) => {
         console.log(error.code);
@@ -69,7 +69,7 @@ export default function Otp({}) {
   // submit otp
   useEffect(() => {
     if (confirmationResult.hasOwnProperty("verificationId")) {
-      toast.success(`تم إرسال رمز التحقق إلى الرقم ${phone}`, {
+      toast.success(`تم إرسال رمز التحقق إلى الرقم ${phone.slice(0,1) + phone.slice(1)}`, {
         duration: 4000,
       });
     }

@@ -1,4 +1,3 @@
-
 .userInfo {
   display: flex;
   font-family: "Roboto", sans-serif;
@@ -11,22 +10,24 @@
   overflow: hidden;
 }
 
-.userInfo label , .userInfo input::placeholder , .userInfo .header {
+.userInfo label,
+.userInfo input::placeholder,
+.userInfo .header {
   font-family: "Vazirmatn", sans-serif;
 }
 
 /* header */
-.userInfo .header h2{
+.userInfo .header h2 {
   font-size: 1.2rem;
   font-weight: 500;
   color: var(--whatsapp-color);
   margin-bottom: 0.5rem;
 }
- .userInfo .header p {
+.userInfo .header p {
   font-size: 0.9rem;
   font-weight: 400;
   color: var(--text-color-light);
- }
+}
 
 .userInfo form .img {
   cursor: pointer;
@@ -93,6 +94,11 @@
   -moz-border-radius: 6px;
   -ms-border-radius: 6px;
   -o-border-radius: 6px;
+}
+
+.userInfo form .input input#phoneNumber {
+  direction: ltr;
+  text-align: end;
 }
 
 .userInfo form input[disabled] {

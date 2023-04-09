@@ -23,8 +23,10 @@ export default function SignUp() {
 
   // get curentUser
   const getCurrentUser = useUser((state) => state.getCurrentUser);
-
   const user = getCurrentUser();
+
+
+  const setIsEmailUser = useUser(state => state.setIsEmailUser)
 
   const navigate = useNavigate();
 
@@ -45,7 +47,7 @@ export default function SignUp() {
         size: "normal",
         callback: (response) => {
           // reCAPTCHA solved, allow signInWithPhoneNumber.
-          sendOtp();
+          // sendOtp();
         },
         "expired-callback": () => {
           // Response expired. Ask user to solve reCAPTCHA again.
@@ -64,6 +66,7 @@ export default function SignUp() {
         window.confirmationResult = confirmationResult;
         setconfirmationResult(confirmationResult);
         setPhones(phone);
+        setIsEmailUser(false)
         console.log("message sent");
         setIsLoding(false);
         navigate("/otp");
@@ -87,7 +90,7 @@ export default function SignUp() {
         toast.success("مرحبا بعودتك ");
         setTimeout(() => {
           navigate("/user");
-        }, 2000);
+        }, 1500);
       } else {
         requestRecaptcha();
         sendOtp();
@@ -132,7 +135,7 @@ export default function SignUp() {
         getGoogleUser(user.uid)
         setCurrentUser(user);
         toast.success("تم تسجيل الدخول بنجاح");
-
+        setIsEmailUser(true)
       })
       .catch((error) => {
         toast.error("حدث خطأ أثناء تسجيل الدخول");
