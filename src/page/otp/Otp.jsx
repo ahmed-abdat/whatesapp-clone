@@ -9,8 +9,6 @@ export default function Otp({}) {
   const confirmationResult = useSignUp((state) => state.confirmationResult);
   const setCurrentUser = useUser((state) => state.setCurrentUser);
 
-  console.log(confirmationResult);
-
   const getPhone = useSignUp((state) => state.getPhone);
 
   const [otp, setOtp] = useState(new Array(6).fill(""));
@@ -51,7 +49,7 @@ export default function Otp({}) {
         setCurrentUser(result.user);
         toast.success("تمت المصادقة", {
           position: "top-center",
-          autoClose: 4000,
+          autoClose: 2000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -69,7 +67,7 @@ export default function Otp({}) {
         if (error.code === "auth/code-expired") {
           toast.error("لقد إنتهت صلاحية رمز التأكيد", {
             position: "top-center",
-            autoClose: 4000,
+            autoClose: 2000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -81,7 +79,7 @@ export default function Otp({}) {
         }
         toast.error("! رمز تأكيد ليس صحيح", {
           position: "top-center",
-          autoClose: 4000,
+          autoClose: 2000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -100,7 +98,7 @@ export default function Otp({}) {
       count++;
       toast.success(`تم إرسال رمز التحقق إلى الرقم  ${getPhone()}`, {
         position: "top-center",
-        autoClose: 4000,
+        autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,

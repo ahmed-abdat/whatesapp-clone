@@ -63,7 +63,7 @@ export default function UserInfo() {
       setCurrentUser(userData);
       toast.success("تم تحديث البيانات ", {
         position: "top-center",
-        autoClose: 4000,
+        autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -74,13 +74,13 @@ export default function UserInfo() {
       setTimeout(() => {
         navigate("/user");
         setIsLoding(false);
-      }, 2500);
+      }, 2000);
     } catch (error) {
       setIsLoding(false);
       console.error(error);
       toast.error("لم تتم العملية بنجاح حاول مرة أخرى", {
         position: "top-center",
-        autoClose: 4000,
+        autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -106,7 +106,7 @@ export default function UserInfo() {
     if (!file.type.startsWith("image/")) {
       toast.warn('رجاءا قم بإخيار صورة صالحة', {
         position: "top-center",
-        autoClose: 4000,
+        autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -134,7 +134,7 @@ export default function UserInfo() {
       }else {
         toast.error("الإسم يجب أن يكون أكثر من حرفين", {
           position: "top-center",
-          autoClose: 4000,
+          autoClose: 2000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -162,7 +162,7 @@ export default function UserInfo() {
     if (validNumver) {
       toast.error("رقم الهاتف مستخدم من قبل", {
         position: "top-center",
-        autoClose: 4000,
+        autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -181,7 +181,7 @@ export default function UserInfo() {
     if (validEmail) {
       toast.error("البريد الإلكتروني مستخدم من قبل", {
         position: "top-center",
-        autoClose: 4000,
+        autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,

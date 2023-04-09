@@ -60,7 +60,7 @@ export default function SignUp() {
           // Response expired. Ask user to solve reCAPTCHA again.
           toast.error("حاول مرة أخرى", {
             position: "top-center",
-            autoClose: 4000,
+            autoClose: 2000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -92,7 +92,7 @@ export default function SignUp() {
         if(error.code === "auth/too-many-requests") {
           toast.error('! عذرا لقد قمت بالكثير من طلبات في وقت قصير حاول مرة أخرى في وقت لاحق', {
             position: "top-center",
-            autoClose: 4000,
+            autoClose: 2000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -104,7 +104,7 @@ export default function SignUp() {
         }
         toast.error("حدث خطأ أثناء إرسال الرسالة", {
           position: "top-center",
-          autoClose: 4000,
+          autoClose: 2000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -125,7 +125,7 @@ export default function SignUp() {
         setCurrentUser(isUserExiste);
         toast.success("مرحبا بعودتك ", {
           position: "top-center",
-          autoClose: 4000,
+          autoClose: 2000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -135,7 +135,7 @@ export default function SignUp() {
         });
         setTimeout(() => {
           navigate("/user");
-        }, 1500);
+        }, 2000);
       } else {
         requestRecaptcha();
         sendOtp();
@@ -161,7 +161,9 @@ export default function SignUp() {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setCurrentUser(docSnap.data());
-        navigate("/user");
+        setTimeout(() => {
+          navigate("/user");
+        }, 2000);
       } else {
         navigate("/userInfo");
         console.log("No such document!");
@@ -181,7 +183,7 @@ export default function SignUp() {
         setCurrentUser(user);
         toast.success("تم تسجيل الدخول بنجاح", {
           position: "top-center",
-          autoClose: 4000,
+          autoClose: 2000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -194,7 +196,7 @@ export default function SignUp() {
       .catch((error) => {
         toast.error("حدث خطأ أثناء تسجيل الدخول", {
           position: "top-center",
-          autoClose: 4000,
+          autoClose: 2000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -222,7 +224,7 @@ export default function SignUp() {
         setCurrentUser(user);
         toast.success("تم تسجيل الدخول بنجاح", {
           position: "top-center",
-          autoClose: 4000,
+          autoClose: 2000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -235,7 +237,7 @@ export default function SignUp() {
       .catch((error) => {
         toast.error("حدث خطأ أثناء تسجيل الدخول", {
           position: "top-center",
-          autoClose: 4000,
+          autoClose: 2000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
