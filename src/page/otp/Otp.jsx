@@ -126,6 +126,8 @@ export default function Otp({}) {
                 <input
                   itemType="number"
                   typeof="number"
+                  type="tel"
+                  pattern="\d*"
                   key={index}
                   value={data}
                   onChange={(e) => handleOtpChange(e.target, index)}
