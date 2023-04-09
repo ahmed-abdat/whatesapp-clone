@@ -124,7 +124,8 @@ export default function Otp({}) {
             {otp.map((data, index) => {
               return (
                 <input
-                  type="text"
+                  itemType="number"
+                  typeof="number"
                   key={index}
                   value={data}
                   onChange={(e) => handleOtpChange(e.target, index)}
