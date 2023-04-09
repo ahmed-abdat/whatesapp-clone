@@ -219,7 +219,7 @@ export default function SignUp() {
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
-        console.log(user);
+        setCurrentUser(user);
         toast.success("تم تسجيل الدخول بنجاح", {
           position: "top-center",
           autoClose: 4000,
@@ -230,7 +230,7 @@ export default function SignUp() {
           progress: undefined,
           theme: "light",
         });
-        setIsEmailUser(true);
+          navigate("/userInfo")
       })
       .catch((error) => {
         toast.error("حدث خطأ أثناء تسجيل الدخول", {
