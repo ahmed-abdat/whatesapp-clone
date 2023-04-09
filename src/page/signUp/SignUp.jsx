@@ -230,7 +230,7 @@ export default function SignUp() {
           progress: undefined,
           theme: "light",
         });
-          navigate("/userInfo")
+        getGoogleUser(user.uid);
       })
       .catch((error) => {
         toast.error("حدث خطأ أثناء تسجيل الدخول", {
