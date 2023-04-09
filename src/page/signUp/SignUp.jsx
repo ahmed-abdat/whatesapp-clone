@@ -213,6 +213,9 @@ export default function SignUp() {
   // sign up with facebook
   const signInWithFacebook = () => {
     const provider = new FacebookAuthProvider();
+    provider.setCustomParameters({
+      'display': 'popup'
+    });
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
