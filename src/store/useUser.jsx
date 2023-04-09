@@ -3,6 +3,7 @@ import { create } from "zustand";
 const useUser = create((set , get) => ({
   currentUser: {},
   isEmailUser : false,
+  imageFile : null,
   setCurrentUser: (user) => {
     localStorage.setItem("currentUser", JSON.stringify(user));
     set(() => ({ currentUser: user }));
@@ -21,6 +22,14 @@ const useUser = create((set , get) => ({
     const savedIsEmailUser = JSON.parse(localStorage.getItem('isEmailUser'))
     return savedIsEmailUser
   },
+  setImageFile : (file)=> {
+    set(() => ({ imageFile : file }));
+    localStorage.setItem("imageFile", JSON.stringify(file));
+  },
+  getImageFile : ()=> {
+    const savedImageFile = JSON.parse(localStorage.getItem('imageFile'))
+    return savedImageFile
+  }
 }));
 
 export default useUser;

@@ -5,30 +5,86 @@ import { useEffect, useState } from "react";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { ToastContainer, toast } from "react-toastify";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { storage } from "../../config/firebase";
 
 import "react-toastify/dist/ReactToastify.css";
 
 export default function UserInfo() {
-  // all Users
-  const [allUsers, setAllUsers] = useState([]);
+    // get current user
+    const getCurrentUser = useUser((state) => state.getCurrentUser);
+    const user = getCurrentUser();
+  
+    const setCurrentUser = useUser((state) => state.setCurrentUser);
+    const getIsEmailUser = useUser((state) => state.getIsEmailUser);
+    const setImageFile = useUser(state => state.setImageFile)
+    const getImageFile = useUser(state => state.getImageFile)
 
-  // get current user
-  const getCurrentUser = useUser((state) => state.getCurrentUser);
-  const user = getCurrentUser();
-
-  const setCurrentUser = useUser((state) => state.setCurrentUser);
-  const getIsEmailUser = useUser((state) => state.getIsEmailUser);
 
   // state
+  const [allUsers, setAllUsers] = useState([]);
+  const [file, setFile] = useState(getImageFile() ? getImageFile() : null);
+
+  console.log(file);
+
   const [formData, setFormData] = useState({
     email: getIsEmailUser() ? user.email : "",
     displayName: user.displayName || "",
+    photoImage : null
   });
-  const [file, setFile] = useState(null);
-
   const [phoneNumber, setPhoneNumber] = useState(
     getIsEmailUser() ? "" : user.phoneNumber
   );
+
+  const [precentage , setPercentege] = useState(null)
+
+useEffect(()=> {
+  if(file){
+    // update the user image
+    const storageRef = ref(storage, file.name);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+    uploadTask.on('state_changed', 
+    (snapshot) => {
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      setPercentege(progress)
+      switch (snapshot.state) {
+        case 'paused':
+          // console.log('Upload is paused');
+          break;
+        case 'running':
+          // console.log('Upload is running');
+          break;
+      }
+    }, 
+    (error) => {
+      console.error(error)
+    }, 
+    () => {
+      getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+        console.log('is uploaded ');
+        toast.success("تم تحميل الصورة", {
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          });
+        setFormData((prevData) => {
+          return {
+            ...prevData,
+            photoImage : downloadURL
+          }
+        })
+      });
+    }
+  );
+
+  }
+},[file])
+
 
   const [isLoading, setIsLoding] = useState(false);
 
@@ -118,6 +174,7 @@ export default function UserInfo() {
       return;
     }
     setFile(file);
+    setImageFile(file)
   };
 
   // handelSubmit
@@ -208,7 +265,7 @@ export default function UserInfo() {
         <label htmlFor="file-input">
           <div className="img d-f">
             <img
-              src="https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"
+              src={file.name ? URL.createObjectURL(file) : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"}
               alt="a user image"
             />
           </div>
@@ -274,13 +331,12 @@ export default function UserInfo() {
             type="button"
             className="cancel"
             onClick={handelSubmit}
-            disabled={isLoading}
+            disabled={isLoading || (precentage !== null && precentage <= 99)}
           >
             تخطي
           </button>
-          <button className="send" disabled={isLoading}>
-            {" "}
-            تحديث البيانات{" "}
+          <button className="send" disabled={isLoading || (precentage !== null && precentage <= 99)}>
+           {isLoading ? "...جاري تحديث البيانات": " تحديث البيانات"}
           </button>
         </div>
         {/* {connection ? (
