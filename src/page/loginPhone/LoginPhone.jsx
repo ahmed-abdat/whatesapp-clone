@@ -23,31 +23,13 @@ export default function LoginPhone() {
     // check if password is correct
     if (password === getCurrentUser().password) {
       // navigate to home page
-      toast.success("مرحبا بعودتك ", {
-        position: "top-center",
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.success("مرحبا بعودتك ");
       setTimeout(() => {
         navigate("/user");
       }, 1600);
     } else {
       // show error message
-      toast.error("كلمة السر غير صحيحة", {
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.error("كلمة السر غير صحيحة");
     }
   };
 
@@ -69,8 +51,11 @@ export default function LoginPhone() {
           <div className="img image d-f">
             <img src={getCurrentUser() ? getCurrentUser().photoURL : '/whatsapp-logo.svg'} alt="" />
           </div>
+          <div className="info">
+            <h3>{getCurrentUser().displayName}</h3>
+          </div>
         </div>
-        <div className="input phone">
+        {/* <div className="input phone">
           <label htmlFor="phoneNumber"> رقم الهاتف</label>
           <input
             type="text"
@@ -80,22 +65,22 @@ export default function LoginPhone() {
             value={phoneNumber}
             disabled={true}
           />
-        </div>
+        </div> */}
         {/* password for user phone */}
         <div className="input phone">
-          <label htmlFor="password"> كلمة السر</label>
+          {/* <label htmlFor="password"> كلمة السر</label> */}
           <input
             type="text"
             placeholder="أدخل كلمة السر هنا"
-            id="password"
             name="password"
+            id="password"
             onChange={(e) => setPassword(e.target.value)}
             value={password}
           />
         </div>
         <ToastContainer
           position="top-center"
-          autoClose={4000}
+          autoClose={2000}
           hideProgressBar={false}
           newestOnTop
           closeOnClick

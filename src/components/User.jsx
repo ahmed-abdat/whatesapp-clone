@@ -11,6 +11,7 @@ export default function User() {
 
   const navigate = useNavigate();
 
+
   // signout user
   const signOut = () => {
     setCurrentUser(null);

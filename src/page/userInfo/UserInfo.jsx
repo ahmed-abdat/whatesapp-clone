@@ -64,28 +64,10 @@ export default function UserInfo() {
       },
       (error) => {
         console.error(error);
-        toast.error("حدث خطأ أثناء تحميل الصورة رجاءا حاول مرة أخرى", {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        toast.error("حدث خطأ أثناء تحميل الصورة رجاءا حاول مرة أخرى");
       },
       () => {
-        toast.success("تم تحميل الصورة بنجاح", {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        toast.success("تم تحميل الصورة بنجاح");
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           setFormData((prevData) => {
             return {
@@ -152,16 +134,7 @@ export default function UserInfo() {
       const userData = getIsEmailUser() ? emailUserData : phoneUseData;
       await setDoc(doc(db, "users", uid), userData);
       setCurrentUser(userData);
-      toast.success("تم تحديث البيانات ", {
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.success("تم تحديث البيانات ");
       setTimeout(() => {
         navigate("/user");
         setIsLoding(false);
@@ -169,16 +142,7 @@ export default function UserInfo() {
     } catch (error) {
       setIsLoding(false);
       console.error(error);
-      toast.error("لم تتم العملية بنجاح حاول مرة أخرى", {
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.error("لم تتم العملية بنجاح حاول مرة أخرى");
     }
   };
 
@@ -195,17 +159,7 @@ export default function UserInfo() {
     if (!file) return;
     // Check if the file type is an image
     if (!file.type.startsWith("image/")) {
-      toast.warn("رجاءا قم بإخيار صورة صالحة", {
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        isLoading: false,
-      });
+      toast.warn("رجاءا قم بإخيار صورة صالحة");
       return;
     }
     setFile(file);
@@ -231,28 +185,10 @@ export default function UserInfo() {
     if( password.length >= 4 && formData.displayName.length >= 2){
       return true
     }else if(formData.displayName.length < 2){
-      toast.error("الإسم يجب أن يكون أكثر من حرفين", {
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.error("الإسم يجب أن يكون أكثر من حرفين");
       return false
     }
-    toast.error("كلمة المرور يجب أن تكون أكثر من 4 أحرف", {
-      position: "top-center",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
+    toast.error("كلمة المرور يجب أن تكون أكثر من 4 أحرف");
     return false
   }
 
@@ -261,16 +197,7 @@ export default function UserInfo() {
     if(formData.displayName.length >= 2 ){
       return true
     }
-    toast.error("الإسم يجب أن يكون أكثر من حرفين", {
-      position: "top-center",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
+    toast.error("الإسم يجب أن يكون أكثر من حرفين");
     return false
   }
   // get all user from firebase
@@ -287,16 +214,7 @@ export default function UserInfo() {
   const isValideNumber = (number) => {
     const validNumver = allUsers.find((user) => user.phoneNumber === number);
     if (validNumver) {
-      toast.error("رقم الهاتف مستخدم بالفعل ", {
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.error("رقم الهاتف مستخدم بالفعل ");
       return false;
     }
     return true;
@@ -306,16 +224,7 @@ export default function UserInfo() {
   const isValideEmail = (email) => {
     const validEmail = allUsers.find((user) => user.email === email);
     if (validEmail) {
-      toast.error("البريد الإلكتروني مستخدم من قبل", {
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.error("البريد الإلكتروني مستخدم من قبل");
       return false;
     }
     return true;
@@ -414,7 +323,7 @@ export default function UserInfo() {
         )}
         <ToastContainer
           position="top-center"
-          autoClose={4000}
+          autoClose={2000}
           hideProgressBar={false}
           newestOnTop
           closeOnClick

@@ -54,16 +54,7 @@ export default function Otp({}) {
       .confirm(otp.join(''))
       .then((result) => {
         setCurrentUser(result.user);
-        toast.success("تمت المصادقة", {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        toast.success("تمت المصادقة");
         setTimeout(() => {
           navigate("/userInfo");
           setIsLoading(false)
@@ -72,28 +63,10 @@ export default function Otp({}) {
       .catch((error) => {
         setIsLoading(false)
         if (error.code === "auth/code-expired") {
-          toast.error("لقد إنتهت صلاحية رمز التأكيد", {
-            position: "top-center",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            });
+          toast.error("لقد إنتهت صلاحية رمز التأكيد");
           return;
         }
-        toast.error("! رمز تأكيد ليس صحيح", {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-          });
+        toast.error("! رمز تأكيد ليس صحيح");
         // console.error(error);
       });
   };
@@ -161,16 +134,16 @@ export default function Otp({}) {
         </form>
         <ToastContainer
           position="top-center"
-          autoClose={4000}
+          autoClose={2000}
           limit={2}
           hideProgressBar={false}
           newestOnTop={false}
           closeOnClick
-          rtl={false}
+          rtl={true}
           pauseOnFocusLoss
           draggable
           pauseOnHover
-          theme="light"
+          theme="colored"
         />
       </div>
     </div>

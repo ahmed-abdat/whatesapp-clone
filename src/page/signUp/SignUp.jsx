@@ -58,16 +58,7 @@ export default function SignUp() {
         },
         "expired-callback": () => {
           // Response expired. Ask user to solve reCAPTCHA again.
-          toast.error("حاول مرة أخرى", {
-            position: "top-center",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            });
+          toast.error("حاول مرة أخرى");
         },
       },
       auth
@@ -90,28 +81,10 @@ export default function SignUp() {
         setIsLoding(false);
         console.log(error.code);
         if(error.code === "auth/too-many-requests") {
-          toast.error('! عذرا لقد قمت بالكثير من طلبات في وقت قصير حاول مرة أخرى في وقت لاحق', {
-            position: "top-center",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            });
+          toast.error('! عذرا لقد قمت بالكثير من طلبات في وقت قصير حاول مرة أخرى في وقت لاحق');
             return
         }
-        toast.error("حدث خطأ أثناء إرسال الرسالة", {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-          });
+        toast.error("حدث خطأ أثناء إرسال الرسالة");
       });
   };
 
@@ -131,16 +104,7 @@ export default function SignUp() {
         sendOtp();
       }
     }else {
-      toast.error('! أدخل رقم هاتف صحيح', {
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        });
+      toast.error('! أدخل رقم هاتف صحيح');
     }
   };
 
@@ -182,29 +146,11 @@ export default function SignUp() {
         const user = result.user;
         getGoogleUser(user.uid);
         setCurrentUser(user);
-        toast.success("تم تسجيل الدخول بنجاح", {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        toast.success("تم تسجيل الدخول بنجاح");
         setIsEmailUser(true);
       })
       .catch((error) => {
-        toast.error("حدث خطأ أثناء تسجيل الدخول", {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-          });
+        toast.error("حدث خطأ أثناء تسجيل الدخول");
         // Handle Errors here.
         const errorCode = error.code;
         console.error(error);
@@ -223,29 +169,11 @@ export default function SignUp() {
       .then((result) => {
         const user = result.user;
         setCurrentUser(user);
-        toast.success("تم تسجيل الدخول بنجاح", {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        toast.success("تم تسجيل الدخول بنجاح", );
         getGoogleUser(user.uid);
       })
       .catch((error) => {
-        toast.error("حدث خطأ أثناء تسجيل الدخول", {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-          });
+        toast.error("حدث خطأ أثناء تسجيل الدخول");
         // Handle Errors here.
         const errorCode = error.code;
         console.error(error);
@@ -303,16 +231,16 @@ export default function SignUp() {
       </div>
       <ToastContainer
         position="top-center"
-        autoClose={4000}
+        autoClose={2000}
         limit={2}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
-        rtl={false}
+        rtl={true}
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="light"
+        theme="colored"
       />
     </div>
   );
