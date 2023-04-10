@@ -11,92 +11,111 @@ import { storage } from "../../config/firebase";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function UserInfo() {
-    // get current user
-    const getCurrentUser = useUser((state) => state.getCurrentUser);
-    const user = getCurrentUser();
-  
-    const setCurrentUser = useUser((state) => state.setCurrentUser);
-    const getIsEmailUser = useUser((state) => state.getIsEmailUser);
+  // get current user
+  const getCurrentUser = useUser((state) => state.getCurrentUser);
+  const user = getCurrentUser();
 
+  const setCurrentUser = useUser((state) => state.setCurrentUser);
+  const getIsEmailUser = useUser((state) => state.getIsEmailUser);
 
   // state
   const [allUsers, setAllUsers] = useState([]);
-  const [file, setFile] = useState( null);
-
+  const [file, setFile] = useState(null);
+  const [password, setPassword] = useState("");
 
   const [formData, setFormData] = useState({
     email: getIsEmailUser() ? user?.email : "",
     displayName: user?.displayName || "",
-    photoURL : user?.photoURL
+    photoURL: user?.photoURL,
   });
-
 
   const [phoneNumber, setPhoneNumber] = useState(
     getIsEmailUser() ? "" : user.phoneNumber
   );
 
-  const [precentage , setPercentege] = useState(null)
-
-
-
-// update the photo img in firebase 
-const uploadTheImageFile = ()=> {
-  const storageRef = ref(storage, file.name);
-  const uploadTask = uploadBytesResumable(storageRef, file);
-  uploadTask.on('state_changed', 
-  (snapshot) => {
-    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    setPercentege(progress)
-    switch (snapshot.state) {
-      case 'paused':
-        // console.log('Upload is paused');
-        break;
-      case 'running':
-        // console.log('Upload is running');
-        break;
-    }
-  }, 
-  (error) => {
-    console.error(error)
-  }, 
-  () => {
-    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-      setFormData((prevData) => {
-        return {
-          ...prevData,
-          photoURL : downloadURL
-        }
-      })
-      handelUploadUserInfo(downloadURL)
-    });
-  }
-);
-}
-
-// handelUploadUserInfo
-const handelUploadUserInfo = (downloadURL)=> {
-  if(formData.displayName.length >= 2 ){
-    const updatedUserData = { ...user, ...formData, phoneNumber , file , photoURL : downloadURL ? downloadURL : user.photoURL};
-    updateUser(updatedUserData);
-  }else {
-    toast.error("الإسم يجب أن يكون أكثر من حرفين", {
-      position: "top-center",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-      });
-    }
-}
-
+  const [precentage, setPercentege] = useState(null);
 
   const [isLoading, setIsLoding] = useState(false);
 
   // navigate
   const navigate = useNavigate();
+
+  // update the photo img in firebase
+  const uploadTheImageFile = () => {
+    // unique image name
+    const imageName = new Date().getTime() + file.name;
+    const storageRef = ref(storage, imageName);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        setIsLoding(true);
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setPercentege(progress);
+        switch (snapshot.state) {
+          case "paused":
+            // console.log('Upload is paused');
+            break;
+          case "running":
+            // console.log('Upload is running');
+            break;
+        }
+      },
+      (error) => {
+        console.error(error);
+        toast.error("حدث خطأ أثناء تحميل الصورة رجاءا حاول مرة أخرى", {
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      },
+      () => {
+        setIsLoding(true);
+        toast.success("تم تحميل الصورة بنجاح", {
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setFormData((prevData) => {
+            return {
+              ...prevData,
+              photoURL: downloadURL,
+            };
+          });
+          handelUploadUserInfo(downloadURL);
+        });
+      }
+    );
+  };
+
+  // handelUploadUserInfo
+  const handelUploadUserInfo = (downloadURL) => {
+    setIsLoding(true);
+    const updatedUserData = {
+      ...user,
+      ...formData,
+      phoneNumber,
+      file,
+      photoURL: downloadURL ? downloadURL : user.photoURL,
+      password,
+    };
+    const required = getIsEmailUser() ? isUserEmailRequiredment() : isUserPhoneRequiredment()
+    required &&  updateUser(updatedUserData);
+  };
+
+ 
 
   // handelChangeData
   const handelChangeData = (e) => {
@@ -114,15 +133,25 @@ const handelUploadUserInfo = (downloadURL)=> {
     setIsLoding(true);
 
     try {
-      const { displayName, email, uid, phoneNumber, photoURL } = user;
-      const userData = {
-        email: email ? email : null,
+      const { displayName, email, uid, phoneNumber, photoURL, password } = user;
+      const phoneUseData = {
         displayName,
         uid,
-        phoneNumber: phoneNumber ? phoneNumber : null,
+        phoneNumber,
         photoURL: photoURL ? photoURL : null,
         isOnline: false,
+        password,
       };
+      const emailUserData = {
+        email,
+        displayName,
+        phoneNumber: phoneNumber ? phoneNumber : null,
+        uid,
+        isOnline: false,
+        photoURL: photoURL ? photoURL : null,
+      };
+
+      const userData = getIsEmailUser() ? emailUserData : phoneUseData;
       await setDoc(doc(db, "users", uid), userData);
       setCurrentUser(userData);
       toast.success("تم تحديث البيانات ", {
@@ -134,7 +163,7 @@ const handelUploadUserInfo = (downloadURL)=> {
         draggable: true,
         progress: undefined,
         theme: "light",
-        });
+      });
       setTimeout(() => {
         navigate("/user");
         setIsLoding(false);
@@ -151,7 +180,7 @@ const handelUploadUserInfo = (downloadURL)=> {
         draggable: true,
         progress: undefined,
         theme: "light",
-        });
+      });
     }
   };
 
@@ -168,7 +197,7 @@ const handelUploadUserInfo = (downloadURL)=> {
     if (!file) return;
     // Check if the file type is an image
     if (!file.type.startsWith("image/")) {
-      toast.warn('رجاءا قم بإخيار صورة صالحة', {
+      toast.warn("رجاءا قم بإخيار صورة صالحة", {
         position: "top-center",
         autoClose: 2000,
         hideProgressBar: false,
@@ -178,7 +207,7 @@ const handelUploadUserInfo = (downloadURL)=> {
         progress: undefined,
         theme: "light",
         isLoading: false,
-        });
+      });
       return;
     }
     setFile(file);
@@ -192,12 +221,60 @@ const handelUploadUserInfo = (downloadURL)=> {
       : isValideEmail(formData.email);
 
     if (valid && file) {
-        uploadTheImageFile()
-      }else if(valid){
-        handelUploadUserInfo()
-      }
-    };
+      const required = getIsEmailUser() ? isUserEmailRequiredment() : isUserPhoneRequiredment()
+      required && uploadTheImageFile();
+    } else if (valid) {
+      handelUploadUserInfo();
+    }
+  };
 
+  // handel validate user phone
+  const isUserPhoneRequiredment = ()=> {
+    if( password.length >= 4 && formData.displayName.length >= 2){
+      return true
+    }else if(formData.displayName.length < 2){
+      toast.error("الإسم يجب أن يكون أكثر من حرفين", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      return false
+    }
+    toast.error("كلمة المرور يجب أن تكون أكثر من 4 أحرف", {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+    return false
+  }
+
+  // handel validate user email
+  const isUserEmailRequiredment = ()=> {
+    if(formData.displayName.length >= 2 ){
+      return true
+    }
+    toast.error("الإسم يجب أن يكون أكثر من حرفين", {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+    return false
+  }
   // get all user from firebase
   const getAllUsers = async () => {
     const users = [];
@@ -221,7 +298,7 @@ const handelUploadUserInfo = (downloadURL)=> {
         draggable: true,
         progress: undefined,
         theme: "light",
-        });
+      });
       return false;
     }
     return true;
@@ -240,7 +317,7 @@ const handelUploadUserInfo = (downloadURL)=> {
         draggable: true,
         progress: undefined,
         theme: "light",
-        });
+      });
       return false;
     }
     return true;
@@ -255,12 +332,21 @@ const handelUploadUserInfo = (downloadURL)=> {
       <form onSubmit={handelSubmit}>
         <div className="header">
           <h2> المعلومات الشخصية </h2>
-          <p>الرجاء إدخال معلوماتك و تحديد صورتك الشخصية - الإسم إلزامي</p>
+          <p>
+            الرجاء إدخال معلوماتك و تحديد صورتك الشخصية - الإسم{" "}
+            {!getIsEmailUser() && "و كلمة السر"} إلزامي
+          </p>
         </div>
         <label htmlFor="file-input">
           <div className="img d-f">
             <img
-              src={ file ? URL.createObjectURL(file) : user.photoURL ? user.photoURL : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"}
+              src={
+                file
+                  ? URL.createObjectURL(file)
+                  : user.photoURL
+                  ? user.photoURL
+                  : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"
+              }
               alt="a user image"
             />
           </div>
@@ -284,18 +370,20 @@ const handelUploadUserInfo = (downloadURL)=> {
             value={formData.displayName}
           />
         </div>
-        <div className="input phone">
-          <label htmlFor="email"> البريد الإلكتروني </label>
-          <input
-            disabled={getIsEmailUser() ? true : false}
-            name="email"
-            type="text"
-            placeholder="أدخل بريدك الإلكتروني هنا"
-            id="email"
-            onChange={handelChangeData}
-            value={formData.email}
-          />
-        </div>
+        {getIsEmailUser() && (
+          <div className="input phone">
+            <label htmlFor="email"> البريد الإلكتروني </label>
+            <input
+              disabled={getIsEmailUser() ? true : false}
+              name="email"
+              type="text"
+              placeholder="أدخل بريدك الإلكتروني هنا"
+              id="email"
+              onChange={handelChangeData}
+              value={formData.email}
+            />
+          </div>
+        )}
         <div className="input phone">
           <label htmlFor="phoneNumber"> رقم الهاتف</label>
           <input
@@ -308,6 +396,20 @@ const handelUploadUserInfo = (downloadURL)=> {
             disabled={getIsEmailUser() ? false : true}
           />
         </div>
+        {/* password for user phone */}
+        {!getIsEmailUser() && (
+          <div className="input phone">
+            <label htmlFor="password"> كلمة السر</label>
+            <input
+              type="text"
+              placeholder="أدخل كلمة السر هنا"
+              id="password"
+              name="password"
+              onChange={(e) => setPassword(e.target.value)}
+              value={password}
+            />
+          </div>
+        )}
         <ToastContainer
           position="top-center"
           autoClose={4000}
@@ -322,12 +424,14 @@ const handelUploadUserInfo = (downloadURL)=> {
           limit={2}
         />
         <div className="btnes">
-          <button className="send" disabled={isLoading || (precentage !== null && precentage <= 99)}>
+          <button
+            className="send"
+            disabled={isLoading || (precentage !== null && precentage <= 99)}
+          >
             التالي
           </button>
         </div>
       </form>
     </div>
   );
-
-        };
+}
