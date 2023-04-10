@@ -13,6 +13,7 @@ export default function Otp({}) {
 
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [isOtpVerifie, setIsotpVerifie] = useState(false);
+  const [isLoading , setIsLoading] = useState(false)
 
   const navigate = useNavigate();
 
@@ -43,6 +44,7 @@ export default function Otp({}) {
 
   const handelSubmit = (e) => {
     e.preventDefault();
+    setIsLoading(true)
     confirmationResult
       .confirm(otp.join(''))
       .then((result) => {
@@ -59,11 +61,11 @@ export default function Otp({}) {
         });
         setTimeout(() => {
           navigate("/userInfo");
+          setIsLoading(false)
         }, 2000);
       })
       .catch((error) => {
-        console.log(error.code);
-        console.log(error.message);
+        setIsLoading(false)
         if (error.code === "auth/code-expired") {
           toast.error("لقد إنتهت صلاحية رمز التأكيد", {
             position: "top-center",
@@ -140,13 +142,13 @@ export default function Otp({}) {
             ليس رقمي ؟ <Link to="/signup"> تغيير رقمك </Link>
           </p>
           <div className="btns">
-            <button className="btn otp-confiramtion" disabled={!isOtpVerifie}>
+            <button className="btn otp-confiramtion" disabled={!isOtpVerifie || isLoading}>
               تأكيد
             </button>
             <button
               className="btn otp-clear"
               onClick={clearOtp}
-              disabled={!isOtpVerifie}
+              disabled={!isOtpVerifie || isLoading}
             >
               مسح
             </button>
