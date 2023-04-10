@@ -333,17 +333,19 @@ export default function UserInfo() {
         <div className="header">
           <h2> المعلومات الشخصية </h2>
           <p>
-            الرجاء إدخال معلوماتك و تحديد صورتك الشخصية - الإسم{" "}
+            الرجاء إدخال معلوماتك و تحديد صورتك الشخصية - الإسم
             {!getIsEmailUser() && "و كلمة السر"} إلزامي
           </p>
         </div>
-        <label htmlFor="file-input">
+        {/* upload image file */}
+        <div className="d-f">
+        <label htmlFor="file-input" style={{borderRadius : '50%'}}> 
           <div className="img d-f">
             <img
               src={
                 file
                   ? URL.createObjectURL(file)
-                  : user.photoURL
+                  : user?.photoURL
                   ? user.photoURL
                   : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"
               }
@@ -358,6 +360,8 @@ export default function UserInfo() {
           name="file"
           style={{ display: "none" }}
         />
+        </div>
+        
 
         <div className="input name">
           <label htmlFor="name"> إسم المستخدم </label>
