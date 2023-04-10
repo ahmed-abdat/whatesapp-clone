@@ -132,7 +132,7 @@
   justify-content: space-around;
 }
 
-.userInfo .btnes button {
+.userInfo .btnes button.send {
   cursor: pointer;
   outline: none;
   border: none;

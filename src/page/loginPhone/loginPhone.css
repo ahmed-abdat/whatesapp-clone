@@ -1,0 +1,17 @@
+
+
+
+
+.userInfo button.cancel {
+    background-color: transparent;
+    font-size: 1.25rem;
+    color: var(--text-color);
+  }
+  
+  .userInfo .cancel:hover {
+    color: #444;
+  }
+
+  .userInfo .btnes button.send{
+    padding: 0.5rem 1.5rem;
+  }
