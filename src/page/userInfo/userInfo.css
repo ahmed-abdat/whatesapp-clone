@@ -136,9 +136,10 @@
   cursor: pointer;
   outline: none;
   border: none;
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 500;
-  padding: 0.6rem 1rem;
+  box-shadow: 0 3px 13px 1px #1796526b;
+  padding: 0.6rem 2.35rem;
   transition: var(--tran-04);
   border-radius: 6px;
   -webkit-border-radius: 6px;
@@ -151,15 +152,7 @@
   -o-transition: var(--tran-04);
 }
 
-.userInfo button.cancel {
-  background-color: transparent;
-  font-size: 1.25rem;
-  color: var(--text-color);
-}
 
-.userInfo .cancel:hover {
-  color: #333;
-}
 
 .userInfo button.send {
   background: var(--whatsapp-color);
@@ -167,5 +160,6 @@
 }
 
 .userInfo button.send:hover {
+  box-shadow: 0 3px 10px 1px #068b445e;
   background-color: var(--whatsapp-color-dark);
 }

@@ -29,18 +29,15 @@ export default function UserInfo() {
     displayName: user?.displayName || "",
     photoURL : user?.photoURL
   });
+
+
   const [phoneNumber, setPhoneNumber] = useState(
     getIsEmailUser() ? "" : user.phoneNumber
   );
 
   const [precentage , setPercentege] = useState(null)
 
-useEffect(()=> {
-  if(file){
-    // update the user image
-    uploadTheImageFile()
-  }
-},[file])
+
 
 // update the photo img in firebase 
 const uploadTheImageFile = ()=> {
@@ -70,9 +67,29 @@ const uploadTheImageFile = ()=> {
           photoURL : downloadURL
         }
       })
+      handelUploadUserInfo(downloadURL)
     });
   }
 );
+}
+
+// handelUploadUserInfo
+const handelUploadUserInfo = (downloadURL)=> {
+  if(formData.displayName.length >= 2 ){
+    const updatedUserData = { ...user, ...formData, phoneNumber , file , photoURL : downloadURL ? downloadURL : user.photoURL};
+    updateUser(updatedUserData);
+  }else {
+    toast.error("الإسم يجب أن يكون أكثر من حرفين", {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      });
+    }
 }
 
 
@@ -174,24 +191,12 @@ const uploadTheImageFile = ()=> {
       ? isValideNumber(phoneNumber)
       : isValideEmail(formData.email);
 
-    if (valid) {
-      if(formData.displayName.length >= 2 ){
-        const updatedUserData = { ...user, ...formData, phoneNumber , file };
-        updateUser(updatedUserData);
-      }else {
-        toast.error("الإسم يجب أن يكون أكثر من حرفين", {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-          });
+    if (valid && file) {
+        uploadTheImageFile()
+      }else if(valid){
+        handelUploadUserInfo()
       }
-    }
-  };
+    };
 
   // get all user from firebase
   const getAllUsers = async () => {
@@ -255,7 +260,7 @@ const uploadTheImageFile = ()=> {
         <label htmlFor="file-input">
           <div className="img d-f">
             <img
-              src={ file ? URL.createObjectURL(file) : formData.photoURL ? formData.photoURL : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"}
+              src={ file ? URL.createObjectURL(file) : user.photoURL ? user.photoURL : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"}
               alt="a user image"
             />
           </div>
@@ -317,24 +322,12 @@ const uploadTheImageFile = ()=> {
           limit={2}
         />
         <div className="btnes">
-          <button
-            type="button"
-            className="cancel"
-            onClick={handelSubmit}
-            disabled={isLoading || (precentage !== null && precentage <= 99)}
-          >
-            تخطي
-          </button>
-          <button className="send dr-ar" disabled={isLoading || (precentage !== null && precentage <= 99)}>
-           {isLoading ? "...جاري تحديث البيانات": " تحديث البيانات"}
+          <button className="send" disabled={isLoading || (precentage !== null && precentage <= 99)}>
+            التالي
           </button>
         </div>
-        {/* {connection ? (
-            ""
-          ) : (
-            <p className="offline"> عذرا يبدو بأنك غير متصل بالإنترنت </p>
-          )} */}
       </form>
     </div>
   );
-}
+
+        };
