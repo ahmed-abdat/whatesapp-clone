@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 const useUser = create((set , get) => ({
-  currentUser: {},
+  currentUser: null,
   isEmailUser : false,
   setCurrentUser: (user) => {
     localStorage.setItem("currentUser", JSON.stringify(user));

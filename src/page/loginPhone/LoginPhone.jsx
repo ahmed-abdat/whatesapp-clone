@@ -2,20 +2,73 @@ import { ToastContainer, toast } from "react-toastify";
 import "./loginPhone.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useUser from "../../store/useUser";
 
 export default function LoginPhone() {
+   // get current user
+   const getCurrentUser = useUser((state) => state.getCurrentUser);
+  //  set current user
+  const setCurrentUser = useUser((state) => state.setCurrentUser);
+
   // state
   const [password, setPassword] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState(getCurrentUser()?.phoneNumber || "");
 
   // navigate
   const navigate = useNavigate();
 
+  // handle submit
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // check if password is correct
+    if (password === getCurrentUser().password) {
+      // navigate to home page
+      toast.success("مرحبا بعودتك ", {
+        position: "top-center",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      setTimeout(() => {
+        navigate("/user");
+      }, 1600);
+    } else {
+      // show error message
+      toast.error("كلمة السر غير صحيحة", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+  };
+
+  // handle cancel
+  const handelCancel = () => {
+    // navigate back to signup page
+    navigate("/signUp");
+    // clear the current user
+    setCurrentUser(null);
+  };
+
+
+
   return (
     <div className="userInfo dr-ar">
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="header">
-          <h2> المعلومات الشخصية </h2>
+          {/* <h2> تسجيل الدخول </h2> */}
+          <div className="img image d-f">
+            <img src={getCurrentUser() ? getCurrentUser().photoURL : '/whatsapp-logo.svg'} alt="" />
+          </div>
         </div>
         <div className="input phone">
           <label htmlFor="phoneNumber"> رقم الهاتف</label>
@@ -23,9 +76,9 @@ export default function LoginPhone() {
             type="text"
             placeholder="أدخل رقم هاتفك هنا"
             id="phoneNumber"
-            // onChange={handelPhone}
+            onChange={()=> setPhoneNumber(e.target.value)}
             value={phoneNumber}
-            // disabled={getIsEmailUser() ? false : true}
+            disabled={true}
           />
         </div>
         {/* password for user phone */}
@@ -54,7 +107,7 @@ export default function LoginPhone() {
           limit={2}
         />
         <div className="btnes">
-          <button className="btn cancel"> إلغاء </button>
+          <button type="button" className="btn cancel" onClick={handelCancel}> إلغاء </button>
           <button className="send">تسجيل الدخول</button>
         </div>
       </form>

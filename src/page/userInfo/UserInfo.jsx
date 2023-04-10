@@ -76,7 +76,6 @@ export default function UserInfo() {
         });
       },
       () => {
-        setIsLoding(true);
         toast.success("تم تحميل الصورة بنجاح", {
           position: "top-center",
           autoClose: 2000,
@@ -102,7 +101,6 @@ export default function UserInfo() {
 
   // handelUploadUserInfo
   const handelUploadUserInfo = (downloadURL) => {
-    setIsLoding(true);
     const updatedUserData = {
       ...user,
       ...formData,
@@ -289,7 +287,7 @@ export default function UserInfo() {
   const isValideNumber = (number) => {
     const validNumver = allUsers.find((user) => user.phoneNumber === number);
     if (validNumver) {
-      toast.error("رقم الهاتف مستخدم من قبل", {
+      toast.error("رقم الهاتف مستخدم بالفعل ", {
         position: "top-center",
         autoClose: 2000,
         hideProgressBar: false,

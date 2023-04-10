@@ -122,16 +122,7 @@ export default function SignUp() {
       setIsLoding(true);
       const isUserExiste = data.find((user) => user.phoneNumber === phone);
       if (isUserExiste) {
-        toast.success("مرحبا بعودتك ", {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        setCurrentUser(isUserExiste);
         setTimeout(() => {
           navigate("/login");
         }, 1000);

@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
 import useUser from "../../store/useUser";
+import { useRef } from "react";
 
 export default function Otp({}) {
   const confirmationResult = useSignUp((state) => state.confirmationResult);
@@ -17,15 +18,18 @@ export default function Otp({}) {
 
   const navigate = useNavigate();
 
+  const Btn = useRef(null);
+
   const handleOtpChange = (element, index) => {
     // If the entered value is not a number, don't update the state
     if (isNaN(element.value)) return false;
     // Update the state with the new entered value
     setOtp([...otp.map((d, idx) => (idx === index ? element.value : d))]);
-    // If the last input is filled, blur and disable the input
+    // If the last input is filled, blur and disable the input and click the btn
     if (index === otp.length - 1) {
       element.blur();
       setIsotpVerifie(true);
+      Btn.current.submit()
       return;
     }
     // Otherwise focus the next input
@@ -33,6 +37,7 @@ export default function Otp({}) {
       element.nextSibling.focus();
     }
   };
+  
 
   // clear OTP
   const clearOtp = () => {
@@ -119,7 +124,7 @@ export default function Otp({}) {
           <span>{getPhone()}</span>
           تم إرسال رمز التحقق إلى الرقم
         </p>
-        <form onSubmit={handelSubmit}>
+        <form onSubmit={handelSubmit} ref={Btn} >
           <div className="otp-inputs">
             {otp.map((data, index) => {
               return (
@@ -142,7 +147,7 @@ export default function Otp({}) {
             ليس رقمي ؟ <Link to="/signup"> تغيير رقمك </Link>
           </p>
           <div className="btns">
-            <button className="btn otp-confiramtion" disabled={!isOtpVerifie || isLoading}>
+            <button className="btn otp-confiramtion" disabled={!isOtpVerifie || isLoading} >
               تأكيد
             </button>
             <button
