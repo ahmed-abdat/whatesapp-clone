@@ -297,18 +297,19 @@ export default function SignUp() {
         </button>
       </form>
       <div id="sign-in-recaptcha"></div>
+      <div className="or">أو</div>
       {/* signup from google */}
       <div className="signup-google" onClick={signInWithGoogle}>
         <img
           className="google-icon"
           src="https://img.icons8.com/color/24/000000/google-logo.png"
         />
-        <p className="btn google-btn"> Sign In with Google</p>
+        <p className="btn google-btn dr-ar"> تسجيل الدخول عن طريق Google</p>
       </div>
       {/* signup with facebook */}
       <div className="signup-facebook" onClick={signInWithFacebook}>
         <img className="facebook-icon" src="https://upload.wikimedia.org/wikipedia/en/thumb/0/04/Facebook_f_logo_%282021%29.svg/768px-Facebook_f_logo_%282021%29.svg.png?20210818083032" />
-        <p className="btn facebook-btn"> Sign In with Facebook</p>
+        <p className="btn facebook-btn dr-ar"> تسجيل الدخول عن طريق Facebook</p>
       </div>
       <ToastContainer
         position="top-center"
