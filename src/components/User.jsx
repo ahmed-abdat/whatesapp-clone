@@ -28,7 +28,7 @@ export default function User() {
       <img
         src={user.photoURL}
         alt=""
-        style={{ width: "150px", padding: "1.5rem" }}
+        style={{ width: "10rem", height : '10rem' , borderRadius : '50%' , objectFit : 'cover' , padding: "1.5rem" }}
       />
       <button
         onClick={signOut}
