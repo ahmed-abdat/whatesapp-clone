@@ -14,6 +14,7 @@ import SignUp from "./page/signUp/SignUp";
 import User from "./components/User";
 import useUser from "./store/useUser";
 import UserInfo from "./page/userInfo/UserInfo";
+import LoginPhone from "./page/loginPhone/LoginPhone";
 
 function App() {
    // get curentUser
@@ -36,6 +37,7 @@ function App() {
         <Route path="/otp" element={<Otp />} />
         <Route path="/userInfo" element={<UserInfo />} />
         <Route path="/user" element={<User />} />
+        <Route path="/login" element={<LoginPhone />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
