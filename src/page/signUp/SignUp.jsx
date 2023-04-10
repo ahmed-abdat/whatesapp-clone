@@ -307,7 +307,7 @@ export default function SignUp() {
       </div>
       {/* signup with facebook */}
       <div className="signup-facebook" onClick={signInWithFacebook}>
-        <img className="facebook-icon" src="/Facebook-logo.png" />
+        <img className="facebook-icon" src="https://upload.wikimedia.org/wikipedia/en/thumb/0/04/Facebook_f_logo_%282021%29.svg/768px-Facebook_f_logo_%282021%29.svg.png?20210818083032" />
         <p className="btn facebook-btn"> Sign In with Facebook</p>
       </div>
       <ToastContainer

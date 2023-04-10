@@ -25,9 +25,9 @@ export default function UserInfo() {
 
 
   const [formData, setFormData] = useState({
-    email: getIsEmailUser() ? user.email : "",
-    displayName: user.displayName || "",
-    photoURL : user.photoURL
+    email: getIsEmailUser() ? user?.email : "",
+    displayName: user?.displayName || "",
+    photoURL : user?.photoURL
   });
   const [phoneNumber, setPhoneNumber] = useState(
     getIsEmailUser() ? "" : user.phoneNumber
