@@ -17,20 +17,19 @@ export default function UserInfo() {
   
     const setCurrentUser = useUser((state) => state.setCurrentUser);
     const getIsEmailUser = useUser((state) => state.getIsEmailUser);
-    const setImageFile = useUser(state => state.setImageFile)
-    const getImageFile = useUser(state => state.getImageFile)
 
 
   // state
   const [allUsers, setAllUsers] = useState([]);
-  const [file, setFile] = useState(getImageFile() ? getImageFile() : null);
+  const [file, setFile] = useState( null);
 
-  console.log(file);
+  // 
+
 
   const [formData, setFormData] = useState({
     email: getIsEmailUser() ? user.email : "",
     displayName: user.displayName || "",
-    photoImage : null
+    photoURL : user.photoURL
   });
   const [phoneNumber, setPhoneNumber] = useState(
     getIsEmailUser() ? "" : user.phoneNumber
@@ -41,49 +40,42 @@ export default function UserInfo() {
 useEffect(()=> {
   if(file){
     // update the user image
-    const storageRef = ref(storage, file.name);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-    uploadTask.on('state_changed', 
-    (snapshot) => {
-      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      setPercentege(progress)
-      switch (snapshot.state) {
-        case 'paused':
-          // console.log('Upload is paused');
-          break;
-        case 'running':
-          // console.log('Upload is running');
-          break;
-      }
-    }, 
-    (error) => {
-      console.error(error)
-    }, 
-    () => {
-      getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-        console.log('is uploaded ');
-        toast.success("تم تحميل الصورة", {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-          });
-        setFormData((prevData) => {
-          return {
-            ...prevData,
-            photoImage : downloadURL
-          }
-        })
-      });
-    }
-  );
-
+    uploadTheImageFile()
   }
 },[file])
+
+// update the photo img in firebase 
+const uploadTheImageFile = ()=> {
+  const storageRef = ref(storage, file.name);
+  const uploadTask = uploadBytesResumable(storageRef, file);
+  uploadTask.on('state_changed', 
+  (snapshot) => {
+    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    setPercentege(progress)
+    switch (snapshot.state) {
+      case 'paused':
+        // console.log('Upload is paused');
+        break;
+      case 'running':
+        // console.log('Upload is running');
+        break;
+    }
+  }, 
+  (error) => {
+    console.error(error)
+  }, 
+  () => {
+    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+      setFormData((prevData) => {
+        return {
+          ...prevData,
+          photoURL : downloadURL
+        }
+      })
+    });
+  }
+);
+}
 
 
   const [isLoading, setIsLoding] = useState(false);
@@ -105,6 +97,7 @@ useEffect(()=> {
   // update the user Data
   const updateUser = async (user) => {
     setIsLoding(true);
+
     try {
       const { displayName, email, uid, phoneNumber, photoURL } = user;
       const userData = {
@@ -174,7 +167,6 @@ useEffect(()=> {
       return;
     }
     setFile(file);
-    setImageFile(file)
   };
 
   // handelSubmit
@@ -186,7 +178,7 @@ useEffect(()=> {
 
     if (valid) {
       if(formData.displayName.length >= 2 ){
-        const updatedUserData = { ...user, ...formData, phoneNumber };
+        const updatedUserData = { ...user, ...formData, phoneNumber , file };
         updateUser(updatedUserData);
       }else {
         toast.error("الإسم يجب أن يكون أكثر من حرفين", {
@@ -265,7 +257,7 @@ useEffect(()=> {
         <label htmlFor="file-input">
           <div className="img d-f">
             <img
-              src={file.name ? URL.createObjectURL(file) : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"}
+              src={ file ? URL.createObjectURL(file) : formData.photoURL ? formData.photoURL : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"}
               alt="a user image"
             />
           </div>
@@ -335,7 +327,7 @@ useEffect(()=> {
           >
             تخطي
           </button>
-          <button className="send" disabled={isLoading || (precentage !== null && precentage <= 99)}>
+          <button className="send dr-ar" disabled={isLoading || (precentage !== null && precentage <= 99)}>
            {isLoading ? "...جاري تحديث البيانات": " تحديث البيانات"}
           </button>
         </div>
