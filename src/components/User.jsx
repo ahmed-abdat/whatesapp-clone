@@ -9,13 +9,12 @@ export default function User() {
 
   const setCurrentUser = useUser((state) => state.setCurrentUser);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // signout user
   const signOut = () => {
-    setCurrentUser(null)
-    navigate('/welcoome')
-
+    setCurrentUser(null);
+    navigate("/welcoome");
   };
 
   return (
@@ -26,8 +25,24 @@ export default function User() {
       <p>{user.email}</p>
       <p>{user.uid}</p>
       <p>{user.displayName}</p>
-      <img src={user.photoURL} alt="" />
-      <button onClick={signOut}>sig out</button>
+      <img
+        src={user.photoURL}
+        alt=""
+        style={{ width: "150px", padding: "1.5rem" }}
+      />
+      <button
+        onClick={signOut}
+        style={{
+          padding: "0.5rem 1.2rem",
+          borderRadius: "0.3rem",
+          color: "#f6f6f6",
+          fontSize: "1rem",
+          background: "#179652",
+        }}
+        className="btn"
+      >
+        sig out
+      </button>
     </div>
   );
 }

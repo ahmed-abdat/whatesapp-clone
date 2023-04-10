@@ -23,8 +23,6 @@ export default function UserInfo() {
   const [allUsers, setAllUsers] = useState([]);
   const [file, setFile] = useState( null);
 
-  // 
-
 
   const [formData, setFormData] = useState({
     email: getIsEmailUser() ? user.email : "",
