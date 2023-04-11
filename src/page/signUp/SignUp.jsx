@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import ar from "react-phone-number-input/locale/ar.json";
@@ -35,6 +35,14 @@ export default function SignUp() {
 
   const setIsEmailUser = useUser((state) => state.setIsEmailUser);
 
+  // get isEmailUser
+  const getIsEmailUser = useUser((state) => state.getIsEmailUser);
+
+  // get phoneUserVerified
+  const getIsPhoneUserVerified = useUser(
+    (state) => state.getIsPhoneUserVerified
+  );
+
   const navigate = useNavigate();
 
   const setPhones = useSignUp((state) => state.setPhones);
@@ -66,7 +74,6 @@ export default function SignUp() {
   };
   // send otp to phone number
   const sendOtp = () => {
-    console.log("send otp ");
     const appVerifier = window.recaptchaVerifier;
     signInWithPhoneNumber(auth, phone, appVerifier)
       .then((confirmationResult) => {
@@ -80,9 +87,11 @@ export default function SignUp() {
       .catch((error) => {
         setIsLoding(false);
         console.log(error.code);
-        if(error.code === "auth/too-many-requests") {
-          toast.error('! عذرا لقد قمت بالكثير من طلبات في وقت قصير حاول مرة أخرى في وقت لاحق');
-            return
+        if (error.code === "auth/too-many-requests") {
+          toast.error(
+            "! عذرا لقد قمت بالكثير من طلبات في وقت قصير حاول مرة أخرى في وقت لاحق"
+          );
+          return;
         }
         toast.error("حدث خطأ أثناء إرسال الرسالة");
       });
@@ -103,8 +112,8 @@ export default function SignUp() {
         requestRecaptcha();
         sendOtp();
       }
-    }else {
-      toast.error('! أدخل رقم هاتف صحيح');
+    } else {
+      toast.error("! أدخل رقم هاتف صحيح");
     }
   };
 
@@ -162,14 +171,11 @@ export default function SignUp() {
   // sign up with facebook
   const signInWithFacebook = () => {
     const provider = new FacebookAuthProvider();
-    provider.setCustomParameters({
-      'display': 'popup'
-    });
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
         setCurrentUser(user);
-        toast.success("تم تسجيل الدخول بنجاح", );
+        toast.success("تم تسجيل الدخول بنجاح");
         getGoogleUser(user.uid);
       })
       .catch((error) => {
@@ -183,9 +189,15 @@ export default function SignUp() {
   };
 
   useEffect(() => {
-    if (user) {
-      navigate("/");
-    } else {
+    if (getIsPhoneUserVerified() === true && getIsEmailUser() === false) {
+      setTimeout(() => {
+          navigate("/user");
+        }, 500);
+      } else if (getIsEmailUser()) {
+        setTimeout(() => {
+          navigate("/user");
+        }, 500);
+      } else {
       getPhoneUsers();
     }
   }, []);
@@ -226,7 +238,10 @@ export default function SignUp() {
       </div>
       {/* signup with facebook */}
       <div className="signup-facebook" onClick={signInWithFacebook}>
-        <img className="facebook-icon" src="https://upload.wikimedia.org/wikipedia/en/thumb/0/04/Facebook_f_logo_%282021%29.svg/768px-Facebook_f_logo_%282021%29.svg.png?20210818083032" />
+        <img
+          className="facebook-icon"
+          src="https://upload.wikimedia.org/wikipedia/en/thumb/0/04/Facebook_f_logo_%282021%29.svg/768px-Facebook_f_logo_%282021%29.svg.png?20210818083032"
+        />
         <p className="btn facebook-btn dr-ar"> تسجيل الدخول عن طريق Facebook</p>
       </div>
       <ToastContainer
@@ -240,7 +255,7 @@ export default function SignUp() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="colored"
+        theme="light"
       />
     </div>
   );

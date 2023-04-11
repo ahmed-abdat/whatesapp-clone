@@ -1,6 +1,6 @@
 import { ToastContainer, toast } from "react-toastify";
 import "./loginPhone.css";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useUser from "../../store/useUser";
 
@@ -10,24 +10,37 @@ export default function LoginPhone() {
   //  set current user
   const setCurrentUser = useUser((state) => state.setCurrentUser);
 
+  // sete the phoneUserVerified
+  const setIsPhoneUserVerified = useUser((state) => state.setIsPhoneUserVerified);
+
   // state
   const [password, setPassword] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState(getCurrentUser()?.phoneNumber || "");
 
   // navigate
   const navigate = useNavigate();
+
+  // password input Ref
+  const passwordInputRef = useRef();
 
   // handle submit
   const handleSubmit = (e) => {
     e.preventDefault();
     // check if password is correct
     if (password === getCurrentUser().password) {
+      setIsPhoneUserVerified(true)
       // navigate to home page
-      toast.success("مرحبا بعودتك ");
+      toast.success("مرحبا بعودتك ",{
+        autoClose: 1300,
+      });
       setTimeout(() => {
         navigate("/user");
-      }, 1600);
-    } else {
+      }, 2000);
+    } else if(password === ""){
+      setIsPhoneUserVerified(false)
+      toast.error("أدخل كلمة السر");
+      passwordInputRef.current.focus();
+      } else {
+      setIsPhoneUserVerified(false)
       // show error message
       toast.error("كلمة السر غير صحيحة");
     }
@@ -43,32 +56,20 @@ export default function LoginPhone() {
 
 
 
+
   return (
     <div className="userInfo dr-ar">
       <form onSubmit={handleSubmit}>
         <div className="header">
-          {/* <h2> تسجيل الدخول </h2> */}
           <div className="img image d-f">
-            <img src={getCurrentUser() ? getCurrentUser().photoURL : '/whatsapp-logo.svg'} alt="" />
+            <img src={getCurrentUser().photoURL ? getCurrentUser().photoURL : 'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png'} alt="avatar" />
           </div>
           <div className="info">
             <h3>{getCurrentUser().displayName}</h3>
           </div>
         </div>
-        {/* <div className="input phone">
-          <label htmlFor="phoneNumber"> رقم الهاتف</label>
-          <input
-            type="text"
-            placeholder="أدخل رقم هاتفك هنا"
-            id="phoneNumber"
-            onChange={()=> setPhoneNumber(e.target.value)}
-            value={phoneNumber}
-            disabled={true}
-          />
-        </div> */}
         {/* password for user phone */}
         <div className="input phone">
-          {/* <label htmlFor="password"> كلمة السر</label> */}
           <input
             type="text"
             placeholder="أدخل كلمة السر هنا"
@@ -76,6 +77,7 @@ export default function LoginPhone() {
             id="password"
             onChange={(e) => setPassword(e.target.value)}
             value={password}
+            ref={passwordInputRef}
           />
         </div>
         <ToastContainer
@@ -88,7 +90,7 @@ export default function LoginPhone() {
           pauseOnFocusLoss
           draggable
           pauseOnHover
-          theme="colored"
+          theme="light"
           limit={2}
         />
         <div className="btnes">

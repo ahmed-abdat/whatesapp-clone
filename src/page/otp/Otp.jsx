@@ -18,18 +18,23 @@ export default function Otp({}) {
 
   const navigate = useNavigate();
 
-  const Btn = useRef(null);
+  // get isEmailUser
+  const getIsEmailUser = useUser((state) => state.getIsEmailUser);
+  // get phoneUserVerified
+  const getIsPhoneUserVerified = useUser((state) => state.getIsPhoneUserVerified);
+  // set phoneUserVerified
+  const setIsPhoneUserVerified = useUser((state) => state.setIsPhoneUserVerified);
+
 
   const handleOtpChange = (element, index) => {
     // If the entered value is not a number, don't update the state
     if (isNaN(element.value)) return false;
     // Update the state with the new entered value
     setOtp([...otp.map((d, idx) => (idx === index ? element.value : d))]);
-    // If the last input is filled, blur and disable the input and click the btn
+    // If the last input is filled, blur and disable the input
     if (index === otp.length - 1) {
       element.blur();
       setIsotpVerifie(true);
-      Btn.current.submit()
       return;
     }
     // Otherwise focus the next input
@@ -54,6 +59,7 @@ export default function Otp({}) {
       .confirm(otp.join(''))
       .then((result) => {
         setCurrentUser(result.user);
+        setIsPhoneUserVerified(true);
         toast.success("تمت المصادقة");
         setTimeout(() => {
           navigate("/userInfo");
@@ -87,6 +93,9 @@ export default function Otp({}) {
         theme: "light",
         });
     }
+    if(!getIsEmailUser() && getIsPhoneUserVerified()){
+      navigate('/user')
+    }
   }, []);
 
   return (
@@ -97,7 +106,7 @@ export default function Otp({}) {
           <span>{getPhone()}</span>
           تم إرسال رمز التحقق إلى الرقم
         </p>
-        <form onSubmit={handelSubmit} ref={Btn} >
+        <form onSubmit={handelSubmit}  >
           <div className="otp-inputs">
             {otp.map((data, index) => {
               return (
@@ -143,7 +152,7 @@ export default function Otp({}) {
           pauseOnFocusLoss
           draggable
           pauseOnHover
-          theme="colored"
+          theme="light"
         />
       </div>
     </div>

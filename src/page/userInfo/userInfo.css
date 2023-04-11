@@ -163,3 +163,7 @@
   box-shadow: 0 3px 10px 1px #068b445e;
   background-color: var(--whatsapp-color-dark);
 }
+
+.userInfo button.send.btn-p{
+  padding: 0.6rem 3rem !important;; 
+}

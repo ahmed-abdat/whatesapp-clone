@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import "./userInfo.css";
 import useUser from "../../store/useUser";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { ToastContainer, toast } from "react-toastify";
@@ -30,8 +30,11 @@ export default function UserInfo() {
   });
 
   const [phoneNumber, setPhoneNumber] = useState(
-    getIsEmailUser() ? "" : user.phoneNumber
+    getIsEmailUser() ? "" : user?.phoneNumber
   );
+
+    // password input
+  const PasswordInputRef = useRef(null);
 
   const [precentage, setPercentege] = useState(null);
 
@@ -39,6 +42,9 @@ export default function UserInfo() {
 
   // navigate
   const navigate = useNavigate();
+
+  // set phoneuserVerified
+  const setIsPhoneUserVerified = useUser((state) => state.setIsPhoneUserVerified);
 
   // update the photo img in firebase
   const uploadTheImageFile = () => {
@@ -50,24 +56,15 @@ export default function UserInfo() {
       "state_changed",
       (snapshot) => {
         setIsLoding(true);
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         setPercentege(progress);
-        switch (snapshot.state) {
-          case "paused":
-            // console.log('Upload is paused');
-            break;
-          case "running":
-            // console.log('Upload is running');
-            break;
-        }
       },
       (error) => {
         console.error(error);
         toast.error("حدث خطأ أثناء تحميل الصورة رجاءا حاول مرة أخرى");
       },
       () => {
-        toast.success("تم تحميل الصورة بنجاح");
+        toast.success("تم تحديث صورتك الشخصية بنجاح");
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           setFormData((prevData) => {
             return {
@@ -134,11 +131,12 @@ export default function UserInfo() {
       const userData = getIsEmailUser() ? emailUserData : phoneUseData;
       await setDoc(doc(db, "users", uid), userData);
       setCurrentUser(userData);
+      setIsPhoneUserVerified(true);
       toast.success("تم تحديث البيانات ");
       setTimeout(() => {
         navigate("/user");
         setIsLoding(false);
-      }, 2000);
+      }, 2400);
     } catch (error) {
       setIsLoding(false);
       console.error(error);
@@ -187,6 +185,12 @@ export default function UserInfo() {
     }else if(formData.displayName.length < 2){
       toast.error("الإسم يجب أن يكون أكثر من حرفين");
       return false
+    }else if(password.length === 0){
+      toast.info('تساعدنا كلمة المرور على حماية حسابك',{
+        theme:'colored'
+      })
+      PasswordInputRef.current.focus()
+      return false
     }
     toast.error("كلمة المرور يجب أن تكون أكثر من 4 أحرف");
     return false
@@ -224,14 +228,20 @@ export default function UserInfo() {
   const isValideEmail = (email) => {
     const validEmail = allUsers.find((user) => user.email === email);
     if (validEmail) {
-      toast.error("البريد الإلكتروني مستخدم من قبل");
+      toast.error("البريد الإلكتروني مستخدم  بالفعل");
       return false;
     }
     return true;
   };
 
+  let count = 0;
+
   useEffect(() => {
     getAllUsers();
+    if(!getIsEmailUser() && !setIsPhoneUserVerified() && count === 0) {
+      count++
+      toast.warning('الرجاء ضغض على التالي للمتابعة');
+    }
   }, []);
 
   return (
@@ -318,6 +328,7 @@ export default function UserInfo() {
               name="password"
               onChange={(e) => setPassword(e.target.value)}
               value={password}
+              ref={PasswordInputRef}
             />
           </div>
         )}
@@ -331,12 +342,12 @@ export default function UserInfo() {
           pauseOnFocusLoss
           draggable
           pauseOnHover
-          theme="colored"
+          theme="light"
           limit={2}
         />
         <div className="btnes">
           <button
-            className="send"
+            className="send btn-p"
             disabled={isLoading || (precentage !== null && precentage <= 99)}
           >
             التالي
