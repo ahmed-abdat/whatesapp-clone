@@ -20,12 +20,10 @@ function App() {
    // get curentUser
    const getCurrentUser = useUser(state => state.getCurrentUser)
 
-   const user = getCurrentUser()
-
-
   const RequireAuth = ({ children }) => {
-    return user  ? children : <Navigate to={"/welcoome"} />;
+    return getCurrentUser()  ? children : <Navigate to={"/welcoome"} />;
   };
+
   return (
     <Router>
       <Routes>

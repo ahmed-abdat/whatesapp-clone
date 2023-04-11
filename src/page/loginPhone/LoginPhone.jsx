@@ -3,6 +3,7 @@ import "./loginPhone.css";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useUser from "../../store/useUser";
+import { useEffect } from "react";
 
 export default function LoginPhone() {
    // get current user
@@ -12,6 +13,9 @@ export default function LoginPhone() {
 
   // sete the phoneUserVerified
   const setIsPhoneUserVerified = useUser((state) => state.setIsPhoneUserVerified);
+
+  // get isEmailUser
+  const getIsEmailUser = useUser(state => state.getIsEmailUser)
 
   // state
   const [password, setPassword] = useState("");
@@ -53,6 +57,13 @@ export default function LoginPhone() {
     // clear the current user
     setCurrentUser(null);
   };
+
+  // if the user is phone user 
+  useEffect(()=> {
+    if(getIsEmailUser() && getCurrentUser()){
+      navigate('/user')
+    }
+  },[])
 
 
 

@@ -9,6 +9,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   FacebookAuthProvider,
+  onAuthStateChanged,
 } from "firebase/auth";
 import {
   collection,
@@ -154,7 +155,6 @@ export default function SignUp() {
       .then((result) => {
         const user = result.user;
         getGoogleUser(user.uid);
-        setCurrentUser(user);
         toast.success("تم تسجيل الدخول بنجاح");
         setIsEmailUser(true);
       })
@@ -174,7 +174,6 @@ export default function SignUp() {
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
-        setCurrentUser(user);
         toast.success("تم تسجيل الدخول بنجاح");
         getGoogleUser(user.uid);
       })
@@ -200,6 +199,18 @@ export default function SignUp() {
     } else {
       getPhoneUsers();
     }
+  }, []);
+
+  // on auth state change
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUser(user);
+      } else {
+        setCurrentUser(null);
+      }
+    });
+    return unsubscribe;
   }, []);
 
   // save the user in firestore

@@ -3,6 +3,7 @@ import { auth } from "../config/firebase";
 import useUser from "../store/useUser";
 import useSignUp from "../store/useSignUp";
 import { useEffect } from "react";
+import {signOut} from 'firebase/auth'
 
 export default function User() {
   // get current user
@@ -30,11 +31,15 @@ export default function User() {
   const setPhones = useSignUp((state) => state.setPhones);
 
   // signout user
-  const signOut = () => {
-    setCurrentUser(null);
-    setIsPhoneUserVerified(false);
-    setIsEmailUser(false);
-    setPhones("");
+  const signOutes = () => {
+    // signout the user
+    signOut(auth).then(() => {
+      setCurrentUser(null)
+      console.log('signout succesfully');
+    }).catch((error) => {
+      console.log(error.message);
+    });
+    localStorage.clear()
     navigate("/welcoome");
   };
 
@@ -70,7 +75,7 @@ export default function User() {
         }}
       />
       <button
-        onClick={signOut}
+        onClick={signOutes}
         style={{
           padding: "0.5rem 1.2rem",
           borderRadius: "0.3rem",
