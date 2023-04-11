@@ -62,10 +62,10 @@ export default function LoginPhone() {
       <form onSubmit={handleSubmit}>
         <div className="header">
           <div className="img image d-f">
-            <img src={getCurrentUser().photoURL ? getCurrentUser().photoURL : 'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png'} alt="avatar" />
+            <img src={getCurrentUser()?.photoURL ? getCurrentUser().photoURL : 'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png'} alt="avatar" />
           </div>
           <div className="info">
-            <h3>{getCurrentUser().displayName}</h3>
+            <h3>{getCurrentUser()?.displayName}</h3>
           </div>
         </div>
         {/* password for user phone */}

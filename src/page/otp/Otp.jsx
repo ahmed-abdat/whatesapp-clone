@@ -93,8 +93,10 @@ export default function Otp({}) {
         theme: "light",
         });
     }
-    if(!getIsEmailUser() && getIsPhoneUserVerified()){
+    if(getIsPhoneUserVerified()){
       navigate('/user')
+    }else {
+      navigate('/signUp')
     }
   }, []);
 
