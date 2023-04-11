@@ -42,11 +42,11 @@ export default function User() {
   useEffect(() => {
     if (!user) {
       navigate("/signUp");
-    }else if(!getIsPhoneUserVerified()){
+    }else if(!getIsEmailUser() && !getIsPhoneUserVerified()){
       navigate("/signUp");
     }
   }, [user]);
-
+  
   return (
     // show the user data
     <div className="signup--container">
