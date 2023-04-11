@@ -44,8 +44,6 @@ export default function User() {
       navigate("/signUp");
     }else if(!getIsPhoneUserVerified()){
       navigate("/signUp");
-    }else {
-      // console.log(getIsEmailUser() , getIsPhoneUserVerified());
     }
   }, [user]);
 

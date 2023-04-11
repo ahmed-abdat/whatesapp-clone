@@ -21,7 +21,7 @@ export default function UserInfo() {
   // state
   const [allUsers, setAllUsers] = useState([]);
   const [file, setFile] = useState(null);
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState(user?.password || "");
 
   const [formData, setFormData] = useState({
     email: getIsEmailUser() ? user?.email : "",
@@ -240,13 +240,11 @@ export default function UserInfo() {
   let count = 0;
 
   useEffect(() => {
-    if(!getIsEmailUser() && !getIsPhoneUserVerified()) {
-      // count++
-      // toast.warning('الرجاء ضغض على التالي للمتابعة');
+    if(!getIsEmailUser() && !getIsPhoneUserVerified() && count === 0) {
+      count++
+      toast.warning('الرجاء ضغض على التالي للمتابعة');
       navigate('/signUp')
     }else {
-      console.log(getIsPhoneUserVerified());
-      // console.log(s);
       getAllUsers();
 
     }

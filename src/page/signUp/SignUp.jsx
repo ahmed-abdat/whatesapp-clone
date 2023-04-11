@@ -198,7 +198,6 @@ export default function SignUp() {
         navigate("/user");
       }, 500);
     } else {
-      console.log("no user");
       getPhoneUsers();
     }
   }, []);
