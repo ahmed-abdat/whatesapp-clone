@@ -27,7 +27,7 @@ const useUser = create((set , get) => ({
     localStorage.setItem("isPhoneUserVerified", JSON.stringify(boolean));
   },
   getIsPhoneUserVerified : ()=> {
-    const savedIsPhoneUserVerified = localStorage.getItem('isPhoneUserVerified') === undefined ? false : JSON.parse(localStorage.getItem('isPhoneUserVerified'))
+    const savedIsPhoneUserVerified = (localStorage.getItem('isPhoneUserVerified') === 'undefined') ? false : JSON.parse(localStorage.getItem('isPhoneUserVerified'))
     return savedIsPhoneUserVerified
   },
 }));

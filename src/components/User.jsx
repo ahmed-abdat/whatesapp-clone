@@ -42,8 +42,10 @@ export default function User() {
   useEffect(() => {
     if (!user) {
       navigate("/signUp");
-    }else if(getIsEmailUser() === false && getIsPhoneUserVerified() === false){
+    }else if(!getIsPhoneUserVerified()){
       navigate("/signUp");
+    }else {
+      // console.log(getIsEmailUser() , getIsPhoneUserVerified());
     }
   }, [user]);
 

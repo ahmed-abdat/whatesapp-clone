@@ -189,15 +189,16 @@ export default function SignUp() {
   };
 
   useEffect(() => {
-    if (getIsPhoneUserVerified() === true && getIsEmailUser() === false) {
+    if (getIsPhoneUserVerified()) {
       setTimeout(() => {
-          navigate("/user");
-        }, 500);
-      } else if (getIsEmailUser()) {
-        setTimeout(() => {
-          navigate("/user");
-        }, 500);
-      } else {
+        navigate("/user");
+      }, 500);
+    } else if (getIsEmailUser()) {
+      setTimeout(() => {
+        navigate("/user");
+      }, 500);
+    } else {
+      console.log("no user");
       getPhoneUsers();
     }
   }, []);

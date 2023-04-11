@@ -46,6 +46,9 @@ export default function UserInfo() {
   // set phoneuserVerified
   const setIsPhoneUserVerified = useUser((state) => state.setIsPhoneUserVerified);
 
+  // get phoneuserVerified
+  const getIsPhoneUserVerified = useUser((state) => state.getIsPhoneUserVerified);
+
   // update the photo img in firebase
   const uploadTheImageFile = () => {
     // unique image name
@@ -237,10 +240,15 @@ export default function UserInfo() {
   let count = 0;
 
   useEffect(() => {
-    getAllUsers();
-    if(!getIsEmailUser() && !setIsPhoneUserVerified() && count === 0) {
-      count++
-      toast.warning('الرجاء ضغض على التالي للمتابعة');
+    if(!getIsEmailUser() && !getIsPhoneUserVerified()) {
+      // count++
+      // toast.warning('الرجاء ضغض على التالي للمتابعة');
+      navigate('/signUp')
+    }else {
+      console.log(getIsPhoneUserVerified());
+      // console.log(s);
+      getAllUsers();
+
     }
   }, []);
 
