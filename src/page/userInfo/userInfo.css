@@ -34,11 +34,11 @@
 }
 
 .userInfo form .img img {
-  width: 7rem;
+  width: 7.5rem;
   object-fit: cover;
   border-radius: 50%;
   max-width: 100%;
-  height: 7rem;
+  height: 7.5rem;
 }
 
 .userInfo form {

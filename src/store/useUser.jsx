@@ -17,6 +17,7 @@ const useUser = create((set , get) => ({
   setIsEmailUser : (boolean) => {
     set(() => ({ isEmailUser : boolean }));
     localStorage.setItem("isEmailUser", JSON.stringify(boolean));
+    
   },
   getIsEmailUser : ()=> {
     const savedIsEmailUser = JSON.parse(localStorage.getItem('isEmailUser'))

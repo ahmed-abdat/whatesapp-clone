@@ -67,7 +67,6 @@ export default function UserInfo() {
         toast.error("حدث خطأ أثناء تحميل الصورة رجاءا حاول مرة أخرى");
       },
       () => {
-        toast.success("تم تحديث صورتك الشخصية بنجاح");
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           setFormData((prevData) => {
             return {
@@ -135,11 +134,11 @@ export default function UserInfo() {
       await setDoc(doc(db, "users", uid), userData);
       setCurrentUser(userData);
       setIsPhoneUserVerified(true);
-      toast.success("تم تحديث البيانات ");
+      toast.success("تم تحديث الملف الشخصي ");
       setTimeout(() => {
         navigate("/user");
         setIsLoding(false);
-      }, 2400);
+      }, 2500);
     } catch (error) {
       setIsLoding(false);
       console.error(error);
@@ -257,7 +256,7 @@ export default function UserInfo() {
           <h2> المعلومات الشخصية </h2>
           <p>
             الرجاء إدخال معلوماتك و تحديد صورتك الشخصية - الإسم
-            {!getIsEmailUser() && "و كلمة السر"} إلزامي
+            {!getIsEmailUser() && " و كلمة السر "} إلزامي
           </p>
         </div>
         {/* upload image file */}
