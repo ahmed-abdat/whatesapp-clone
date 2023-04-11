@@ -4,21 +4,25 @@ import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useUser from "../../store/useUser";
 import { useEffect } from "react";
+import { BsFillEyeFill, BsFillEyeSlashFill } from "react-icons/bs";
 
 export default function LoginPhone() {
-   // get current user
-   const getCurrentUser = useUser((state) => state.getCurrentUser);
+  // get current user
+  const getCurrentUser = useUser((state) => state.getCurrentUser);
   //  set current user
   const setCurrentUser = useUser((state) => state.setCurrentUser);
 
   // sete the phoneUserVerified
-  const setIsPhoneUserVerified = useUser((state) => state.setIsPhoneUserVerified);
+  const setIsPhoneUserVerified = useUser(
+    (state) => state.setIsPhoneUserVerified
+  );
 
   // get isEmailUser
-  const getIsEmailUser = useUser(state => state.getIsEmailUser)
+  const getIsEmailUser = useUser((state) => state.getIsEmailUser);
 
   // state
   const [password, setPassword] = useState("");
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   // navigate
   const navigate = useNavigate();
@@ -31,20 +35,20 @@ export default function LoginPhone() {
     e.preventDefault();
     // check if password is correct
     if (password === getCurrentUser().password) {
-      setIsPhoneUserVerified(true)
+      setIsPhoneUserVerified(true);
       // navigate to home page
-      toast.success("مرحبا بعودتك ",{
+      toast.success("مرحبا بعودتك ", {
         autoClose: 1300,
       });
       setTimeout(() => {
         navigate("/user");
       }, 2000);
-    } else if(password === ""){
-      setIsPhoneUserVerified(false)
+    } else if (password === "") {
+      setIsPhoneUserVerified(false);
       toast.error("أدخل كلمة السر");
       passwordInputRef.current.focus();
-      } else {
-      setIsPhoneUserVerified(false)
+    } else {
+      setIsPhoneUserVerified(false);
       // show error message
       toast.error("كلمة السر غير صحيحة");
     }
@@ -58,22 +62,26 @@ export default function LoginPhone() {
     setCurrentUser(null);
   };
 
-  // if the user is phone user 
-  useEffect(()=> {
-    if(getIsEmailUser() && getCurrentUser()){
-      navigate('/user')
+  // if the user is phone user
+  useEffect(() => {
+    if (getIsEmailUser() && getCurrentUser()) {
+      navigate("/user");
     }
-  },[])
-
-
-
+  }, []);
 
   return (
     <div className="userInfo dr-ar">
       <form onSubmit={handleSubmit}>
         <div className="header">
           <div className="img image d-f">
-            <img src={getCurrentUser()?.photoURL ? getCurrentUser().photoURL : 'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png'} alt="avatar" />
+            <img
+              src={
+                getCurrentUser()?.photoURL
+                  ? getCurrentUser().photoURL
+                  : "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
+              }
+              alt="avatar"
+            />
           </div>
           <div className="info">
             <h3>{getCurrentUser()?.displayName}</h3>
@@ -82,14 +90,28 @@ export default function LoginPhone() {
         {/* password for user phone */}
         <div className="input phone">
           <input
-            type="text"
+          type={isPasswordVisible ? "text" : "password"}
             placeholder="أدخل كلمة السر هنا"
             name="password"
             id="password"
             onChange={(e) => setPassword(e.target.value)}
             value={password}
             ref={passwordInputRef}
+
           />
+          {/* <BsFillEyeSlashFill className="close-eye" />
+          <BsFillEyeFill className="open-eye" /> */}
+          {isPasswordVisible ? (
+            <BsFillEyeFill
+              className="open-eye"
+              onClick={() => setIsPasswordVisible(false)}
+            />
+          ) : (
+            <BsFillEyeSlashFill
+              className="close-eye"
+              onClick={() => setIsPasswordVisible(true)}
+            />
+          )}
         </div>
         <ToastContainer
           position="top-center"
@@ -105,7 +127,10 @@ export default function LoginPhone() {
           limit={2}
         />
         <div className="btnes">
-          <button type="button" className="btn cancel" onClick={handelCancel}> إلغاء </button>
+          <button type="button" className="btn cancel" onClick={handelCancel}>
+            {" "}
+            إلغاء{" "}
+          </button>
           <button className="send">تسجيل الدخول</button>
         </div>
       </form>

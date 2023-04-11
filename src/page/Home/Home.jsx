@@ -5,10 +5,10 @@ import NavBar from "../../components/NavBar";
 export default function Home() {
 
   return (
-    <>
-      <Link to="/welcoome">Login</Link>
-      {/* <NavBar /> */}
+    <main className="main--container">
       <Outlet />
-    </>
+
+
+    </main>
   );
 }
