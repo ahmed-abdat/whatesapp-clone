@@ -18,6 +18,7 @@ import {
   getDocs,
   doc,
   getDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -205,6 +206,12 @@ export default function SignUp() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
+        // update the online statues 
+        updateDoc(doc(db, "users", user.uid), {
+          isOnline: true,
+        }).catch((error) => {
+          console.error("Error updating document: ", error.message);
+        });
         setCurrentUser(user);
       } else {
         setCurrentUser(null);

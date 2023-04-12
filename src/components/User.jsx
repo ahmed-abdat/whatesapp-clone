@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { auth } from "../config/firebase";
+import { auth, db } from "../config/firebase";
 import useUser from "../store/useUser";
 import useSignUp from "../store/useSignUp";
 import { useEffect } from "react";
 import {signOut} from 'firebase/auth'
+import './styles/userProfile.css'
+import { doc, updateDoc } from "firebase/firestore";
 
 export default function User() {
   // get current user
@@ -33,6 +35,14 @@ export default function User() {
   // signout user
   const signOutes = () => {
     // signout the user
+    // update the isOnline property to false
+    console.log(getCurrentUser());
+    updateDoc(doc(db, "users", getCurrentUser().uid), {
+      isOnline : false
+    }).catch((error) => {
+      console.log(error.message);
+    });
+
     signOut(auth).then(() => {
       setCurrentUser(null)
       console.log('signout succesfully');
@@ -55,17 +65,16 @@ export default function User() {
   return (
     // show the user data
     <div className="signup--container">
-      <h1>user</h1>
-      <p>{user?.phoneNumber}</p>
-      <p>{user?.email}</p>
-      <p>{user?.uid}</p>
-      <p>{user?.displayName}</p>
+    <div className="user-profile">
+    <h1>user</h1>
+      <div className="image">
       <img
+      className="avatar"
         src={
           user?.photoURL ||
           "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
         }
-        alt=""
+        alt="avatar"
         style={{
           width: "10rem",
           height: "10rem",
@@ -74,6 +83,13 @@ export default function User() {
           padding: "1.5rem",
         }}
       />
+      <div className="online-statue">
+      </div>
+      </div>
+      <p>{user?.displayName}</p>
+      {user?.email && <p>{user?.email}</p>}
+      <p>{user?.phoneNumber}</p>
+      <p>online : {user?.isOnline ? 'true' : 'false'}</p>
       <button
         onClick={signOutes}
         style={{
@@ -87,6 +103,7 @@ export default function User() {
       >
         sig out
       </button>
+    </div>
     </div>
   );
 }
