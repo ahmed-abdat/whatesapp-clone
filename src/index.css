@@ -23,6 +23,8 @@
   --whatsapp-color-light : #25d366;
   --whatsapp-color : #179652;
   --whatsapp-color-dark : #077139;
+  --app-background : #eae6df;
+  --app-background-deeper : #d1d7db;
 
   /* trasition */
   --tran-02: all 0.2s ease;
@@ -39,8 +41,8 @@
 }
 
 body {
-  font-family: 'Amiri' , sans-serif;
-  background-color: var(--main-bgc);
+  font-family: Segoe UI,Helvetica Neue,Helvetica,Lucida Grande,Arial,Ubuntu,Cantarell,Fira Sans,sans-serif , 'Amiri';
+  background-image: linear-gradient(180deg,var(--app-background),var(--app-background-deeper));
 
 }
 
