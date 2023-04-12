@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { ToastContainer, toast } from "react-toastify";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes, uploadBytesResumable } from "firebase/storage";
 import { storage } from "../../config/firebase";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -22,6 +22,7 @@ export default function UserInfo() {
   const [allUsers, setAllUsers] = useState([]);
   const [file, setFile] = useState(null);
   const [password, setPassword] = useState(user?.password || "");
+  const [imageFullPath , setImageFullPath] = useState(null)
 
   const [formData, setFormData] = useState({
     email: getIsEmailUser() ? user?.email : "",
@@ -50,11 +51,12 @@ export default function UserInfo() {
   const getIsPhoneUserVerified = useUser((state) => state.getIsPhoneUserVerified);
 
   // update the photo img in firebase
-  const uploadTheImageFile = () => {
+  const uploadTheImageFile = async () => {
     // unique image name
     const imageName = new Date().getTime() + file.name;
-    const storageRef = ref(storage, imageName);
-    const uploadTask = uploadBytesResumable(storageRef, file);
+    const storageRef = ref(storage, `profile/${imageName}`);
+    const uploadTask = await uploadBytes(storageRef, file);
+    setImageFullPath(uploadTask.ref.fu)
     uploadTask.on(
       "state_changed",
       (snapshot) => {
@@ -79,6 +81,7 @@ export default function UserInfo() {
       }
     );
   };
+
 
   // handelUploadUserInfo
   const handelUploadUserInfo = (downloadURL) => {
@@ -120,6 +123,7 @@ export default function UserInfo() {
         photoURL: photoURL ? photoURL : null,
         isOnline: true,
         password,
+        photoPath : imageFullPath
       };
       const emailUserData = {
         email,
@@ -128,6 +132,7 @@ export default function UserInfo() {
         uid,
         isOnline: true,
         photoURL: photoURL ? photoURL : null,
+        photoPath : imageFullPath
       };
 
       const userData = getIsEmailUser() ? emailUserData : phoneUseData;
