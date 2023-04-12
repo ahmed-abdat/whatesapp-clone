@@ -85,7 +85,7 @@ export default function User() {
         <img
           className="avatar"
           src={
-            currentUsere?.photoURL ||
+            currentUsere?.photoURL ??
             "/default-avatar.svg"
           }
           alt="avatar"
