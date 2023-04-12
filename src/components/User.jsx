@@ -80,22 +80,22 @@ export default function User() {
     <div className="signup--container">
     {
       currentUsere ? (  <div className="user-profile">
-      <h1>user</h1>
+      <h2>الملف الشخصي</h2>
       <div className="image">
         <img
           className="avatar"
           src={
             currentUsere?.photoURL ||
-            "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
+            "/default-avatar.svg"
           }
           alt="avatar"
         />
         {currentUsere?.isOnline && <div className="online-statue"></div>}
       </div>
-      <p>{currentUsere?.displayName}</p>
-      {currentUsere?.email && <p>{user?.email}</p>}
-      <p>{currentUsere?.phoneNumber}</p>
-      <p>{currentUsere?.isOnline ? 'online' : 'offline'}</p>
+      <p> {currentUsere?.displayName} : الإسم </p>
+      {currentUsere?.email && <p>{user?.email} : البريد الإلكتروني </p>}
+      {currentUsere?.phoneNumber && <p>{user?.phoneNumber} : رقم الهاتف</p>}
+      <p>{currentUsere?.isOnline ? 'online' : 'offline'} : الحالة</p>
       <button
         onClick={signOutes}
         style={{
@@ -107,7 +107,7 @@ export default function User() {
         }}
         className="btn"
       >
-        sig out
+        تسجيل الخروج
       </button>
     </div>) : <Loading />
     }

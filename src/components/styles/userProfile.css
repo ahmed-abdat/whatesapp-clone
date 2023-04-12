@@ -1,6 +1,7 @@
 
 
 .user-profile {
+    font-family: 'Vazirmatn', sans-serif;
     padding-top: 1.5rem;
     padding-bottom: 2rem;
     padding-inline: 1.2rem;
@@ -49,4 +50,16 @@
     -ms-border-radius: 50%;
     -o-border-radius: 50%;
     background-color: #07bc0c;
+}
+
+.user-profile p , button {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-block: 0.4rem;
+}
+
+.user-profile h2 {
+    color: var(--text-color);
+    font-size: 1.3rem;
 }

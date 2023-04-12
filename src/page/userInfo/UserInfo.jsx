@@ -5,7 +5,12 @@ import { useEffect, useRef, useState } from "react";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { ToastContainer, toast } from "react-toastify";
-import { getDownloadURL, ref, uploadBytes, uploadBytesResumable } from "firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
 import { storage } from "../../config/firebase";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -22,7 +27,6 @@ export default function UserInfo() {
   const [allUsers, setAllUsers] = useState([]);
   const [file, setFile] = useState(null);
   const [password, setPassword] = useState(user?.password || "");
-  const [imageFullPath , setImageFullPath] = useState(null)
 
   const [formData, setFormData] = useState({
     email: getIsEmailUser() ? user?.email : "",
@@ -34,8 +38,6 @@ export default function UserInfo() {
     getIsEmailUser() ? "" : user?.phoneNumber
   );
 
-    // password input
-  const PasswordInputRef = useRef(null);
 
   const [precentage, setPercentege] = useState(null);
 
@@ -45,23 +47,40 @@ export default function UserInfo() {
   const navigate = useNavigate();
 
   // set phoneuserVerified
-  const setIsPhoneUserVerified = useUser((state) => state.setIsPhoneUserVerified);
+  const setIsPhoneUserVerified = useUser(
+    (state) => state.setIsPhoneUserVerified
+  );
 
   // get phoneuserVerified
-  const getIsPhoneUserVerified = useUser((state) => state.getIsPhoneUserVerified);
+  const getIsPhoneUserVerified = useUser(
+    (state) => state.getIsPhoneUserVerified
+  );
 
   // update the photo img in firebase
-  const uploadTheImageFile = async () => {
+  const uploadTheImageFile = () => {
     // unique image name
     const imageName = new Date().getTime() + file.name;
     const storageRef = ref(storage, `profile/${imageName}`);
-    const uploadTask = await uploadBytes(storageRef, file);
-    setImageFullPath(uploadTask.ref.fu)
+    if (getCurrentUser().photoPath) {
+      const oldRef = ref(storage, getCurrentUser().photoPath);
+      // Delete the file
+      deleteObject(oldRef)
+        .then(() => {
+        console.log('fill deleted successfully');
+          // File deleted successfully
+        })
+        .catch((error) => {
+          console.log('error deleting ');
+          // Uh-oh, an error occurred!
+        });
+    }
+    const uploadTask = uploadBytesResumable(storageRef, file);
     uploadTask.on(
       "state_changed",
       (snapshot) => {
         setIsLoding(true);
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         setPercentege(progress);
       },
       (error) => {
@@ -76,15 +95,15 @@ export default function UserInfo() {
               photoURL: downloadURL,
             };
           });
-          handelUploadUserInfo(downloadURL);
+          const fullPath = uploadTask.snapshot.ref.fullPath;
+          handelUploadUserInfo(downloadURL, fullPath);
         });
       }
     );
   };
 
-
   // handelUploadUserInfo
-  const handelUploadUserInfo = (downloadURL) => {
+  const handelUploadUserInfo = (downloadURL, fullPath) => {
     const updatedUserData = {
       ...user,
       ...formData,
@@ -92,12 +111,13 @@ export default function UserInfo() {
       file,
       photoURL: downloadURL ? downloadURL : user.photoURL,
       password,
+      imageFullPath: fullPath,
     };
-    const required = getIsEmailUser() ? isUserEmailRequiredment() : isUserPhoneRequiredment()
-    required &&  updateUser(updatedUserData);
+    const required = getIsEmailUser()
+      ? isUserEmailRequiredment()
+      : isUserPhoneRequiredment();
+    required && updateUser(updatedUserData);
   };
-
- 
 
   // handelChangeData
   const handelChangeData = (e) => {
@@ -113,9 +133,16 @@ export default function UserInfo() {
   // update the user Data
   const updateUser = async (user) => {
     setIsLoding(true);
-
     try {
-      const { displayName, email, uid, phoneNumber, photoURL, password } = user;
+      const {
+        displayName,
+        email,
+        uid,
+        phoneNumber,
+        photoURL,
+        password,
+        imageFullPath,
+      } = user;
       const phoneUseData = {
         displayName,
         uid,
@@ -123,7 +150,7 @@ export default function UserInfo() {
         photoURL: photoURL ? photoURL : null,
         isOnline: true,
         password,
-        photoPath : imageFullPath
+        photoPath: imageFullPath ? imageFullPath : null,
       };
       const emailUserData = {
         email,
@@ -132,7 +159,7 @@ export default function UserInfo() {
         uid,
         isOnline: true,
         photoURL: photoURL ? photoURL : null,
-        photoPath : imageFullPath
+        photoPath: imageFullPath ? imageFullPath : null,
       };
 
       const userData = getIsEmailUser() ? emailUserData : phoneUseData;
@@ -178,7 +205,9 @@ export default function UserInfo() {
       : isValideEmail(formData.email);
 
     if (valid && file) {
-      const required = getIsEmailUser() ? isUserEmailRequiredment() : isUserPhoneRequiredment()
+      const required = getIsEmailUser()
+        ? isUserEmailRequiredment()
+        : isUserPhoneRequiredment();
       required && uploadTheImageFile();
     } else if (valid) {
       handelUploadUserInfo();
@@ -186,31 +215,30 @@ export default function UserInfo() {
   };
 
   // handel validate user phone
-  const isUserPhoneRequiredment = ()=> {
-    if( password.length >= 4 && formData.displayName.length >= 2){
-      return true
-    }else if(formData.displayName.length < 2){
+  const isUserPhoneRequiredment = () => {
+    if (password.length >= 4 && formData.displayName.length >= 2) {
+      return true;
+    } else if (formData.displayName.length < 2) {
       toast.error("الإسم يجب أن يكون أكثر من حرفين");
-      return false
-    }else if(password.length === 0){
-      toast.info('تساعدنا كلمة المرور على حماية حسابك',{
-        theme:'colored'
-      })
-      PasswordInputRef.current.focus()
-      return false
+      return false;
+    } else if (password.length === 0) {
+      toast.info("تساعدنا كلمة المرور على حماية حسابك", {
+        theme: "colored",
+      });
+      return false;
     }
     toast.error("كلمة المرور يجب أن تكون أكثر من 4 أحرف");
-    return false
-  }
+    return false;
+  };
 
   // handel validate user email
-  const isUserEmailRequiredment = ()=> {
-    if(formData.displayName.length >= 2 ){
-      return true
+  const isUserEmailRequiredment = () => {
+    if (formData.displayName.length >= 2) {
+      return true;
     }
     toast.error("الإسم يجب أن يكون أكثر من حرفين");
-    return false
-  }
+    return false;
+  };
   // get all user from firebase
   const getAllUsers = async () => {
     const users = [];
@@ -241,16 +269,13 @@ export default function UserInfo() {
     return true;
   };
 
-  let count = 0;
 
   useEffect(() => {
-    if(!getIsEmailUser() && !getIsPhoneUserVerified() && count === 0) {
-      count++
-      toast.warning('الرجاء ضغض على التالي للمتابعة');
-      navigate('/signUp')
-    }else {
+    if (!getIsEmailUser() && !getIsPhoneUserVerified()) {
+      toast.warning("الرجاء ضغض على التالي للمتابعة");
+      navigate("/signUp");
+    } else {
       getAllUsers();
-
     }
   }, []);
 
@@ -266,29 +291,28 @@ export default function UserInfo() {
         </div>
         {/* upload image file */}
         <div className="d-f">
-        <label htmlFor="file-input" style={{borderRadius : '50%'}}> 
-          <div className="img d-f">
-            <img
-              src={
-                file
-                  ? URL.createObjectURL(file)
-                  : user?.photoURL
-                  ? user.photoURL
-                  : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"
-              }
-              alt="a user image"
-            />
-          </div>
-        </label>
-        <input
-          onChange={handleFile}
-          id="file-input"
-          type="file"
-          name="file"
-          style={{ display: "none" }}
-        />
+          <label htmlFor="file-input" style={{ borderRadius: "50%" }}>
+            <div className="img d-f">
+              <img
+                src={
+                  file
+                    ? URL.createObjectURL(file)
+                    : user?.photoURL
+                    ? user.photoURL
+                    : "/default-avatar.svg"
+                }
+                alt="a user image"
+              />
+            </div>
+          </label>
+          <input
+            onChange={handleFile}
+            id="file-input"
+            type="file"
+            name="file"
+            style={{ display: "none" }}
+          />
         </div>
-        
 
         <div className="input name">
           <label htmlFor="name"> إسم المستخدم </label>
@@ -338,7 +362,6 @@ export default function UserInfo() {
               name="password"
               onChange={(e) => setPassword(e.target.value)}
               value={password}
-              ref={PasswordInputRef}
             />
           </div>
         )}

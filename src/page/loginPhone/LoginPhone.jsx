@@ -48,12 +48,12 @@ export default function LoginPhone() {
       setIsPhoneUserVerified(true);
       // navigate to home page
       toast.success("مرحبا بعودتك ", {
-        autoClose: 1300,
+        autoClose: 1000,
       });
       setTimeout(() => {
         navigate("/user");
         setIsLoading(false)
-      }, 2000);
+      }, 1600);
     } else if (password === "") {
       setIsPhoneUserVerified(false);
       setIsLoading(false)

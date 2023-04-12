@@ -18,12 +18,15 @@ export default function Otp({}) {
 
   const navigate = useNavigate();
 
-  // get isEmailUser
-  const getIsEmailUser = useUser((state) => state.getIsEmailUser);
   // get phoneUserVerified
   const getIsPhoneUserVerified = useUser((state) => state.getIsPhoneUserVerified);
   // set phoneUserVerified
   const setIsPhoneUserVerified = useUser((state) => state.setIsPhoneUserVerified);
+  // get the current user
+  const getCurrentUser = useUser((state) => state.getCurrentUser);
+  // get isemailuser
+  const getIsEmailUser = useUser((state) => state.getIsEmailUser);
+  
 
 
   const handleOtpChange = (element, index) => {
@@ -93,10 +96,12 @@ export default function Otp({}) {
         theme: "light",
         });
     }
-    if(getIsPhoneUserVerified()){
+    if(!getIsEmailUser() && getCurrentUser() ){
+      console.log('user phone is verified');
       navigate('/user')
-    }else {
-      navigate('/signUp')
+    }else if(getIsEmailUser() && getCurrentUser() ){
+      console.log('user email is verified');
+      navigate('/user')
     }
   }, []);
 
