@@ -1,7 +1,7 @@
 
 import useUser from "../store/useUser";
 import HomePageHeader from "./HomePageHeader";
-import HomepageSearch from "./HomepageSearch";
+import HomepageSearch from "./HomePageSearch";
 
 export default function HomePage() {
   // get the current user

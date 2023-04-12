@@ -73,6 +73,10 @@
   gap: 0 1rem;
 }
 
+.main--container .search--container svg {
+  cursor: pointer;
+}
+
 .search--container > svg {
   font-size: 1.3rem;
 }
