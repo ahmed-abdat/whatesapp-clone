@@ -8,8 +8,9 @@
   overflow: hidden;
 }
 
-/* home page */
+/* ? home page */
 .main--container .home-page {
+  position: relative;
   background: #fff;
   display: flex;
   flex-direction: column;
@@ -56,9 +57,59 @@
   cursor: pointer;
 }
 
+/* ? home page search */
+.main--container .search--container {
+  box-shadow: 0 2px 3px #0b141a14;
+  padding: 0 12px;
+  position: relative;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  height: 49px;
+  position: absolute;
+  left: 0;
+  top: 65px;
+  width: 100%;
+  gap: 0 1rem;
+}
+
+.search--container > svg {
+  font-size: 1.3rem;
+}
+
+.main--container .search--container .input {
+  width: 100%;
+  background: #f0f2f5;
+  display: flex;
+  align-items: center;
+  border-radius: 0.5rem;
+  gap: 0 1rem;
+  padding-inline: 0.5rem;
+}
+
+.main--container .search--container .input input {
+  font-size: 1rem;
+  font-weight: 400;
+  padding: 0.5rem;
+  outline: none;
+  border: none;
+  width: 100%;
+  height: 100%;
+  background-color: inherit;
+}
+
+.main--container .search--container .input svg:first-child {
+  color: #54656f;
+  font-size: 1.4rem;
+}
+.main--container .search--container .input svg:last-child {
+  color: #8696a0;
+  font-size: 2rem;
+}
+
 /* ? chat page */
 .main--container .chat-page {
-    box-shadow: -5px 5px 10px 1px rgba(0, 0, 0, 0.1);
+  box-shadow: -10px 10px 10px 2px rgba(0, 0, 0, 0.1);
   position: relative;
   width: 100%;
   height: 100%;
@@ -72,12 +123,12 @@
 }
 
 .main--container .chat-page::after {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 6px;
-    background: #25D367;
-    bottom: 0;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 6px;
+  background: #25d367;
+  bottom: 0;
 }
 
 .main--container .chat-page h3 {
@@ -114,14 +165,16 @@
 }
 
 .main--container .chat-page .info svg {
-    font-size: 0.7rem;
-    margin: 0.3rem 0 0 0.3rem;
+  font-size: 0.7rem;
+  margin: 0.3rem 0 0 0.3rem;
 }
 
 .main--container .chat-page .info p {
-    font-weight: 400;
-    font-size: 0.9rem;
+  font-weight: 400;
+  font-size: 0.9rem;
 }
+
+/* ? media query */
 
 @media screen and (min-width: 1440px) {
   .large-screen {
