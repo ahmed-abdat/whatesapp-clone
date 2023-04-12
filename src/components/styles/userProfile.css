@@ -59,6 +59,10 @@
     margin-block: 0.4rem;
 }
 
+.user-profile p.email {
+    font-size: 1rem;
+}
+
 .user-profile h2 {
     color: var(--text-color);
     font-size: 1.3rem;

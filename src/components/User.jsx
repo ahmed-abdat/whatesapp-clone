@@ -93,7 +93,7 @@ export default function User() {
         {currentUsere?.isOnline && <div className="online-statue"></div>}
       </div>
       <p> {currentUsere?.displayName} : الإسم </p>
-      {currentUsere?.email && <p>{user?.email} : البريد الإلكتروني </p>}
+      {currentUsere?.email && <p className="email">{user?.email} : البريد الإلكتروني </p>}
       {currentUsere?.phoneNumber && <p>{user?.phoneNumber} : رقم الهاتف</p>}
       <p>{currentUsere?.isOnline ? 'online' : 'offline'} : الحالة</p>
       <button
