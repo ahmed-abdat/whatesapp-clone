@@ -3,9 +3,11 @@ import { auth, db } from "../config/firebase";
 import useUser from "../store/useUser";
 import useSignUp from "../store/useSignUp";
 import { useEffect } from "react";
-import {signOut} from 'firebase/auth'
-import './styles/userProfile.css'
-import { doc, updateDoc } from "firebase/firestore";
+import { signOut } from "firebase/auth";
+import "./styles/userProfile.css";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { useState } from "react";
+import Loading from './Loading'
 
 export default function User() {
   // get current user
@@ -16,18 +18,16 @@ export default function User() {
 
   const navigate = useNavigate();
 
-  // set phoneuserVerified
-  const setIsPhoneUserVerified = useUser(
-    (state) => state.setIsPhoneUserVerified
-  );
+  // state current user
+  const [currentUsere, setCurrentUsere] = useState(null);
 
-  // set isEmailUser
-  const setIsEmailUser = useUser((state) => state.setIsEmailUser);
   // get isEmailUser
   const getIsEmailUser = useUser((state) => state.getIsEmailUser);
 
   // get phoneUserVerified
-  const getIsPhoneUserVerified = useUser((state) => state.getIsPhoneUserVerified);
+  const getIsPhoneUserVerified = useUser(
+    (state) => state.getIsPhoneUserVerified
+  );
 
   // set phone
   const setPhones = useSignUp((state) => state.setPhones);
@@ -36,20 +36,23 @@ export default function User() {
   const signOutes = () => {
     // signout the user
     // update the isOnline property to false
-    console.log(getCurrentUser());
-    updateDoc(doc(db, "users", getCurrentUser().uid), {
-      isOnline : false
-    }).catch((error) => {
-      console.log(error.message);
-    });
+    if(getCurrentUser()?.isOnline){
+      updateDoc(doc(db, "users", getCurrentUser().uid), {
+        isOnline: false,
+      }).catch((error) => {
+        console.log(error.message);
+      });
+    }
 
-    signOut(auth).then(() => {
-      setCurrentUser(null)
-      console.log('signout succesfully');
-    }).catch((error) => {
-      console.log(error.message);
-    });
-    localStorage.clear()
+    signOut(auth)
+      .then(() => {
+        setCurrentUser(null);
+        console.log("signout succesfully");
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+    localStorage.clear();
     navigate("/welcoome");
   };
 
@@ -57,39 +60,42 @@ export default function User() {
   useEffect(() => {
     if (!user) {
       navigate("/signUp");
-    }else if(!getIsEmailUser() && !getIsPhoneUserVerified()){
+    } else if (!getIsEmailUser() && !getIsPhoneUserVerified()) {
       navigate("/signUp");
     }
   }, [user]);
-  
+
+  // get the current user snapchot 
+  useEffect(() => {
+    if (user) {
+      const unsub = onSnapshot(doc(db, "users", user.uid), (doc) => {
+        setCurrentUsere(doc.data());
+       setCurrentUser(doc.data());
+      });
+      return unsub;
+    }
+  }, []);
   return (
     // show the user data
     <div className="signup--container">
-    <div className="user-profile">
-    <h1>user</h1>
+    {
+      currentUsere ? (  <div className="user-profile">
+      <h1>user</h1>
       <div className="image">
-      <img
-      className="avatar"
-        src={
-          user?.photoURL ||
-          "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
-        }
-        alt="avatar"
-        style={{
-          width: "10rem",
-          height: "10rem",
-          borderRadius: "50%",
-          objectFit: "cover",
-          padding: "1.5rem",
-        }}
-      />
-      <div className="online-statue">
+        <img
+          className="avatar"
+          src={
+            currentUsere?.photoURL ||
+            "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
+          }
+          alt="avatar"
+        />
+        {currentUsere?.isOnline && <div className="online-statue"></div>}
       </div>
-      </div>
-      <p>{user?.displayName}</p>
-      {user?.email && <p>{user?.email}</p>}
-      <p>{user?.phoneNumber}</p>
-      <p>online : {user?.isOnline ? 'true' : 'false'}</p>
+      <p>{currentUsere?.displayName}</p>
+      {currentUsere?.email && <p>{user?.email}</p>}
+      <p>{currentUsere?.phoneNumber}</p>
+      <p>{currentUsere?.isOnline ? 'online' : 'offline'}</p>
       <button
         onClick={signOutes}
         style={{
@@ -103,7 +109,8 @@ export default function User() {
       >
         sig out
       </button>
-    </div>
+    </div>) : <Loading />
+    }
     </div>
   );
 }

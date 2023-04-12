@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import useUser from "../../store/useUser";
 import { useEffect } from "react";
 import { BsFillEyeFill, BsFillEyeSlashFill } from "react-icons/bs";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../config/firebase";
 
 export default function LoginPhone() {
   // get current user
@@ -23,6 +25,7 @@ export default function LoginPhone() {
   // state
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // navigate
   const navigate = useNavigate();
@@ -33,8 +36,15 @@ export default function LoginPhone() {
   // handle submit
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsLoading(true);
     // check if password is correct
     if (password === getCurrentUser().password) {
+      // update the user isOnline status
+      updateDoc(doc(db, "users", getCurrentUser().uid), {
+        isOnline : true
+      }).catch((error) => {
+        console.log(error.message);
+      });
       setIsPhoneUserVerified(true);
       // navigate to home page
       toast.success("مرحبا بعودتك ", {
@@ -42,12 +52,15 @@ export default function LoginPhone() {
       });
       setTimeout(() => {
         navigate("/user");
+        setIsLoading(false)
       }, 2000);
     } else if (password === "") {
       setIsPhoneUserVerified(false);
+      setIsLoading(false)
       toast.error("أدخل كلمة السر");
       passwordInputRef.current.focus();
     } else {
+      setIsLoading(false)
       setIsPhoneUserVerified(false);
       // show error message
       toast.error("كلمة السر غير صحيحة");
@@ -127,11 +140,10 @@ export default function LoginPhone() {
           limit={2}
         />
         <div className="btnes">
-          <button type="button" className="btn cancel" onClick={handelCancel}>
-            {" "}
-            إلغاء{" "}
+          <button type="button" className="btn cancel" onClick={handelCancel} disabled={isLoading}>
+            إلغاء
           </button>
-          <button className="send">تسجيل الدخول</button>
+          <button className="send" disabled={isLoading}>تسجيل الدخول</button>
         </div>
       </form>
     </div>

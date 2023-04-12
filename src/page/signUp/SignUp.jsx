@@ -189,11 +189,11 @@ export default function SignUp() {
   };
 
   useEffect(() => {
-    if (getIsPhoneUserVerified()) {
+    if (getIsPhoneUserVerified() && getCurrentUser()) {
       setTimeout(() => {
         navigate("/user");
       }, 500);
-    } else if (getIsEmailUser()) {
+    } else if (getIsEmailUser() && getCurrentUser()) {
       setTimeout(() => {
         navigate("/user");
       }, 500);

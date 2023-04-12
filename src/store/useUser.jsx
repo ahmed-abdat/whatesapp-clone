@@ -9,9 +9,9 @@ const useUser = create((set , get) => ({
     set(() => ({ currentUser: user }));
   },
   getCurrentUser : ()=> {
-    const savedUser = JSON.parse(localStorage.getItem('currentUser'))
+    const savedUser = localStorage.getItem('currentUser') === 'undefined' ? null : JSON.parse(localStorage.getItem('currentUser'))
     const curentUser = get().currentUser
-    const user = curentUser?.email ? curentUser : savedUser
+    const user = curentUser?.displayName ? curentUser : savedUser
     return user
   },
   setIsEmailUser : (boolean) => {
