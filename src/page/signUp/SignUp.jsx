@@ -228,7 +228,7 @@ export default function SignUp() {
         <h3>أدخل رقم هاتفك</h3>
         <p>سيحتاج واتساب إلى التحقق من رقم هاتفك.</p>
       </div>
-      <form className="signup-form" onSubmit={handelSumbit}>
+      <form className="signup-form dr-en" onSubmit={handelSumbit}>
         <PhoneInput
           className={`phoneInput`}
           value={phone}
@@ -247,7 +247,7 @@ export default function SignUp() {
       <div id="sign-in-recaptcha"></div>
       <div className="or">أو</div>
       {/* signup from google */}
-      <div className="signup-google" onClick={signInWithGoogle}>
+      <div className="signup-google dr-en" onClick={signInWithGoogle}>
         <img
           className="google-icon"
           src="https://img.icons8.com/color/24/000000/google-logo.png"
@@ -255,7 +255,7 @@ export default function SignUp() {
         <p className="btn google-btn dr-ar"> تسجيل الدخول عن طريق Google</p>
       </div>
       {/* signup with facebook */}
-      <div className="signup-facebook" onClick={signInWithFacebook}>
+      <div className="signup-facebook dr-en" onClick={signInWithFacebook}>
         <img
           className="facebook-icon"
           src="https://upload.wikimedia.org/wikipedia/en/thumb/0/04/Facebook_f_logo_%282021%29.svg/768px-Facebook_f_logo_%282021%29.svg.png?20210818083032"
