@@ -118,7 +118,7 @@ export default function UserInfo() {
         uid,
         phoneNumber,
         photoURL: photoURL ? photoURL : null,
-        isOnline: false,
+        isOnline: true,
         password,
       };
       const emailUserData = {
@@ -126,7 +126,7 @@ export default function UserInfo() {
         displayName,
         phoneNumber: phoneNumber ? phoneNumber : null,
         uid,
-        isOnline: false,
+        isOnline: true,
         photoURL: photoURL ? photoURL : null,
       };
 
