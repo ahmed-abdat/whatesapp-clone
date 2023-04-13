@@ -14,6 +14,7 @@
   background: #fff;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .main--container .home-page header {
@@ -65,7 +66,7 @@
   z-index: 100;
   display: flex;
   align-items: center;
-  height: 49px;
+  height:60px;
   position: absolute;
   left: 0;
   top: 65px;
@@ -109,6 +110,69 @@
 .main--container .search--container .input svg:last-child {
   color: #8696a0;
   font-size: 2rem;
+}
+
+/* ? home page users profile */
+
+.main--container .user-profile--container {
+  margin-top: 62px;
+  margin-left: 0.3rem;
+}
+
+
+.main--container .user-profile--container .user--profile {
+  width: 100%;
+  padding-block: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid #e9edef;
+}
+
+.main--container .user-profile--container .user--profile--info {
+  padding-left: 15px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem 0;
+}
+
+
+.main--container .user-profile--container .user--profile--info .info {
+  font-family:  Segoe UI,Helvetica Neue,Helvetica,Lucida Grande,Arial,Ubuntu,Cantarell,Fira Sans,sans-serif , 'Amiri';
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.main--container .user-profile--container .user--profile--info .info h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #111B21;
+}
+
+.main--container .user-profile--container .user--profile--info .info p {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: #667781;
+}
+
+.main--container .user--profile--info .last-message {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #667781;
+}
+
+.main--container .user-profile--container img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  padding: 0.2rem;
+}
+
+.main--container .user--profile:hover {
+  background-color: #f0f2f5;
 }
 
 /* ? chat page */

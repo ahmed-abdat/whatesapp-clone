@@ -1,69 +1,148 @@
-
-
 .user-profile {
-    font-family: 'Vazirmatn', sans-serif;
-    padding-top: 1.5rem;
-    padding-bottom: 2rem;
-    padding-inline: 1.2rem;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: #fff;
+    z-index: 200;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 1rem 0;
-    background-color: #fff;
-    width: 450px;
-    min-width: 250px;
-    max-width: 96%;
-    max-height: calc(100vh - 0px);
-    box-shadow: 0 10px 40px -20px rgba(0, 0, 0, 0.5);
-    border-radius: 6px;
-    -webkit-border-radius: 6px;
-    -moz-border-radius: 6px;
-    -ms-border-radius: 6px;
-    -o-border-radius: 6px;
+    gap: 1rem;
+    font-family: Segoe UI, Helvetica Neue, Helvetica, Lucida Grande, Arial, Ubuntu,    Cantarell, Fira Sans, sans-serif, "Amiri";
+    transform: translateX(-100%);
+    transition: all 0.5s ease-in-out;
+    -webkit-transform: translateX(-100%);
+    -moz-transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
+    -o-transform: translateX(-100%);
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -ms-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
 }
 
-/* online statue */
-.user-profile .image {
-    position: relative;
-}
-.user-profile .image img {
-    padding: 0 ;
-    width: 7rem ;
-    height: 7rem ;
-    border-radius: 50%;
-    object-fit: cover;
-    -webkit-border-radius: 50%;
-    -moz-border-radius: 50%;
-    -ms-border-radius: 50%;
-    -o-border-radius: 50%;
-}
-.user-profile .image .online-statue {
-    outline: 4px solid #fff;
-    position: absolute;
-    bottom: 20px;
-    right: 8px;
-    width: 13px;
-    height: 13px;
-    border-radius: 50%;
-    -webkit-border-radius: 50%;
-    -moz-border-radius: 50%;
-    -ms-border-radius: 50%;
-    -o-border-radius: 50%;
-    background-color: #07bc0c;
+.user-profile.profile-show {
+    transform: translateX(0);
+    -webkit-transform: translateX(0);
+    -moz-transform: translateX(0);
+    -ms-transform: translateX(0);
+    -o-transform: translateX(0);
+
 }
 
-.user-profile p , button {
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: var(--text-color);
-    margin-block: 0.4rem;
+.user-profile header.user-profile--header {
+  color: #fff;
+  background-color: #008069;
+  padding-inline: 1rem;
+  height: 50px;
+  display: flex;
+  align-items: center;
 }
 
-.user-profile p.email {
-    font-size: 1rem;
+.user-profile .user-profile--header .header--text {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0 2rem;
 }
 
-.user-profile h2 {
-    color: var(--text-color);
-    font-size: 1.3rem;
+.user-profile .user-profile--header .header--text h4 {
+  font-size: 1.2rem;
+  font-weight: 400;
+}
+
+.user-profile .user-profile--header .header--text svg {
+  cursor: pointer;
+  font-size: 1.2em;
+  transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+}
+
+.user-profile .profile--image .img{
+  position: relative;
+}
+
+.user-profile .profile--image img {
+  cursor: pointer;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-profile .profile--image .icon {
+  cursor: pointer;
+  position: absolute;
+  left: 0.5rem;
+  bottom: 1rem;
+  padding: 0.5rem;
+  background: #179652;
+  border-radius: 50%;
+  text-align: center;
+
+}
+
+.user-profile .profile--image .img svg {
+  color: #fff;
+  font-size: 1.3rem;
+}
+
+.user-profile .profile--name,
+.user-profile .profile--status,
+.user-profile .profile--phone-number {
+  padding: 1.2rem;
+  border-bottom: 1px solid #eae6df;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 50px 1fr 40px;
+}
+
+/* phone number exception */
+.user-profile .profile--phone-number {
+    grid-template-columns: 50px 1fr;
+}
+
+.user-profile .profile--name {
+  grid-template-rows: 45px 45px;
+}
+
+.user-profile .icon svg {
+  font-size: 1.5rem;
+  color: #8696a0;
+}
+
+.user-profile  .display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem 0;
+}
+
+.user-profile  .display h3 {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: #8696a0;
+}
+
+.user-profile  .display h4 {
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+
+.user-profile .profile--name .info {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #667781;
+}
+
+.user-profile  .edit {
+    cursor: pointer;
+  text-align: center;
+}
+
+.user-profile .edit svg {
+  font-size: 1.2rem;
+  color: var(--whatsapp-color);
 }

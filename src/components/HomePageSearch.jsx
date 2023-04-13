@@ -18,7 +18,7 @@ export default function HomepageSearch() {
     if (value.length > 0) {
       setIsSearch(true);
     } else {
-      setIsArabic(false)
+      setIsArabic(true)
       setIsSearch(false);
     }
   };
@@ -27,6 +27,7 @@ export default function HomepageSearch() {
   const handelClear = () => {
     setSearch("");
     setIsSearch(false);
+    setIsArabic(true)
   };
   return (
     <div className="search--container">
