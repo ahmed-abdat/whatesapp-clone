@@ -46,19 +46,7 @@ const setIsOnline = useUsers((state) => state.setIsOnline);
       if(getCurrentUser()?.isOnline){
         updateDoc(doc(db, "users", getCurrentUser().uid), {
           isOnline: true,
-          latestSean : serverTimestamp()
-        }).catch((error) => {
-          console.log(error.message);
-        });
-      }
-    }
-    
-    function handleOffline() {
-      if(getCurrentUser()?.isOnline){
-        console.log(`${getCurrentUser().displayName} is offline`);
-        updateDoc(doc(db, "users", getCurrentUser().uid), {
-          isOnline: false,
-          latestSean : serverTimestamp()
+          latestSean : new Date().getTime()
         }).catch((error) => {
           console.log(error.message);
         });
@@ -66,11 +54,9 @@ const setIsOnline = useUsers((state) => state.setIsOnline);
     }
 
     window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
 
     return () => {
       window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
     };
   }, []);
 

@@ -3,6 +3,7 @@ import moment from "moment/moment";
 export default function HomePageUser({displayName , photoURL , isOnline , latestSean}) {
 
   console.log(`name ${displayName} isOnline : ${isOnline}`)
+  console.log(`latestSean ${latestSean}`);
   const timeAgo = moment(latestSean).fromNow(); 
   return (
     <div className="user--profile">
@@ -12,7 +13,7 @@ export default function HomePageUser({displayName , photoURL , isOnline , latest
       <div className="user--profile--info">
         <div className="info">
             <h3>{displayName || 'Ahmed Abdat'}</h3>
-            <p>{timeAgo}</p>
+            <p>{isOnline ? 'متصل الآن' : timeAgo}</p>
         </div>
         <div className="last-message">
             <p>أهلا بك في واتساب</p>

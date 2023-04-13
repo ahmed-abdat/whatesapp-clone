@@ -151,7 +151,7 @@ export default function UserInfo() {
         isOnline: true,
         password,
         photoPath: imageFullPath ? imageFullPath : null,
-        latestSean : serverTimestamp(),
+        latestSean : new Date().getTime()
       };
       const emailUserData = {
         email,
@@ -161,7 +161,7 @@ export default function UserInfo() {
         isOnline: true,
         photoURL: photoURL ? photoURL : null,
         photoPath: imageFullPath ? imageFullPath : null,
-        latestSean : serverTimestamp(),
+        latestSean : new Date().getTime()
       };
 
       const userData = getIsEmailUser() ? emailUserData : phoneUseData;

@@ -36,14 +36,7 @@ export default function User() {
   const signOutes = () => {
     // signout the user
     // update the isOnline property to false
-    if(getCurrentUser()?.isOnline){
-      updateDoc(doc(db, "users", getCurrentUser().uid), {
-        isOnline: false,
-        latestSean : serverTimestamp()
-      }).catch((error) => {
-        console.log(error.message);
-      });
-    }
+      updateIsOnline()
 
     signOut(auth)
       .then(() => {
@@ -56,6 +49,21 @@ export default function User() {
     localStorage.clear();
     navigate("/welcoome");
   };
+
+  // update the user isOnline property to true
+  const updateIsOnline = async () => {
+   try {
+    const docRef = doc(db, "users", getCurrentUser().uid);
+    await updateDoc(docRef, {
+      isOnline: false,
+      latestSean :  new Date().getTime()
+    })
+    console.log("Document successfully updated!");
+   } catch (error) {
+    console.log(error.message);
+   }
+  }
+
 
   // return to sign up page if ther no user
   useEffect(() => {
