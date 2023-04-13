@@ -37,7 +37,6 @@
   display: flex;
   width: 45px;
   height: 45px;
-  border: 1px solid #f0f2f5;
   object-fit: cover;
   border-radius: 50%;
   -webkit-border-radius: 50%;

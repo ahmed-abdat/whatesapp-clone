@@ -168,7 +168,7 @@ export default function UserInfo() {
       setIsPhoneUserVerified(true);
       toast.success("تم تحديث الملف الشخصي ");
       setTimeout(() => {
-        navigate("/user");
+        navigate("/");
         setIsLoding(false);
       }, 2500);
     } catch (error) {

@@ -138,7 +138,7 @@ export default function SignUp() {
       if (docSnap.exists()) {
         setCurrentUser(docSnap.data());
         setTimeout(() => {
-          navigate("/user");
+          navigate("/");
         }, 2000);
       } else {
         navigate("/userInfo");
@@ -191,7 +191,7 @@ export default function SignUp() {
   useEffect(() => {
     if (getIsPhoneUserVerified() && getCurrentUser()) {
       setTimeout(() => {
-        navigate("/user");
+        navigate("/");
       }, 500);
     } else if (getIsEmailUser() && getCurrentUser()) {
       setTimeout(() => {

@@ -51,7 +51,7 @@ export default function LoginPhone() {
         autoClose: 1000,
       });
       setTimeout(() => {
-        navigate("/user");
+        navigate("/");
         setIsLoading(false)
       }, 1600);
     } else if (password === "") {
@@ -78,7 +78,7 @@ export default function LoginPhone() {
   // if the user is phone user
   useEffect(() => {
     if (getIsEmailUser() && getCurrentUser()) {
-      navigate("/user");
+      navigate("/");
     }
   }, []);
 
