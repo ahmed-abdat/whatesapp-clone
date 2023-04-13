@@ -19,6 +19,10 @@ export default function UserProfile() {
   // is profile show
   const isProfileShow = useUsers((state) => state.isProfileShow);
 
+  // is name Arabic
+  const isArabic = /[\u0600-\u06FF]/.test(user.displayName);
+
+
   // handle back
   const handelBack = () => {
     setIsProfileShow(false)
@@ -38,19 +42,21 @@ export default function UserProfile() {
           src={user.photoURL ? user.photoURL : "default-avatar.svg"}
           alt="avatar"
         />
-        <div className="icon">
+        <div className="icon d-f">
         <BsCamera />
         </div>
         </div>
       </div>
-      {/* profile name */}
+      {/* profile info */}
+      <div className="profile--info">
+         {/* profile name */}
       <div className="profile--name">
         <div className="icon">
           <CgProfile />
         </div>
         <div className="display">
-          <h3>الإسم</h3>
-          <h4>ahmed</h4>
+          <h3 >الإسم</h3>
+          <h4 className={isArabic ? 'f-ar' : 'f-en'}>{user.displayName}</h4>
         </div>
         <div className="edit">
           <HiPencil />
@@ -68,7 +74,7 @@ export default function UserProfile() {
         </div>
           <div className="display">
             <h3>الحالة</h3>
-            <h4>متصل</h4>
+            <h4>مالايدرك كله لايترك جله</h4>
           </div>
         <div className="edit">
           <HiPencil />
@@ -81,8 +87,9 @@ export default function UserProfile() {
         </div>
           <div className="display">
             <h3>رقم الهاتف</h3>
-          <p className="info">+222 37928327</p>
+          <p className="info dr-en">+222 37928327</p>
           </div>
+        </div>
         </div>
     </div>
   );

@@ -70,6 +70,14 @@ body {
   -o-transition: all 0.3s ease-in-out;
 }
 
+.f-ar {
+  font-family: "Vazirmatn" , 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.f-en {
+  font-family: "Roboto" , 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 .dr-en {
   direction : ltr;
 }
