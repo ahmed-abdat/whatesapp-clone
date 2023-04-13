@@ -13,11 +13,7 @@ export default function HomePageHeader() {
   // is popup show 
   const [isPopupShow , setIsPopupShow] = useState(false)
 
-  // handel popup
-  const handelPopup = () => {
-    setIsPopupShow(true)
-    
-  };
+
 
  
   return (
@@ -31,7 +27,7 @@ export default function HomePageHeader() {
               </div>
               <div className="header--icons">
                 <BsFillChatRightTextFill  />
-                <HiDotsVertical onClick={handelPopup} />
+                <HiDotsVertical onClick={()=> setIsPopupShow(prev => !prev)} className={isPopupShow ? 'bg--hover' : ''} />
               </div>
             </div>
           </header>
