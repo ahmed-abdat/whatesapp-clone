@@ -106,7 +106,7 @@ export default function Otp({}) {
   }, []);
 
   return (
-    <div className="signup--container">
+    <div className="signup--container dr-en">
       <div className="otp">
         <h1>التحقق من رقمك</h1>
         <p className="d-f">
