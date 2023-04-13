@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import "./userInfo.css";
 import useUser from "../../store/useUser";
 import { useEffect, useRef, useState } from "react";
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { collection, doc, getDocs, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { ToastContainer, toast } from "react-toastify";
 import {
@@ -151,6 +151,7 @@ export default function UserInfo() {
         isOnline: true,
         password,
         photoPath: imageFullPath ? imageFullPath : null,
+        latestSean : serverTimestamp(),
       };
       const emailUserData = {
         email,
@@ -160,6 +161,7 @@ export default function UserInfo() {
         isOnline: true,
         photoURL: photoURL ? photoURL : null,
         photoPath: imageFullPath ? imageFullPath : null,
+        latestSean : serverTimestamp(),
       };
 
       const userData = getIsEmailUser() ? emailUserData : phoneUseData;

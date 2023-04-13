@@ -65,7 +65,7 @@
   z-index: 100;
   display: flex;
   align-items: center;
-  height:60px;
+  height: 60px;
   position: absolute;
   left: 0;
   top: 65px;
@@ -115,9 +115,15 @@
 
 .main--container .user-profile--container {
   margin-top: 62px;
-  margin-left: 0.3rem;
+  padding-left: 0.3rem;
+  overflow-y: auto;
 }
 
+
+
+/* .main--container .user-profile--container::-webkit-scrollbar-track, ::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.1);
+}  */
 
 .main--container .user-profile--container .user--profile {
   width: 100%;
@@ -137,9 +143,9 @@
   gap: 0.4rem 0;
 }
 
-
 .main--container .user-profile--container .user--profile--info .info {
-  font-family:  Segoe UI,Helvetica Neue,Helvetica,Lucida Grande,Arial,Ubuntu,Cantarell,Fira Sans,sans-serif , 'Amiri';
+  font-family: Segoe UI, Helvetica Neue, Helvetica, Lucida Grande, Arial, Ubuntu,
+    Cantarell, Fira Sans, sans-serif, "Amiri";
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -147,7 +153,7 @@
 .main--container .user-profile--container .user--profile--info .info h3 {
   font-size: 1rem;
   font-weight: 500;
-  color: #111B21;
+  color: #111b21;
 }
 
 .main--container .user-profile--container .user--profile--info .info p {

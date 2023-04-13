@@ -23,7 +23,7 @@ export default function HomePage() {
       <HomepageSearch />
       {/* home page user profile */}
       <div className="user-profile--container">
-      {allUsers.length && allUsers.map((user) => (
+      {allUsers.length > 0 && allUsers.map((user) => (
         <HomePageUser key={user.id} {...user} />
       ))}
       </div>

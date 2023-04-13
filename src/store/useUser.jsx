@@ -30,7 +30,7 @@ const useUser = create((set , get) => ({
   getIsPhoneUserVerified : ()=> {
     const savedIsPhoneUserVerified = (localStorage.getItem('isPhoneUserVerified') === 'undefined') ? false : JSON.parse(localStorage.getItem('isPhoneUserVerified'))
     return savedIsPhoneUserVerified
-  },
+  }
 }));
 
 export default useUser;

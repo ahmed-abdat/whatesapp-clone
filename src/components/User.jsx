@@ -5,7 +5,7 @@ import useSignUp from "../store/useSignUp";
 import { useEffect } from "react";
 import { signOut } from "firebase/auth";
 import "./styles/userProfile.css";
-import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { doc, onSnapshot, serverTimestamp, updateDoc } from "firebase/firestore";
 import { useState } from "react";
 import Loading from './Loading'
 
@@ -39,6 +39,7 @@ export default function User() {
     if(getCurrentUser()?.isOnline){
       updateDoc(doc(db, "users", getCurrentUser().uid), {
         isOnline: false,
+        latestSean : serverTimestamp()
       }).catch((error) => {
         console.log(error.message);
       });

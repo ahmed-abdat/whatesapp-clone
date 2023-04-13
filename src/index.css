@@ -89,6 +89,20 @@ body {
 
 }
 
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f6f6f6;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+
 .btn[disabled] , button[disabled]{
   opacity: 0.5;
   pointer-events: none;
