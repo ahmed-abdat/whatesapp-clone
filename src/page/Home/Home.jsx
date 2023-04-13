@@ -43,14 +43,12 @@ const setIsOnline = useUsers((state) => state.setIsOnline);
    useEffect(() => {
     function handleOnline() {
       console.log(`${getCurrentUser().displayName} is online`);
-      if(getCurrentUser()?.isOnline){
         updateDoc(doc(db, "users", getCurrentUser().uid), {
           isOnline: true,
           latestSean : new Date().getTime()
         }).catch((error) => {
           console.log(error.message);
         });
-      }
     }
 
     window.addEventListener("online", handleOnline);
