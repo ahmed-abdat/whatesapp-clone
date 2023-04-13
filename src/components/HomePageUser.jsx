@@ -1,10 +1,9 @@
-import moment from "moment/moment";
+import moment from 'moment';
+import 'moment/locale/ar'; 
 
 export default function HomePageUser({displayName , photoURL , isOnline , latestSean}) {
-
-  console.log(`name ${displayName} isOnline : ${isOnline}`)
-  console.log(`latestSean ${latestSean}`);
-  const timeAgo = moment(latestSean).fromNow(); 
+  moment.locale('ar'); // Set the locale to Arabic
+  const timeAgo = moment(latestSean).fromNow("DD/MM/YYYY, hh:mm A"); 
   return (
     <div className="user--profile">
       <div className="user--profile--img">

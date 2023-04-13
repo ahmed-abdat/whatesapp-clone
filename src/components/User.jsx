@@ -36,18 +36,22 @@ export default function User() {
   const signOutes = () => {
     // signout the user
     // update the isOnline property to false
+     if(currentUsere?.isOnline){
       updateIsOnline()
+     }
 
-    signOut(auth)
-      .then(() => {
-        setCurrentUser(null);
-        console.log("signout succesfully");
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
-    localStorage.clear();
+     setTimeout(() => {
+     signOut(auth)
+       .then(() => {
+         setCurrentUser(null);
+         console.log("signout succesfully");
+       })
+       .catch((error) => {
+         console.log(error.message);
+       });
+     localStorage.clear();
     navigate("/welcoome");
+   }, 1200);
   };
 
   // update the user isOnline property to true

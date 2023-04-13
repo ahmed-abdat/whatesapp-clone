@@ -136,6 +136,8 @@ export default function SignUp() {
       const docRef = doc(db, "users", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
+        console.log(docSnap.id);
+        updateIsOnline(id)
         setCurrentUser(docSnap.data());
         setTimeout(() => {
           navigate("/");
@@ -148,6 +150,20 @@ export default function SignUp() {
       console.error(error);
     }
   };
+
+  // update user isOnline to true
+  const updateIsOnline = async (id) => {
+    try {
+     const docRef = doc(db, "users", id);
+     await updateDoc(docRef, {
+       isOnline: true,
+       latestSean :  new Date().getTime()
+     })
+     console.log("Document successfully updated!");
+    } catch (error) {
+     console.log(error.message);
+    }
+   }
 
   // sign up with google
   const signInWithGoogle = () => {
