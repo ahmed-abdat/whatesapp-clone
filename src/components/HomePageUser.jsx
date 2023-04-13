@@ -9,7 +9,7 @@ export default function HomePageUser({ displayName, photoURL, isOnline, latestSe
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeAgo(moment(latestSean).fromNow("DD/MM/YYYY, hh:mm A"));
-    }, 60000); 
+    }, 6000); 
 
     return () => clearInterval(interval);
   }, [latestSean]);
