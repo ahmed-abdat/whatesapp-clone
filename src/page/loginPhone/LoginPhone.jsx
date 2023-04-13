@@ -41,7 +41,8 @@ export default function LoginPhone() {
     if (password === getCurrentUser().password) {
       // update the user isOnline status
       updateDoc(doc(db, "users", getCurrentUser().uid), {
-        isOnline : true
+        isOnline : true,
+        latestSean : new Date().getTime()
       }).catch((error) => {
         console.log(error.message);
       });
