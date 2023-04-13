@@ -15,6 +15,10 @@ import User from "./components/User";
 import useUser from "./store/useUser";
 import UserInfo from "./page/userInfo/UserInfo";
 import LoginPhone from "./page/loginPhone/LoginPhone";
+import moment from "moment";
+import 'moment/locale/ar'; 
+
+moment().locale('ar');
 
 function App() {
    // get curentUser

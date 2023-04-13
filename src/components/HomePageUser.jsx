@@ -1,9 +1,19 @@
 import moment from 'moment';
 import 'moment/locale/ar'; 
+import { useState, useEffect } from 'react';
 
-export default function HomePageUser({displayName , photoURL , isOnline , latestSean}) {
-  moment.locale('ar'); // Set the locale to Arabic
-  const timeAgo = moment(latestSean).fromNow("DD/MM/YYYY, hh:mm A"); 
+export default function HomePageUser({ displayName, photoURL, isOnline, latestSean }) {
+  moment.locale('ar');
+  const [timeAgo, setTimeAgo] = useState(moment(latestSean).fromNow("DD/MM/YYYY, hh:mm A"));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeAgo(moment(latestSean).fromNow("DD/MM/YYYY, hh:mm A"));
+    }, 60000); 
+
+    return () => clearInterval(interval);
+  }, [latestSean]);
+
   return (
     <div className="user--profile">
       <div className="user--profile--img">
