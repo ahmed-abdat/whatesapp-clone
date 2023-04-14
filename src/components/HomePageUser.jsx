@@ -1,21 +1,33 @@
 import moment from 'moment';
 import 'moment/locale/ar'; 
 import { useState, useEffect } from 'react';
+import useSelectedUser from '../store/useSelectedUser';
 
-export default function HomePageUser({ displayName, photoURL, isOnline, latestSean }) {
+export default function HomePageUser({ displayName, photoURL, isOnline, lastSeen }) {
   moment.locale('ar');
-  const [timeAgo, setTimeAgo] = useState(moment(latestSean).fromNow("DD/MM/YYYY, hh:mm A"));
+  const [timeAgo, setTimeAgo] = useState(moment(lastSeen).fromNow("DD/MM/YYYY, hh:mm A"));
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeAgo(moment(latestSean).fromNow("DD/MM/YYYY, hh:mm A"));
-    }, 6000); 
+      setTimeAgo(moment(lastSeen).fromNow("DD/MM/YYYY, hh:mm A"));
+    }, 10000); 
 
     return () => clearInterval(interval);
-  }, [latestSean]);
+  }, [lastSeen]);
+
+  // get the selected user
+  const setSelectedUser = useSelectedUser((state) => state.setSelectedUser);
+  // set is selected user
+  const setIsSelectedUser = useSelectedUser((state) => state.setIsSelectedUser);
+
+  const handelSelectedUser = () => {
+    setSelectedUser({ displayName, photoURL, isOnline, lastSeen })
+    setIsSelectedUser(true);
+  };
+
 
   return (
-    <div className="user--profile">
+    <div className="user--profile" onClick={handelSelectedUser}>
       <div className="user--profile--img">
         <img src={photoURL || '/default-avatar.svg'} alt="user profile" />
       </div>

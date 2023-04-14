@@ -1,0 +1,36 @@
+.popup--container {
+  position: absolute;
+  z-index: 250;
+  background-color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px 0 rgba(11, 20, 26, 0.26),
+    0 2px 10px 0 rgba(11, 20, 26, 0.16);
+  max-width: 340px;
+  color: #54656f;
+  width: 45%;
+  padding-block:  10px;
+  top: 55px;
+  left: 20px;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  -o-border-radius: 6px;
+}
+
+.popup--container ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+
+}
+
+
+.popup--container ul li {
+    cursor: pointer;
+    padding: 0.7rem 1.3rem;
+    width: 100%;
+}
+
+.popup--container ul li:hover {
+    background: #f0f2f5;
+}

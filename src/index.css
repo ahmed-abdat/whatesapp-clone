@@ -70,6 +70,14 @@ body {
   -o-transition: all 0.3s ease-in-out;
 }
 
+.r-180{
+  transform: rotate(180deg);
+}
+
+.hide {
+  display: none;
+}
+
 .f-ar {
   font-family: "Vazirmatn" , 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }

@@ -8,6 +8,9 @@ import { useEffect } from "react";
 import { collection, doc, onSnapshot, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import Loading from '../../components/Loading'
+import useSelectedUser from "../../store/useSelectedUser";
+import ChatPageUser from "../../components/ChatPageUser";
+import { useState } from "react";
 
 
 
@@ -18,12 +21,9 @@ export default function Home() {
    // get all users
  const allUsers = useUsers((state) => state.allUsers);
 
-//  set the isOnline 
-const setIsOnline = useUsers((state) => state.setIsOnline);
-
-
   // get current user
   const getCurrentUser = useUser((state) => state.getCurrentUser);
+
 
    // get all user in firebase except the current user
    useEffect(() => {
@@ -45,7 +45,7 @@ const setIsOnline = useUsers((state) => state.setIsOnline);
       console.log(`${getCurrentUser().displayName} is online`);
         updateDoc(doc(db, "users", getCurrentUser().uid), {
           isOnline: true,
-          latestSean : new Date().getTime()
+          lastSeen : new Date().getTime()
         }).catch((error) => {
           console.log(error.message);
         });
@@ -58,16 +58,26 @@ const setIsOnline = useUsers((state) => state.setIsOnline);
     };
   }, []);
 
+  // selected user
+  const selectedUser = useSelectedUser((state) => state.selectedUser);
+
+
+
+
 
   return (
     <div className="large-screen">
     <div className="green-nav"> </div>
   {
-    allUsers.length ? (  <main className="main--container">
+    allUsers.length > 0 ? (  <main className="main--container">
     {/* home page */}
     <HomePage />
     {/* chat page */}
-    <ChatPage />
+    {
+      selectedUser ? (
+        <ChatPageUser />
+      ) : (<ChatPage />)
+    }
   </main>) : <Loading />
   }
   </div>

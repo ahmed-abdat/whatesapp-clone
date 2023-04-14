@@ -1,11 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../config/firebase";
 import useUser from "../store/useUser";
-import useSignUp from "../store/useSignUp";
 import { useEffect } from "react";
 import { signOut } from "firebase/auth";
 import "./styles/userProfile.css";
-import { doc, onSnapshot, serverTimestamp, updateDoc } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useState } from "react";
 import Loading from './Loading'
 
@@ -29,18 +28,17 @@ export default function User() {
     (state) => state.getIsPhoneUserVerified
   );
 
-  // set phone
-  const setPhones = useSignUp((state) => state.setPhones);
+
 
   // signout user
   const signOutes = () => {
     // signout the user
-    // update the isOnline property to false
-     if(currentUsere?.isOnline){
+     if(getCurrentUser()?.uid){
       updateIsOnline()
      }
 
      setTimeout(() => {
+       localStorage.clear();
      signOut(auth)
        .then(() => {
          setCurrentUser(null);
@@ -49,9 +47,8 @@ export default function User() {
        .catch((error) => {
          console.log(error.message);
        });
-     localStorage.clear();
     navigate("/welcoome");
-   }, 1200);
+   }, 1000);
   };
 
   // update the user isOnline property to true
@@ -60,7 +57,7 @@ export default function User() {
     const docRef = doc(db, "users", getCurrentUser().uid);
     await updateDoc(docRef, {
       isOnline: false,
-      latestSean :  new Date().getTime()
+      lastSeen :  new Date().getTime()
     })
     console.log("Document successfully updated!");
    } catch (error) {
@@ -85,7 +82,7 @@ export default function User() {
         setCurrentUsere(doc.data());
        setCurrentUser(doc.data());
       });
-      return unsub;
+      return ()=> unsub()
     }
   }, []);
   return (

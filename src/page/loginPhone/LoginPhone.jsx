@@ -42,7 +42,7 @@ export default function LoginPhone() {
       // update the user isOnline status
       updateDoc(doc(db, "users", getCurrentUser().uid), {
         isOnline : true,
-        latestSean : new Date().getTime()
+        lastSeen : new Date().getTime()
       }).catch((error) => {
         console.log(error.message);
       });
@@ -81,6 +81,8 @@ export default function LoginPhone() {
     if (getIsEmailUser() && getCurrentUser()) {
       navigate("/");
     }
+
+    setIsPhoneUserVerified(false);
   }, []);
 
   return (

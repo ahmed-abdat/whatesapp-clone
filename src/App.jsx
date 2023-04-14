@@ -24,8 +24,14 @@ function App() {
    // get curentUser
    const getCurrentUser = useUser(state => state.getCurrentUser)
 
+  //  get isPhoneUserVerified
+  const getIsPhoneUserVerified = useUser( state => state.getIsPhoneUserVerified)
+
+  // get isEmailUser
+  const getIsEmailUser = useUser(state => state.getIsEmailUser)
+
   const RequireAuth = ({ children }) => {
-    return getCurrentUser()  ? children : <Navigate to={"/welcoome"} />;
+    return (getCurrentUser() && getIsPhoneUserVerified()) || (getCurrentUser() && getIsEmailUser()) ? children : <Navigate to={"/welcoome"} />;
   };
 
   return (

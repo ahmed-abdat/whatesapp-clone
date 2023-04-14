@@ -136,7 +136,6 @@ export default function SignUp() {
       const docRef = doc(db, "users", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        console.log(docSnap.id);
         updateIsOnline(id)
         setCurrentUser(docSnap.data());
         setTimeout(() => {
@@ -157,7 +156,7 @@ export default function SignUp() {
      const docRef = doc(db, "users", id);
      await updateDoc(docRef, {
        isOnline: true,
-       latestSean :  new Date().getTime()
+       lastSeen :  new Date().getTime()
      })
      console.log("Document successfully updated!");
     } catch (error) {
@@ -204,36 +203,21 @@ export default function SignUp() {
       });
   };
 
-  useEffect(() => {
-    if (getIsPhoneUserVerified() && getCurrentUser()) {
-      setTimeout(() => {
-        navigate("/");
-      }, 500);
-    } else if (getIsEmailUser() && getCurrentUser()) {
-      setTimeout(() => {
-        navigate("/user");
-      }, 500);
-    } else {
-      getPhoneUsers();
-    }
-  }, []);
 
   // on auth state change
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // update the online statues 
-        updateDoc(doc(db, "users", user.uid), {
-          isOnline: true,
-        }).catch((error) => {
-          console.error("Error updating document: ", error.message);
-        });
         setCurrentUser(user);
-      } else {
+        navigate("/")
+      } else if((getCurrentUser() && getIsPhoneUserVerified()) || (getCurrentUser() && getIsEmailUser())){
+          navigate("/");
+      }else {
         setCurrentUser(null);
+        getPhoneUsers();
       }
     });
-    return unsubscribe;
+    return ()=> unsubscribe();
   }, []);
 
   // save the user in firestore
@@ -260,7 +244,7 @@ export default function SignUp() {
           التالي
         </button>
       </form>
-      <div id="sign-in-recaptcha"></div>
+      <div id="sign-in-recaptcha" className="dr-en"></div>
       <div className="or">أو</div>
       {/* signup from google */}
       <div className="signup-google dr-en" onClick={signInWithGoogle}>

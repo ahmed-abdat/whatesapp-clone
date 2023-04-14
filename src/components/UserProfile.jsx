@@ -7,6 +7,7 @@ import { HiPencil } from "react-icons/hi";
 import useUsers from "../store/useUsers";
 import useUser from "../store/useUser";
 import { BsCamera } from "react-icons/bs";
+import Camera from "./svg/Camera";
 
 export default function UserProfile() {
   // get current user
@@ -43,7 +44,7 @@ export default function UserProfile() {
           alt="avatar"
         />
         <div className="icon d-f">
-        <BsCamera />
+        <Camera />
         </div>
         </div>
       </div>
