@@ -41,8 +41,8 @@ export default function LoginPhone() {
     if (password === getCurrentUser().password) {
       // update the user isOnline status
       updateDoc(doc(db, "users", getCurrentUser().uid), {
-        isOnline : true,
-        lastSeen : new Date().getTime()
+        isOnline: true,
+        lastSeen: new Date().getTime(),
       }).catch((error) => {
         console.log(error.message);
       });
@@ -53,15 +53,15 @@ export default function LoginPhone() {
       });
       setTimeout(() => {
         navigate("/");
-        setIsLoading(false)
+        setIsLoading(false);
       }, 1600);
     } else if (password === "") {
       setIsPhoneUserVerified(false);
-      setIsLoading(false)
+      setIsLoading(false);
       toast.error("أدخل كلمة السر");
       passwordInputRef.current.focus();
     } else {
-      setIsLoading(false)
+      setIsLoading(false);
       setIsPhoneUserVerified(false);
       // show error message
       toast.error("كلمة السر غير صحيحة");
@@ -94,7 +94,7 @@ export default function LoginPhone() {
               src={
                 getCurrentUser()?.photoURL
                   ? getCurrentUser().photoURL
-                  : "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
+                  : "/default-avatar.svg"
               }
               alt="avatar"
             />
@@ -106,14 +106,13 @@ export default function LoginPhone() {
         {/* password for user phone */}
         <div className="input phone">
           <input
-          type={isPasswordVisible ? "text" : "password"}
+            type={isPasswordVisible ? "text" : "password"}
             placeholder="أدخل كلمة السر هنا"
             name="password"
             id="password"
             onChange={(e) => setPassword(e.target.value)}
             value={password}
             ref={passwordInputRef}
-
           />
           {isPasswordVisible ? (
             <BsFillEyeFill
@@ -141,10 +140,17 @@ export default function LoginPhone() {
           limit={2}
         />
         <div className="btnes">
-          <button type="button" className="btn cancel" onClick={handelCancel} disabled={isLoading}>
+          <button
+            type="button"
+            className="btn cancel"
+            onClick={handelCancel}
+            disabled={isLoading}
+          >
             إلغاء
           </button>
-          <button className="send" disabled={isLoading}>تسجيل الدخول</button>
+          <button className="send" disabled={isLoading}>
+            تسجيل الدخول
+          </button>
         </div>
       </form>
     </div>
