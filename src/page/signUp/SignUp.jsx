@@ -35,7 +35,6 @@ export default function SignUp() {
 
   // get curentUser
   const getCurrentUser = useUser((state) => state.getCurrentUser);
-  const user = getCurrentUser();
 
   const setIsEmailUser = useUser((state) => state.setIsEmailUser);
 
@@ -209,13 +208,10 @@ export default function SignUp() {
   // on auth state change
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
+      if ((getCurrentUser() && getIsPhoneUserVerified()) || (getCurrentUser() && getIsEmailUser())) {
+        navigate("/");
+      } else if(user){
         setCurrentUser(user);
-        setTimeout(() => {
-          navigate("/");
-        }, 2000);
-      } else if((user && getIsPhoneUserVerified()) || (user && getIsEmailUser())){
-          navigate("/");
       }else {
         setCurrentUser(null);
         getPhoneUsers();
