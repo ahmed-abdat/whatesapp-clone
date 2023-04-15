@@ -8,14 +8,12 @@ import  { lazy, Suspense } from "react";
 import Loading from "./components/Loading";
 import useUser from "./store/useUser";
 import LoginPhone from "./page/loginPhone/LoginPhone";
-
-
+import Welcoome from "./page/welcome/Welcoome";
+import Otp from "./page/otp/Otp";
+import SignUp from "./page/signUp/SignUp";
 
 
 const Home = lazy(() => import("./page/Home/Home"));
-const Welcoome = lazy(() => import("./page/welcome/Welcoome"));
-const Otp = lazy(() => import("./page/otp/Otp"));
-const SignUp = lazy(() => import("./page/signUp/SignUp"));
 const UserInfo = lazy(() => import("./page/userInfo/UserInfo"));
 const NotFound = lazy(() => import("./components/NotFound"));
 
@@ -38,12 +36,12 @@ function App() {
     
       <Routes>
         <Route path="/" element={<RequireAuth><Suspense fallback={<Loading />}><Home /></Suspense></RequireAuth>} />
-        <Route path="/welcoome" element={<Suspense fallback={<Loading />}><Welcoome /></Suspense> } />
-        <Route path="/signUp" element={<Suspense fallback={<Loading />}><SignUp /></Suspense> } />
-        <Route path="/otp" element={<Suspense fallback={<Loading />}><Otp /></Suspense> }  />
+        <Route path="/welcoome" element={<Welcoome />} />
+        <Route path="/signUp" element={<SignUp />} />
+        <Route path="/otp" element={<Otp /> }  />
         <Route path="/userInfo" element={<Suspense fallback={<Loading />}><UserInfo /></Suspense> } />
         <Route path="/login" element={<LoginPhone />} />
-        <Route path="*" element={<Suspense fallback={<Loading />}><NotFound /></Suspense> }  />
+        <Route path="*" element={<NotFound /> }  />
       </Routes>
   </Router>
   );

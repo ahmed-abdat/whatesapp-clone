@@ -1,4 +1,3 @@
-import { ToastContainer, toast } from "react-toastify";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useUser from "../../store/useUser";
@@ -6,6 +5,9 @@ import { useEffect } from "react";
 import { BsFillEyeFill, BsFillEyeSlashFill } from "react-icons/bs";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../userInfo/userInfo.css'
 import "./login.css";
 
 export default function LoginPhone() {
