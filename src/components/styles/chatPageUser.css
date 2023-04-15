@@ -28,7 +28,7 @@
   cursor: pointer;
 }
 
-.chat-page--container .icon {
+.chat-page--container .back .icon {
   display: none;
 }
 
@@ -43,6 +43,7 @@
 
 .chat-page--container header .info {
     flex-grow : 1;
+    cursor: pointer;
   }
 
   .chat-page--container header .info h3 {
@@ -57,7 +58,7 @@
   }
 
   .chat-page--container header .icons {
-    margin-right: 20px;
+    margin-right: 10px;
     color: #54656f;
     display: flex;
     align-items: center;
@@ -80,7 +81,7 @@
     z-index: 1;
     overflow-y: auto;
     height: 100%;
-    max-height: calc(100vh - 125px);
+    max-height: calc(100vh - 126px);
     background-color: #efeae2;
   }
   
@@ -155,7 +156,7 @@
     font-size: 1.2rem;
   }
 
-  .chat-page--container footer .icons svg {
+  .chat-page--container footer svg {
     cursor: pointer;
     color: #54656f;
     font-size: 1.5rem;
@@ -173,7 +174,7 @@
       inset: 0;
       height: 100%;
     }
-    .chat-page--container .icon {
+    .chat-page--container .back .icon {
       display: block;
       margin-left: 5px;
       font-size: 1.3rem;

@@ -26,9 +26,11 @@
 
 
 .popup--container ul li {
-    cursor: pointer;
-    padding: 0.7rem 1.3rem;
-    width: 100%;
+  cursor: pointer;
+  padding: 0.7rem 1rem;
+  width: 100%;
+  color: #667781;
+  font-size: 0.95rem;
 }
 
 .popup--container ul li:hover {

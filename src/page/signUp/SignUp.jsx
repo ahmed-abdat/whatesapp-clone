@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import ar from "react-phone-number-input/locale/ar.json";
@@ -24,7 +24,8 @@ import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
 import useUser from "../../store/useUser";
-import "./SignUp.css";
+
+import './SignUp.css'
 
 export default function SignUp() {
   const [phone, setPhone] = useState("");
@@ -210,7 +211,7 @@ export default function SignUp() {
       if (user) {
         setCurrentUser(user);
         navigate("/")
-      } else if((getCurrentUser() && getIsPhoneUserVerified()) || (getCurrentUser() && getIsEmailUser())){
+      } else if((user && getIsPhoneUserVerified()) || (user && getIsEmailUser())){
           navigate("/");
       }else {
         setCurrentUser(null);

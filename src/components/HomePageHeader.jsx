@@ -2,23 +2,89 @@ import { BsFillChatRightTextFill } from "react-icons/bs";
 import { HiDotsVertical } from "react-icons/hi";
 import useUsers from "../store/useUsers";
 import useUser from "../store/useUser";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import "./styles/HeaderPopup.css";
+import { auth, db } from "../config/firebase";
+import { signOut } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { doc, updateDoc } from "firebase/firestore";
 import useSelectedUser from "../store/useSelectedUser";
-import HomePageHeaderPopup from "./HomePageHeaderPopup";
 
 export default function HomePageHeader() {
-  // get the current user
   const getCurrentUser = useUser((state) => state.getCurrentUser);
-  // set is profile show
   const setIsProfileShow = useUsers((state) => state.setIsProfileShow);
 
-  // is popup show
   const [isPopupShow, setIsPopupShow] = useState(false);
+  const headerIconsRef = useRef(null);
+  const popupContainerRef = useRef(null);
 
-  // set is popup show
-  const setIsHeaderPopupShow = useSelectedUser(
-    (state) => state.setIsHeaderPopupShow
-  );
+  // setIsLogoutLoading
+  const setIsLogoutLoading = useUser((state) => state.setIsLogoutLoading);
+
+  // set is selected user
+  const setIsSelectedUser = useSelectedUser((state) => state.setIsSelectedUser);
+
+  // set selected user
+  const setSelectedUser = useSelectedUser((state) => state.setSelectedUser);
+
+  // navigate
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    function handleOutsideClick(e) {
+      if (
+        headerIconsRef.current &&
+        (headerIconsRef?.current?.contains(e.target) ||
+          popupContainerRef?.current?.contains(e.target))
+      ) {
+        return;
+      }
+      setIsPopupShow(false);
+    }
+
+    document.addEventListener("click", handleOutsideClick);
+    return () => document.removeEventListener("click", handleOutsideClick);
+  }, []);
+
+  // set current user
+  const setCurrentUser = useUser((state) => state.setCurrentUser);
+
+  // handel signout
+  const handelSignout = () => {
+    setIsLogoutLoading(true);
+    // signout the user
+    if (getCurrentUser()?.uid) {
+      updateIsOnline();
+    }
+    setTimeout(() => {
+      setIsSelectedUser(false);
+      setSelectedUser(null);
+      localStorage.clear();
+      signOut(auth)
+        .then(() => {
+          setCurrentUser(null);
+          console.log("signout succesfully");
+          setIsLogoutLoading(false);
+        })
+        .catch((error) => {
+          console.log(error.message);
+        });
+      navigate("/welcoome");
+    }, 3000);
+  };
+
+  // update the user isOnline property to true
+  const updateIsOnline = async () => {
+    try {
+      const docRef = doc(db, "users", getCurrentUser().uid);
+      await updateDoc(docRef, {
+        isOnline: false,
+        lastSeen: new Date().getTime(),
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   return (
     <header>
@@ -29,7 +95,7 @@ export default function HomePageHeader() {
             alt="avatar"
           />
         </div>
-        <div className="header--icons">
+        <div className="header--icons" ref={headerIconsRef}>
           <BsFillChatRightTextFill />
           <div className="d-f">
             <HiDotsVertical
@@ -39,9 +105,15 @@ export default function HomePageHeader() {
           </div>
         </div>
       </div>
-            {
-              isPopupShow && ( <HomePageHeaderPopup /> )
-            }
+      {isPopupShow && (
+        <div className="popup--container" ref={popupContainerRef}>
+          <ul className="popup--item">
+            <li> مجموعة جديدة </li>
+            <li>الإعدادات</li>
+            <li onClick={handelSignout}>تسجيل الخروج</li>
+          </ul>
+        </div>
+      )}
     </header>
   );
 }

@@ -21,7 +21,7 @@ export default function UserProfile() {
   const isProfileShow = useUsers((state) => state.isProfileShow);
 
   // is name Arabic
-  const isArabic = /[\u0600-\u06FF]/.test(user.displayName);
+  const isArabic = /[\u0600-\u06FF]/.test(user?.displayName);
 
 
   // handle back
@@ -40,7 +40,7 @@ export default function UserProfile() {
       <div className="profile--image d-f">
         <div className="img">
         <img
-          src={user.photoURL ? user.photoURL : "default-avatar.svg"}
+          src={user?.photoURL ? user.photoURL : "default-avatar.svg"}
           alt="avatar"
         />
         <div className="icon d-f">

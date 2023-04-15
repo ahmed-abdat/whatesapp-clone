@@ -4,6 +4,8 @@ import { HiDotsVertical, HiSearch } from "react-icons/hi";
 import "./styles/chatPageUser.css";
 import SmileFace from "./svg/SmileFace";
 import Options from "./svg/Options";
+import Send from './svg/Send'
+import Voice from "./svg/Voice";
 import { useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +15,8 @@ export default function ChatPageUser() {
   const navigate = useNavigate();
   // selectedUser
   const selectedUser = useSelectedUser((state) => state.selectedUser);
+
+
 
   const connectionStatus = () => {
     if (selectedUser?.isOnline) {
@@ -33,6 +37,10 @@ export default function ChatPageUser() {
     const { value } = e.target;
     const isArabic = /[\u0600-\u06FF]/.test(value);
     isArabic ? setIsArabic(true) : setIsArabic(false);
+
+    if(value.length === 0){
+      setIsArabic(true)
+    }
 
     setMessage(value);
   };
@@ -106,9 +114,16 @@ export default function ChatPageUser() {
               placeholder="اكتب رسالة"
               onChange={handelMessage}
               value={message}
-              className={isArabic ? "f-ar" : "f-en"}
+              className={isArabic ? "f-ar" : "f-en dr-en"}
             />
           </div>
+         {
+          message.length > 0 ? <div className="icon">
+          <Send />
+          </div> : <div className="icon">
+            <Voice />
+          </div>
+         }
         </footer>
       </div>
   );

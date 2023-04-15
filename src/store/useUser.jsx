@@ -4,6 +4,7 @@ const useUser = create((set , get) => ({
   currentUser: null,
   isEmailUser : false,
   isPhoneUserVerified : false,
+  isLogoutLoading : false,
   setCurrentUser: (user) => {
     localStorage.setItem("currentUser", JSON.stringify(user));
     set(() => ({ currentUser: user }));
@@ -30,6 +31,9 @@ const useUser = create((set , get) => ({
   getIsPhoneUserVerified : ()=> {
     const savedIsPhoneUserVerified = (localStorage.getItem('isPhoneUserVerified') === 'undefined') ? false : JSON.parse(localStorage.getItem('isPhoneUserVerified'))
     return savedIsPhoneUserVerified
+  },
+  setIsLogoutLoading : (boolean) => {
+    set(() => ({ isLogoutLoading : boolean }));
   },
 }));
 
