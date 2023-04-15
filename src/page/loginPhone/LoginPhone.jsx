@@ -13,7 +13,6 @@ export default function LoginPhone() {
   const getCurrentUser = useUser((state) => state.getCurrentUser);
   //  set current user
   const setCurrentUser = useUser((state) => state.setCurrentUser);
-  const currentUser = getCurrentUser()
 
   // sete the phoneUserVerified
   const setIsPhoneUserVerified = useUser(
@@ -22,7 +21,6 @@ export default function LoginPhone() {
 
   // get isEmailUser
   const getIsEmailUser = useUser((state) => state.getIsEmailUser);
-  const isEmailUser = getIsEmailUser();
 
   // state
   const [password, setPassword] = useState("");
@@ -80,7 +78,7 @@ export default function LoginPhone() {
 
   // if the user is phone user
   useEffect(() => {
-    if (isEmailUser && currentUser) {
+    if (getIsEmailUser() && getCurrentUser()) {
       navigate("/");
     }
 
