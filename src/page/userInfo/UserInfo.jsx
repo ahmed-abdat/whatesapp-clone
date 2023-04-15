@@ -2,8 +2,9 @@ import { useNavigate } from "react-router-dom";
 import "./userInfo.css";
 import useUser from "../../store/useUser";
 import { useEffect, useState } from "react";
-import { collection, doc, getDocs, serverTimestamp, setDoc } from "firebase/firestore";
+import {  getFirestore, doc, updateDoc } from "firebase/firestore/lite";
 import { db } from "../../config/firebase";
+import {app} from '../../config/firebase'
 import { ToastContainer, toast } from "react-toastify";
 import {
   deleteObject,
@@ -24,9 +25,7 @@ export default function UserInfo() {
   const getIsEmailUser = useUser((state) => state.getIsEmailUser);
 
   // state
-  const [allUsers, setAllUsers] = useState([]);
   const [file, setFile] = useState(null);
-  const [password, setPassword] = useState(user?.password || "");
 
   const [formData, setFormData] = useState({
     email: getIsEmailUser() ? user?.email : "",
@@ -37,7 +36,6 @@ export default function UserInfo() {
   const [phoneNumber, setPhoneNumber] = useState(
     getIsEmailUser() ? "" : user?.phoneNumber
   );
-
 
   const [precentage, setPercentege] = useState(null);
 
@@ -66,11 +64,11 @@ export default function UserInfo() {
       // Delete the file
       deleteObject(oldRef)
         .then(() => {
-        console.log('fill deleted successfully');
+          console.log("fill deleted successfully");
           // File deleted successfully
         })
         .catch((error) => {
-          console.log('error deleting ');
+          console.log("error deleting ");
           // Uh-oh, an error occurred!
         });
     }
@@ -108,9 +106,7 @@ export default function UserInfo() {
       ...user,
       ...formData,
       phoneNumber,
-      file,
       photoURL: downloadURL ? downloadURL : user.photoURL,
-      password,
       imageFullPath: fullPath,
     };
     const required = getIsEmailUser()
@@ -140,7 +136,6 @@ export default function UserInfo() {
         uid,
         phoneNumber,
         photoURL,
-        password,
         imageFullPath,
       } = user;
       const phoneUseData = {
@@ -149,9 +144,8 @@ export default function UserInfo() {
         phoneNumber,
         photoURL: photoURL ? photoURL : null,
         isOnline: true,
-        password,
         photoPath: imageFullPath ? imageFullPath : null,
-        lastSeen : new Date().getTime()
+        lastSeen: new Date().getTime(),
       };
       const emailUserData = {
         email,
@@ -161,11 +155,15 @@ export default function UserInfo() {
         isOnline: true,
         photoURL: photoURL ? photoURL : null,
         photoPath: imageFullPath ? imageFullPath : null,
-        lastSeen : new Date().getTime()
+        lastSeen: new Date().getTime(),
       };
 
+      const firestore = getFirestore(app);
+
       const userData = getIsEmailUser() ? emailUserData : phoneUseData;
-      await setDoc(doc(db, "users", uid), userData);
+      const docRef = doc(firestore, 'users', uid);
+      await updateDoc(docRef, userData);
+      console.log('userData', userData);
       setCurrentUser(userData);
       setIsPhoneUserVerified(true);
       toast.success("تم تحديث الملف الشخصي ");
@@ -175,7 +173,7 @@ export default function UserInfo() {
       }, 2500);
     } catch (error) {
       setIsLoding(false);
-      console.error(error);
+      console.error(error.message);
       toast.error("لم تتم العملية بنجاح حاول مرة أخرى");
     }
   };
@@ -202,35 +200,26 @@ export default function UserInfo() {
   // handelSubmit
   const handelSubmit = async (e) => {
     e.preventDefault();
-    const valid = getIsEmailUser()
-      ? isValideNumber(phoneNumber)
-      : isValideEmail(formData.email);
 
-    if (valid && file) {
+    if ( file) {
       const required = getIsEmailUser()
         ? isUserEmailRequiredment()
         : isUserPhoneRequiredment();
       required && uploadTheImageFile();
-    } else if (valid) {
+      return
+    } 
       handelUploadUserInfo();
-    }
+    
   };
 
   // handel validate user phone
   const isUserPhoneRequiredment = () => {
-    if (password.length >= 4 && formData.displayName.length >= 2) {
+    if (formData.displayName.length >= 2) {
       return true;
-    } else if (formData.displayName.length < 2) {
+    } 
       toast.error("الإسم يجب أن يكون أكثر من حرفين");
       return false;
-    } else if (password.length === 0) {
-      toast.info("تساعدنا كلمة المرور على حماية حسابك", {
-        theme: "colored",
-      });
-      return false;
-    }
-    toast.error("كلمة المرور يجب أن تكون أكثر من 4 أحرف");
-    return false;
+    
   };
 
   // handel validate user email
@@ -241,44 +230,14 @@ export default function UserInfo() {
     toast.error("الإسم يجب أن يكون أكثر من حرفين");
     return false;
   };
-  // get all user from firebase
-  const getAllUsers = async () => {
-    const users = [];
-    const querySnapshot = await getDocs(collection(db, "users"));
-    querySnapshot.forEach((doc) => {
-      users.push({ ...doc.data(), id: doc.id });
-    });
-    setAllUsers(users);
-  };
 
-  // is valide number
-  const isValideNumber = (number) => {
-    const validNumver = allUsers.find((user) => user.phoneNumber === number);
-    if (validNumver) {
-      toast.error("رقم الهاتف مستخدم بالفعل ");
-      return false;
-    }
-    return true;
-  };
-
-  // is valide email
-  const isValideEmail = (email) => {
-    const validEmail = allUsers.find((user) => user.email === email);
-    if (validEmail) {
-      toast.error("البريد الإلكتروني مستخدم  بالفعل");
-      return false;
-    }
-    return true;
-  };
 
 
   useEffect(() => {
     if (!getIsEmailUser() && !getIsPhoneUserVerified()) {
       toast.warning("الرجاء ضغض على التالي للمتابعة");
       navigate("/signUp");
-    } else {
-      getAllUsers();
-    }
+    } 
   }, []);
 
   return (
@@ -286,10 +245,7 @@ export default function UserInfo() {
       <form onSubmit={handelSubmit}>
         <div className="header">
           <h2> المعلومات الشخصية </h2>
-          <p>
-            الرجاء إدخال معلوماتك و تحديد صورتك الشخصية - الإسم
-            {!getIsEmailUser() && " و كلمة السر "} إلزامي
-          </p>
+          <p>الرجاء إدخال معلوماتك و تحديد صورتك الشخصية - الإسم إلزامي</p>
         </div>
         {/* upload image file */}
         <div className="d-f">
@@ -354,7 +310,7 @@ export default function UserInfo() {
           />
         </div>
         {/* password for user phone */}
-        {!getIsEmailUser() && (
+        {/* {!getIsEmailUser() && (
           <div className="input phone">
             <label htmlFor="password"> كلمة السر</label>
             <input
@@ -366,7 +322,7 @@ export default function UserInfo() {
               value={password}
             />
           </div>
-        )}
+        )} */}
         <ToastContainer
           position="top-center"
           autoClose={2000}

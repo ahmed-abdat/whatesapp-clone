@@ -5,6 +5,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Link, useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
 import useUser from "../../store/useUser";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../../config/firebase";
 
 export default function Otp({}) {
   const confirmationResult = useSignUp((state) => state.confirmationResult);
@@ -61,6 +63,7 @@ export default function Otp({}) {
     confirmationResult
       .confirm(otp.join(''))
       .then((result) => {
+        setUser(result.user)
         setCurrentUser(result.user);
         setIsPhoneUserVerified(true);
         toast.success("تمت المصادقة");
@@ -80,21 +83,26 @@ export default function Otp({}) {
       });
   };
 
+  // set doc to the firebase 
+  const setUser = async (user) => {
+    const userRef = doc(db, "users", user.uid);
+    await setDoc(userRef, {
+      uid : user.uid,
+      phoneNumber : getPhone(),
+      displayName : user.displayName,
+      photoURL : user.photoURL,
+      lastSeen: new Date().getTime(),
+      photoPath : null,
+      isOnline : true,
+    });
+  };
+
   let count = 0;
   // submit otp
   useEffect(() => {
     if (confirmationResult.hasOwnProperty("verificationId") && count === 0) {
       count++;
-      toast.success(`تم إرسال رمز التحقق إلى الرقم  ${getPhone()}`, {
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        });
+      toast.success(`تم إرسال رمز التحقق إلى الرقم  ${getPhone()}`);
     }
   }, []);
 

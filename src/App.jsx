@@ -7,7 +7,6 @@ import {
 import  { lazy, Suspense } from "react";
 import Loading from "./components/Loading";
 import useUser from "./store/useUser";
-import LoginPhone from "./page/loginPhone/LoginPhone";
 import Welcoome from "./page/welcome/Welcoome";
 import Otp from "./page/otp/Otp";
 import SignUp from "./page/signUp/SignUp";
@@ -40,7 +39,6 @@ function App() {
         <Route path="/signUp" element={<SignUp />} />
         <Route path="/otp" element={<Otp /> }  />
         <Route path="/userInfo" element={<Suspense fallback={<Loading />}><UserInfo /></Suspense> } />
-        <Route path="/login" element={<LoginPhone />} />
         <Route path="*" element={<NotFound /> }  />
       </Routes>
   </Router>

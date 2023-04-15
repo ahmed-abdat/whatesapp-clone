@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import PhoneInput from "react-phone-number-input";
+import PhoneInput from "react-phone-number-input/min";
 import "react-phone-number-input/style.css";
 import ar from "react-phone-number-input/locale/ar.json";
 import { auth, db } from "../../config/firebase";
@@ -8,18 +8,13 @@ import {
   signInWithPhoneNumber,
   GoogleAuthProvider,
   signInWithPopup,
-  FacebookAuthProvider,
   onAuthStateChanged,
 } from "firebase/auth";
 import {
-  collection,
-  query,
-  where,
-  getDocs,
   doc,
   getDoc,
   updateDoc,
-} from "firebase/firestore";
+} from "firebase/firestore/lite";
 import { useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
 import useUser from "../../store/useUser";
@@ -105,30 +100,11 @@ export default function SignUp() {
     e.preventDefault();
     if (phone.length >= 12) {
       setIsLoding(true);
-      const isUserExiste = data.find((user) => user.phoneNumber === phone);
-      if (isUserExiste) {
-        setCurrentUser(isUserExiste);
-        setTimeout(() => {
-          navigate("/login");
-        }, 1000);
-      } else {
         requestRecaptcha();
         sendOtp();
-      }
     } else {
       toast.error("! أدخل رقم هاتف صحيح");
     }
-  };
-
-  // get the user that sign in with phone in firestore
-  const getPhoneUsers = async () => {
-    const q = query(collection(db, "users"), where("phoneNumber", "!=", null));
-    const querySnapshot = await getDocs(q);
-    let AllDocs = [];
-    querySnapshot.forEach((doc) => {
-      AllDocs.push({ id: doc.id, ...doc.data() });
-    });
-    setData(AllDocs);
   };
 
   // get the cuurent user that sign in with google
@@ -185,24 +161,6 @@ export default function SignUp() {
       });
   };
 
-  // sign up with facebook
-  const signInWithFacebook = () => {
-    const provider = new FacebookAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const user = result.user;
-        toast.success("تم تسجيل الدخول بنجاح");
-        getGoogleUser(user.uid);
-      })
-      .catch((error) => {
-        toast.error("حدث خطأ أثناء تسجيل الدخول");
-        // Handle Errors here.
-        const errorCode = error.code;
-        console.error(error);
-        const errorMessage = error.message;
-        console.error(errorMessage);
-      });
-  };
 
 
   // on auth state change
@@ -214,7 +172,6 @@ export default function SignUp() {
         setCurrentUser(user);
       }else {
         setCurrentUser(null);
-        getPhoneUsers();
       }
     });
     return ()=> unsubscribe();
@@ -223,7 +180,7 @@ export default function SignUp() {
   // save the user in firestore
 
   return (
-    <div className="signup--container dr-en">
+    <div className="signup--container">
       <div className="info">
         <h3>أدخل رقم هاتفك</h3>
         <p>سيحتاج واتساب إلى التحقق من رقم هاتفك.</p>
@@ -255,14 +212,6 @@ export default function SignUp() {
           src="https://img.icons8.com/color/24/000000/google-logo.png"
         />
         <p className="btn google-btn dr-ar"> تسجيل الدخول عن طريق Google</p>
-      </div>
-      {/* signup with facebook */}
-      <div className="signup-facebook dr-en" onClick={signInWithFacebook}>
-        <img
-          className="facebook-icon"
-          src="https://upload.wikimedia.org/wikipedia/en/thumb/0/04/Facebook_f_logo_%282021%29.svg/768px-Facebook_f_logo_%282021%29.svg.png?20210818083032"
-        />
-        <p className="btn facebook-btn dr-ar"> تسجيل الدخول عن طريق Facebook</p>
       </div>
       <ToastContainer
         position="top-center"
