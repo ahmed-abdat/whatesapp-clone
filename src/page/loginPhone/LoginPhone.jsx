@@ -1,5 +1,4 @@
 import { ToastContainer, toast } from "react-toastify";
-import "./loginPhone.css";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useUser from "../../store/useUser";
@@ -7,6 +6,7 @@ import { useEffect } from "react";
 import { BsFillEyeFill, BsFillEyeSlashFill } from "react-icons/bs";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
+import "./login.css";
 
 export default function LoginPhone() {
   // get current user

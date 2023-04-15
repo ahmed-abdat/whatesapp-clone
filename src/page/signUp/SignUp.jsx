@@ -210,7 +210,6 @@ export default function SignUp() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setCurrentUser(user);
-        navigate("/")
       } else if((user && getIsPhoneUserVerified()) || (user && getIsEmailUser())){
           navigate("/");
       }else {
