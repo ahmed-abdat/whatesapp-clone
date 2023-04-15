@@ -6,13 +6,21 @@ import { MdOutlineLocalPhone } from "react-icons/md";
 import { HiPencil } from "react-icons/hi";
 import useUsers from "../store/useUsers";
 import useUser from "../store/useUser";
-import { BsCamera } from "react-icons/bs";
 import Camera from "./svg/Camera";
+import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { db, storage } from "../config/firebase";
+import { doc, updateDoc } from "firebase/firestore";
+import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function UserProfile() {
   // get current user
   const getCurrentUser = useUser((state) => state.getCurrentUser);
   const user = getCurrentUser();
+
+  // percentege
+  const [percentege, setPercentege] = useState(0);
+  const [file , setFile] = useState(null)
 
   // set is profile show 
   const setIsProfileShow = useUsers((state) => state.setIsProfileShow);
@@ -28,6 +36,76 @@ export default function UserProfile() {
   const handelBack = () => {
     setIsProfileShow(false)
   }
+
+    // update the photo img in firebase
+    const uploadTheImageFile = (file) => {
+      // unique image name
+      const imageName = new Date().getTime() + file.name;
+      const storageRef = ref(storage, `profile/${imageName}`);
+      if (getCurrentUser().photoPath) {
+        const oldRef = ref(storage, getCurrentUser().photoPath);
+        // Delete the file
+        deleteObject(oldRef)
+          .then(() => {
+          console.log('fill deleted successfully');
+            // File deleted successfully
+          })
+          .catch((error) => {
+            console.log('error deleting ');
+            // Uh-oh, an error occurred!
+          });
+      }
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setPercentege(progress);
+        },
+        (error) => {
+          console.error(error);
+          toast.error("حدث خطأ أثناء تحميل الصورة رجاءا حاول مرة أخرى");
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            const fullPath = uploadTask.snapshot.ref.fullPath;
+            updateUserInfo(downloadURL, fullPath);
+          });
+        }
+      );
+    };
+
+      // handel file
+  const handleFile = (e) => {
+    console.log(e.target.files[0]);
+    const file = e.target.files[0];
+    if (!file) return;
+    // Check if the file type is an image
+    if (!file.type.startsWith("image/")) {
+      toast.warn("رجاءا قم بإخيار صورة صالحة");
+      return;
+    }
+    setFile(file);
+    uploadTheImageFile(file)
+  };
+
+    // update the user info in firebase
+    const updateUserInfo = (downloadURL, fullPath) => {
+      const userRef = doc(db, "users", getCurrentUser().uid);
+      updateDoc(userRef, {
+        photoURL: downloadURL,
+        photoPath: fullPath,
+      })
+        .then(() => {
+          toast.success("تم تحديث الصورة بنجاح");
+        })
+        .catch((error) => {
+          console.error("Error updating document: ", error);
+          toast.error("حدث خطأ أثناء تحديث الصورة رجاءا حاول مرة أخرى");
+        });
+    };
+
   return (
     <div className={`user-profile ${isProfileShow ? 'profile-show' : ''}`}>
       <header className="user-profile--header">
@@ -36,16 +114,43 @@ export default function UserProfile() {
           <h4>الملف الشخصي</h4>
         </div>
       </header>
+      <ToastContainer
+          position="top-center"
+          autoClose={2000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={true}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+          limit={2}
+        />
       {/* profile imagae */}
       <div className="profile--image d-f">
         <div className="img">
         <img
-          src={user?.photoURL ? user.photoURL : "default-avatar.svg"}
+           src={
+            file
+              ? URL.createObjectURL(file)
+              : user?.photoURL
+              ? user.photoURL
+              : "/default-avatar.svg"
+          }
           alt="avatar"
         />
-        <div className="icon d-f">
+        {/* upload file */}
+        <label htmlFor="file-input"  className={`icon d-f `} >
         <Camera />
-        </div>
+        </label>
+        <input
+            onChange={handleFile}
+            id="file-input"
+            type="file"
+            name="file"
+            style={{ display: "none" }}
+          />
         </div>
       </div>
       {/* profile info */}
@@ -57,7 +162,7 @@ export default function UserProfile() {
         </div>
         <div className="display">
           <h3 >الإسم</h3>
-          <h4 className={isArabic ? 'f-ar' : 'f-en'}>{user.displayName}</h4>
+          <h4 className={isArabic ? 'f-ar' : 'f-en'}>{user?.displayName}</h4>
         </div>
         <div className="edit">
           <HiPencil />
@@ -92,6 +197,8 @@ export default function UserProfile() {
           </div>
         </div>
         </div>
+        
     </div>
+    
   );
 }

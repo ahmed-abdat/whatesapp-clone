@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import "./userInfo.css";
 import useUser from "../../store/useUser";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { collection, doc, getDocs, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { ToastContainer, toast } from "react-toastify";

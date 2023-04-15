@@ -96,13 +96,6 @@ export default function Otp({}) {
         theme: "light",
         });
     }
-    if(!getIsEmailUser() && getCurrentUser() ){
-      console.log('user phone is verified');
-      navigate('/user')
-    }else if(getIsEmailUser() && getCurrentUser() ){
-      console.log('user email is verified');
-      navigate('/user')
-    }
   }, []);
 
   return (

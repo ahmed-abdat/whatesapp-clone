@@ -78,6 +78,11 @@ body {
   display: none;
 }
 
+.disabel {
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
 .f-ar {
   font-family: "Vazirmatn" , 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
