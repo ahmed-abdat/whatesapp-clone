@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import "./Opt.css";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Link, useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
 import useUser from "../../store/useUser";
-import { useRef } from "react";
 
 export default function Otp({}) {
   const confirmationResult = useSignUp((state) => state.confirmationResult);

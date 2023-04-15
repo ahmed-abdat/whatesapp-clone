@@ -1,5 +1,6 @@
 import HomepageSearch from "./HomePageSearch";
 import HomePageUser from "./HomePageUser";
+import UserProfile from "./UserProfile";
 import HomePageHeader from "./HomePageHeader";
 import useUser from "../store/useUser";
 import { useEffect, useState } from "react";
@@ -10,7 +11,7 @@ import { Suspense } from "react";
 
 // lazy loade
 
-const UserProfile = lazy(() => import("./UserProfile"));
+
 
 export default function HomePage() {
   const [allUsers, setAllUsers] = useState([]);
@@ -51,15 +52,7 @@ export default function HomePage() {
       ) : (
         <>
           {/* profile */}
-          <Suspense
-            fallback={
-              <div className="loader--user d-f">
-                <div className="loader"></div>
-              </div>
-            }
-          >
             <UserProfile />
-          </Suspense>
           {/* home page header */}
           <HomePageHeader />
           {/* home page search */}

@@ -7,7 +7,7 @@ import "./styles/HeaderPopup.css";
 import { auth, db } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import useSelectedUser from "../store/useSelectedUser";
 
 export default function HomePageHeader() {
@@ -26,6 +26,9 @@ export default function HomePageHeader() {
 
   // set selected user
   const setSelectedUser = useSelectedUser((state) => state.setSelectedUser);
+
+  // user profile state
+  const [userProfile , setUserProfile] = useState(null)
 
   // navigate
   const navigate = useNavigate();
@@ -86,12 +89,23 @@ export default function HomePageHeader() {
     }
   };
 
+  useEffect(() => {
+    // listen to real time profile update
+    const unsub = onSnapshot(doc(db, "users", getCurrentUser().uid), (doc) => {
+      setUserProfile(doc.data())
+      setCurrentUser(doc.data())
+    });
+    return () => {
+      unsub();
+    };
+  }, []);
+
   return (
     <header>
       <div className="header--container">
         <div className="header--logo" onClick={() => setIsProfileShow(true)}>
           <img
-            src={getCurrentUser().photoURL || "/default-avatar.svg"}
+            src={userProfile ? userProfile.photoURL : getCurrentUser().photoURL || "/default-avatar.svg"}
             alt="avatar"
           />
         </div>

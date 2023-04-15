@@ -20,10 +20,11 @@ import {
   getDoc,
   updateDoc,
 } from "firebase/firestore";
-import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
 import useUser from "../../store/useUser";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import './SignUp.css'
 
@@ -103,7 +104,7 @@ export default function SignUp() {
   // handel submit form
   const handelSumbit = (e) => {
     e.preventDefault();
-    if (phone.length >= 11) {
+    if (phone.length >= 12) {
       setIsLoding(true);
       const isUserExiste = data.find((user) => user.phoneNumber === phone);
       if (isUserExiste) {
@@ -210,6 +211,9 @@ export default function SignUp() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setCurrentUser(user);
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
       } else if((user && getIsPhoneUserVerified()) || (user && getIsEmailUser())){
           navigate("/");
       }else {
@@ -223,7 +227,7 @@ export default function SignUp() {
   // save the user in firestore
 
   return (
-    <div className="signup--container">
+    <div className="signup--container dr-en">
       <div className="info">
         <h3>أدخل رقم هاتفك</h3>
         <p>سيحتاج واتساب إلى التحقق من رقم هاتفك.</p>
@@ -244,7 +248,9 @@ export default function SignUp() {
           التالي
         </button>
       </form>
-      <div id="sign-in-recaptcha" className="dr-en"></div>
+      <div className="dr-en">
+      <div id="sign-in-recaptcha"></div>
+      </div>
       <div className="or">أو</div>
       {/* signup from google */}
       <div className="signup-google dr-en" onClick={signInWithGoogle}>
