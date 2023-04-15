@@ -3,7 +3,7 @@ import HomePageUser from "./HomePageUser";
 import HomePageHeader from "./HomePageHeader";
 import useUser from "../store/useUser";
 import { useEffect, useState } from "react";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { collection, query, where, onSnapshot, limit } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { lazy } from "react";
 import { Suspense } from "react";
@@ -28,7 +28,8 @@ export default function HomePage() {
     setIsLoading(true);
     const q = query(
       collection(db, "users"),
-      where("uid", "!=", currentUser.uid)
+      where("uid", "!=", currentUser.uid),
+      limit(10)
     );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const usereData = [];
@@ -66,7 +67,9 @@ export default function HomePage() {
           {/* home page user profile */}
           <div className="user-profile--container">
             {!isLoading ? (
-              allUsers.map((user) => <HomePageUser key={user.id} {...user} />)
+              allUsers.map((user) => {
+                return <HomePageUser key={user.id} {...user} />
+              })
             ) : (
               <div className="loader--user d-f">
                 <div className="loader"></div>

@@ -1,13 +1,18 @@
 import "./home.css";
 import HomePage from "../../components/HomePage";
-import ChatPage from "../../components/ChatPage";
+// import ChatPage from "../../components/ChatPage";
 import useSelectedUser from "../../store/useSelectedUser";
-import ChatPageUser from "../../components/ChatPageUser";
+import SpinerLoader from "../../components/SpinerLoader";
+// import ChatPageUser from "../../components/ChatPageUser";
+import { lazy } from "react";
+import { Suspense } from "react";
+
+// lazy load
+const ChatPageUser = lazy(() => import("../../components/ChatPageUser"));
+const ChatPage = lazy(() => import("../../components/ChatPage"));
 
 export default function Home() {
-
   const selectedUser = useSelectedUser((state) => state.selectedUser);
-
 
   return (
     <div className="large-screen">
@@ -17,7 +22,15 @@ export default function Home() {
         {/* home page */}
         <HomePage />
         {/* chat page */}
-        {selectedUser ? <ChatPageUser /> : <ChatPage />}
+        {selectedUser ? (
+          <Suspense fallback={<SpinerLoader />}>
+            <ChatPageUser />
+          </Suspense>
+        ) : (
+          <Suspense fallback={<SpinerLoader />}>
+            <ChatPage />
+          </Suspense>
+        )}
       </main>
     </div>
   );
