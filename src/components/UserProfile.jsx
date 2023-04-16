@@ -126,7 +126,7 @@ export default function UserProfile() {
               file
                 ? URL.createObjectURL(file)
                 : user?.photoURL
-                ? user.photoURL
+                ? user?.photoURL
                 : "/default-avatar.svg"
             }
             alt="avatar"

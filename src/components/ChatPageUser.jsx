@@ -70,7 +70,7 @@ export default function ChatPageUser() {
             <BiArrowBack className="r-180" />
             </div>
           <div className="img">
-            <img src={selectedUser.photoURL} alt="avatar" />
+            <img src={selectedUser?.photoURL} alt="avatar" />
           </div>
             </div>
           <div className="info">
