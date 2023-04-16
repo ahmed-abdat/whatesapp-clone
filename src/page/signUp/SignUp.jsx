@@ -125,7 +125,6 @@ export default function SignUp() {
         console.log("No such document!");
       }
     } catch (error) {
-      console.log('get google user error');
       console.error(error);
     }
   };
@@ -139,10 +138,8 @@ export default function SignUp() {
        isOnline: true,
        lastSeen :  new Date().getTime()
      })
-     console.log("Document successfully updated!");
     } catch (error) {
      console.log(error.message);
-     console.log('updateIsOnline problem');
     }
    }
 

@@ -36,8 +36,8 @@ const useUser = create((set , get) => ({
     set(() => ({ isLogoutLoading : boolean }));
   },
   updateProfile : (user) => {
-    const currentUser = get().currentUser
-    const updatedUser = {...currentUser , ...user}
+    const currentUsere = get().currentUser
+    const updatedUser = {...currentUsere , ...user}
     set(() => ({ currentUser: updatedUser }));
     localStorage.setItem("currentUser", JSON.stringify(updatedUser));
   },

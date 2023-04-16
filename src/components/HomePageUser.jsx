@@ -35,7 +35,7 @@ export default function HomePageUser({ displayName, photoURL, isOnline, lastSeen
       <div className="user--profile--info">
         <div className="info">
             <h3>{displayName || 'Ahmed Abdat'}</h3>
-            <p>{isOnline ? 'متصل الآن' : timeAgo}</p>
+            <p className='dr-en f-en'>{isOnline ? 'متصل الآن' : timeAgo}</p>
         </div>
         <div className="last-message">
             <p>أهلا بك في واتساب</p>

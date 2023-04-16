@@ -6,12 +6,11 @@ import { useEffect, useState } from "react";
 import {
   collection,
   limit,
-  getDocs,
   query,
   where,
-  getFirestore,
-} from "firebase/firestore/lite";
-import { app} from "../config/firebase";
+  onSnapshot,
+} from "firebase/firestore";
+import { db} from "../config/firebase";
 import { lazy } from "react";
 import { Suspense } from "react";
 import SpinerLoader from "./SpinerLoader";
@@ -36,23 +35,21 @@ export default function HomePage() {
 
   // get all user in firebase except the current user
   useEffect(() => {
-    const getAllUsers = async () => {
-      setIsLoading(true);
-      const firestore = getFirestore(app);
+    setIsLoading(true);
       const q = query(
-        collection(firestore, "users"),
+        collection(db, "users"),
         where("uid", "!=", currentUser.uid),
         limit(6)
       );
-      const querySnapshot = await getDocs(q);
+      const querySnapshot = onSnapshot(q, (querySnapshot) => {
       const users = [];
       querySnapshot.forEach((doc) => {
         users.push({...doc.data() , id: doc.id});
       });
       setAllUsers(users);
       setIsLoading(false);
-    };
-    getAllUsers();
+    });
+    return () => querySnapshot();
   }, []);
 
   return (

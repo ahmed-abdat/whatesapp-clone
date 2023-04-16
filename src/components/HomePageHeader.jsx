@@ -7,7 +7,7 @@ import "./styles/HeaderPopup.css";
 import { app, auth } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore/lite";
+import { doc, getFirestore, updateDoc } from "firebase/firestore/lite";
 import useSelectedUser from "../store/useSelectedUser";
 import defaultAvatar from "../assets/img/default-avatar.svg";
 
@@ -89,27 +89,16 @@ export default function HomePageHeader() {
     }
   };
 
-  useEffect(() => {
-    // listen to real time profile update
-    const getcurrentUserData = async () => {
-      const firestore = getFirestore(app)
-      const docRef = doc(firestore, "users", getCurrentUser()?.uid);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setCurrentUser(docSnap.data());
-      } else {
-        console.log("No such document!");
-      }
-    };
-    getCurrentUser() && getcurrentUserData();
-  }, [setCurrentUser]);
+ 
+
+
 
   return (
     <header>
       <div className="header--container">
         <div className="header--logo" onClick={() => setIsProfileShow(true)}>
           <img
-            src={ getCurrentUser()?.photoURL || defaultAvatar}
+            src={ getCurrentUser() ? getCurrentUser().photoURL : defaultAvatar}
             alt="avatar"
           />
         </div>

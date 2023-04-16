@@ -201,17 +201,18 @@ export default function UserProfile() {
           </div>
         </div>
         {/* profile phone number */}
-        <div className="profile--phone-number">
-          <div className="icon">
-            <MdOutlineLocalPhone />
-          </div>
+        
           {user?.phoneNumber && (
+            <div className="profile--phone-number">
+            <div className="icon">
+              <MdOutlineLocalPhone />
+            </div>
             <div className="display">
               <h3>رقم الهاتف</h3>
               <h4 className="dr-en">{user?.phoneNumber}</h4>
             </div>
+          </div>
           )}
-        </div>
         {/* profile email */}
        {
         user?.email && (

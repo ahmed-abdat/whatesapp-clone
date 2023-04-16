@@ -27,9 +27,13 @@ export default function UserInfo() {
   // state
   const [file, setFile] = useState(null);
 
+  // displayName user
+  const [displayName, setDisplayName] = useState(user?.displayName || "");
+  // is name Arabic
+  const [isArabic, setIsArabic] = useState(false);
+
   const [formData, setFormData] = useState({
     email: getIsEmailUser() ? user?.email : "",
-    displayName: user?.displayName || "",
     photoURL: user?.photoURL,
   });
 
@@ -105,6 +109,7 @@ export default function UserInfo() {
     const updatedUserData = {
       ...user,
       ...formData,
+      displayName,
       phoneNumber,
       photoURL: downloadURL ? downloadURL : user.photoURL,
       imageFullPath: fullPath,
@@ -117,6 +122,8 @@ export default function UserInfo() {
 
   // handelChangeData
   const handelChangeData = (e) => {
+     // is name Arabic
+  const isArabic = /[\u0600-\u06FF]/.test(user?.displayName);
     const { value, name } = e.target;
     setFormData((prevData) => {
       return {
@@ -163,7 +170,7 @@ export default function UserInfo() {
       const firestore = getFirestore(app);
       const docRef = doc(firestore, 'users', uid);
       await setDoc(docRef, userData);
-      console.log('userData', userData);
+
       setCurrentUser(userData);
       setIsPhoneUserVerified(true);
       toast.success("تم تحديث الملف الشخصي ");
@@ -214,7 +221,7 @@ export default function UserInfo() {
 
   // handel validate user phone
   const isUserPhoneRequiredment = () => {
-    if (formData.displayName.length >= 2) {
+    if (displayName.length >= 2) {
       return true;
     } 
       toast.error("الإسم يجب أن يكون أكثر من حرفين");
@@ -224,12 +231,26 @@ export default function UserInfo() {
 
   // handel validate user email
   const isUserEmailRequiredment = () => {
-    if (formData.displayName.length >= 2) {
+    if (displayName.length >= 2) {
       return true;
     }
     toast.error("الإسم يجب أن يكون أكثر من حرفين");
     return false;
   };
+
+  // handel displayName user
+  const handelDisplayName = (e) => {
+    const { value } = e.target;
+    const isArabic = /[\u0600-\u06FF]/.test(value);
+    if (isArabic) {
+      setIsArabic(true);
+    } else {
+      setIsArabic(false);
+    }
+    setDisplayName(value);
+  };
+
+
 
 
 
@@ -279,8 +300,9 @@ export default function UserInfo() {
             placeholder="أدخل إسمك هنا"
             id="name"
             name="displayName"
-            onChange={handelChangeData}
-            value={formData.displayName}
+            onChange={handelDisplayName}
+            value={displayName}
+            className={isArabic ? "f-ar" : "f-en"}
           />
         </div>
         {getIsEmailUser() && (
