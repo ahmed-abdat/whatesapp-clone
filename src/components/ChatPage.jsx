@@ -1,9 +1,10 @@
 import { HiLockClosed } from "react-icons/hi";
+import WhatsppwebImg from '../assets/img/whatsapp-web.png'
 
 export default function ChatPage() {
   return (
     <div className="chat-page">
-      <img src="/whatsapp-web.png" alt="" />
+      <img src={WhatsppwebImg} alt="" />
       <h3>واتساب ويب</h3>
       <div className="text">
         <p>

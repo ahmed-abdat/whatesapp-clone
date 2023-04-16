@@ -3,7 +3,6 @@ import "./userInfo.css";
 import useUser from "../../store/useUser";
 import { useEffect, useState } from "react";
 import {  getFirestore, doc, updateDoc } from "firebase/firestore/lite";
-import { db } from "../../config/firebase";
 import {app} from '../../config/firebase'
 import { ToastContainer, toast } from "react-toastify";
 import {
@@ -13,6 +12,7 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { storage } from "../../config/firebase";
+import DefaultAvatar from '../../assets/img/default-avatar.svg'
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -257,7 +257,7 @@ export default function UserInfo() {
                     ? URL.createObjectURL(file)
                     : user?.photoURL
                     ? user.photoURL
-                    : "/default-avatar.svg"
+                    : DefaultAvatar
                 }
                 alt="a user image"
               />

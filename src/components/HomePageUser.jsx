@@ -2,6 +2,7 @@ import moment from 'moment';
 import 'moment/locale/ar'; 
 import { useState, useEffect } from 'react';
 import useSelectedUser from '../store/useSelectedUser';
+import defaultAvatar from '../assets/img/default-avatar.svg'
 
 export default function HomePageUser({ displayName, photoURL, isOnline, lastSeen }) {
   moment.locale('ar');
@@ -29,7 +30,7 @@ export default function HomePageUser({ displayName, photoURL, isOnline, lastSeen
   return (
     <div className="user--profile" onClick={handelSelectedUser}>
       <div className="user--profile--img">
-        <img src={photoURL || '/default-avatar.svg'} alt="user profile" />
+        <img src={photoURL || defaultAvatar} alt="user profile" />
       </div>
       <div className="user--profile--info">
         <div className="info">

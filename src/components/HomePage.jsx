@@ -1,6 +1,6 @@
 import HomepageSearch from "./HomePageSearch";
 import HomePageUser from "./HomePageUser";
-import UserProfile from "./UserProfile";
+// import UserProfile from "./UserProfile";
 import HomePageHeader from "./HomePageHeader";
 import useUser from "../store/useUser";
 import { useEffect, useState } from "react";
@@ -8,8 +8,10 @@ import { collection, query, where, onSnapshot, limit } from "firebase/firestore"
 import { db } from "../config/firebase";
 import { lazy } from "react";
 import { Suspense } from "react";
+import SpinerLoader from "./SpinerLoader";
 
 // lazy loade
+const UserProfile = lazy(() => import("./UserProfile"));
 
 
 
@@ -52,7 +54,9 @@ export default function HomePage() {
       ) : (
         <>
           {/* profile */}
-            <UserProfile />
+            <Suspense fallback={<SpinerLoader />}>
+              <UserProfile />
+            </Suspense>
           {/* home page header */}
           <HomePageHeader />
           {/* home page search */}
@@ -64,9 +68,7 @@ export default function HomePage() {
                 return <HomePageUser key={user.id} {...user} />
               })
             ) : (
-              <div className="loader--user d-f">
-                <div className="loader"></div>
-              </div>
+              <SpinerLoader />
             )}
           </div>
         </>

@@ -13,8 +13,8 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import { db, storage } from "../config/firebase";
-import { doc, updateDoc } from "firebase/firestore";
+import { app, storage } from "../config/firebase";
+import { doc, updateDoc , getFirestore} from "firebase/firestore/lite";
 import { useState } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -24,8 +24,6 @@ export default function UserProfile() {
   const getCurrentUser = useUser((state) => state.getCurrentUser);
   const user = getCurrentUser();
 
-  // percentege
-  const [percentege, setPercentege] = useState(0);
   const [file, setFile] = useState(null);
 
   // set is profile show
@@ -66,7 +64,6 @@ export default function UserProfile() {
       (snapshot) => {
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setPercentege(progress);
       },
       (error) => {
         console.error(error);
@@ -96,7 +93,8 @@ export default function UserProfile() {
 
   // update the user info in firebase
   const updateUserInfo = (downloadURL, fullPath) => {
-    const userRef = doc(db, "users", getCurrentUser().uid);
+    const firestore = getFirestore(app);
+    const userRef = doc(firestore , "users", getCurrentUser().uid);
     updateDoc(userRef, {
       photoURL: downloadURL,
       photoPath: fullPath,
@@ -116,7 +114,7 @@ export default function UserProfile() {
       
       <header className="user-profile--header">
         <div className="header--text">
-          <BiArrowBack onClick={handelBack} />
+          <BiArrowBack onClick={handelBack} className="r-180" />
           <h4>الملف الشخصي</h4>
         </div>
       </header>

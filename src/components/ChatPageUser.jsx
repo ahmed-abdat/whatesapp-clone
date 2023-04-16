@@ -9,6 +9,7 @@ import Voice from "./svg/Voice";
 import { useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
+import ChatImg from '../assets/img/chat-img.png'
 
 export default function ChatPageUser() {
   // navigate 
@@ -87,7 +88,7 @@ export default function ChatPageUser() {
         </header>
         {/* chat container */}
         <div className="chat-content">
-          <div className="message--container">
+          <div className="message--container" style={{ backgroundImage: `url(${ChatImg})` }}>
             <div className="message">
               <div className="message">
                 <p>أهلا بك في واتساب</p>
