@@ -25,6 +25,7 @@ export default function UserProfile() {
   const user = getCurrentUser();
 
   const [file, setFile] = useState(null);
+  const [isImageLoading ,setIsImageLoading] = useState(false)
 
   // set is profile show
   const setIsProfileShow = useUsers((state) => state.setIsProfileShow);
@@ -42,6 +43,7 @@ export default function UserProfile() {
     // unique image name
     const imageName = new Date().getTime() + file.name;
     const storageRef = ref(storage, `profile/${imageName}`);
+    setIsImageLoading(true)
     if (getCurrentUser().photoPath) {
       const oldRef = ref(storage, getCurrentUser().photoPath);
       // Delete the file
@@ -98,9 +100,10 @@ export default function UserProfile() {
     })
       .then(() => {
         toast.success("تم تحديث الصورة بنجاح");
-        setFile(null);
+        setIsImageLoading(false)
       })
       .catch((error) => {
+        setIsImageLoading(false)
         console.error("Error updating document: ", error);
         toast.error("حدث خطأ أثناء تحديث الصورة رجاءا حاول مرة أخرى");
       });
@@ -130,7 +133,7 @@ export default function UserProfile() {
           {/* upload file */}
           <label
             htmlFor="file-input"
-            className={`icon d-f ${file ? "disabel" : ""}`}
+            className={`icon d-f ${isImageLoading ? "disabel" : ""}`}
           >
             <Camera />
           </label>
