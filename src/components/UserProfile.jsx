@@ -198,10 +198,19 @@ export default function UserProfile() {
           <div className="icon">
             <MdOutlineLocalPhone />
           </div>
-          <div className="display">
-            <h3>رقم الهاتف</h3>
-            <p className="info dr-en">+222 37928327</p>
-          </div>
+          {
+            user?.phoneNumber ? (
+              <div className="display">
+                <h3>رقم الهاتف</h3>
+                <h4 className="dr-en">{user?.phoneNumber}</h4>
+              </div>
+            ) : (
+              <div className="display">
+                <h3>الإيميل</h3>
+                <h4>{user?.email}</h4>
+              </div>
+            )
+          }
         </div>
       </div>
     </div>

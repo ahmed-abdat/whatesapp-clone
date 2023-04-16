@@ -115,9 +115,7 @@ export default function SignUp() {
       if (docSnap.exists()) {
         updateIsOnline(id)
         setCurrentUser(docSnap.data());
-        setTimeout(() => {
           navigate("/");
-        }, 2000);
       } else {
         navigate("/userInfo");
         console.log("No such document!");

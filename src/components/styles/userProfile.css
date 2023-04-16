@@ -129,6 +129,7 @@
 }
 
 .user-profile  .display h4 {
+  align-self: flex-start;
   font-size: 0.95rem;
   font-weight: 400;
 }
