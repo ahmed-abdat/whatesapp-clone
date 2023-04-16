@@ -1,8 +1,11 @@
 import HomepageSearch from "./HomePageSearch";
 import HomePageUser from "./HomePageUser";
+// import UserProfile from "./UserProfile";
 import HomePageHeader from "./HomePageHeader";
 import useUser from "../store/useUser";
 import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../config/firebase";
 import { lazy } from "react";
 import { Suspense } from "react";
 import SpinerLoader from "./SpinerLoader";
@@ -24,23 +27,40 @@ export default function HomePage() {
   const isLogoutLoading = useUser((state) => state.isLogoutLoading);
 
   // get all user in firebase except the current user
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   const q = query(
-  //     collection(db, "users"),
-  //     where("uid", "!=", currentUser.uid),
-  //     limit(10)
-  //   );
-  //   const unsubscribe = onSnapshot(q, (querySnapshot) => {
-  //     const usereData = [];
-  //     querySnapshot.forEach((doc) => {
-  //       usereData.push({ ...doc.data(), id: doc.id });
-  //     });
-  //     setAllUsers(usereData);
-  //     setIsLoading(false);
-  //   });
-  //   return () => unsubscribe();
-  // }, []);
+  useEffect(() => {
+    setIsLoading(true);
+    // const q = query(
+    //   collection(db, "users"),
+    //   where("uid", "!=", currentUser.uid),
+    //   limit(10)
+    // );
+    // const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    //   const usereData = [];
+    //   querySnapshot.forEach((doc) => {
+    //     usereData.push({ ...doc.data(), id: doc.id });
+    //   });
+    //   setAllUsers(usereData);
+    //   setIsLoading(false);
+    // });
+    // return () => unsubscribe();
+
+    // get all users
+    const fetchAllUsers = async () => {
+      setIsLoading(true);
+      const docRef = collection(db, "users");
+      await getDocs(docRef).then((querySnapshot) => {
+        const usereData = [];
+        querySnapshot.forEach((doc) => {
+          usereData.push({ ...doc.data(), id: doc.id });
+        });
+        setAllUsers(usereData);
+        setIsLoading(false);
+      }
+      );
+    }
+    fetchAllUsers();
+
+  }, []);
 
   return (
     <div className="home-page">
@@ -59,7 +79,7 @@ export default function HomePage() {
           {/* home page search */}
           <HomepageSearch />
           {/* home page user profile */}
-          {/* <div className="user-profile--container">
+          <div className="user-profile--container">
             {!isLoading ? (
               allUsers.map((user) => {
                 return <HomePageUser key={user.id} {...user} />
@@ -67,7 +87,7 @@ export default function HomePage() {
             ) : (
               <SpinerLoader />
             )}
-          </div> */}
+          </div>
         </>
       )}
     </div>
