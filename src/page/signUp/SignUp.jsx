@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import PhoneInput from "react-phone-number-input/min";
+import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import ar from "react-phone-number-input/locale/ar.json";
-import { auth, db } from "../../config/firebase";
+import { app, auth } from "../../config/firebase";
 import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
@@ -14,6 +14,7 @@ import {
   doc,
   getDoc,
   updateDoc,
+  getFirestore
 } from "firebase/firestore/lite";
 import { useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
@@ -110,17 +111,21 @@ export default function SignUp() {
   // get the cuurent user that sign in with google
   const getGoogleUser = async (id) => {
     try {
-      const docRef = doc(db, "users", id);
+      const firestore = getFirestore(app)
+      const docRef = doc(firestore, "users", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         updateIsOnline(id)
         setCurrentUser(docSnap.data());
+         setTimeout(() => {
           navigate("/");
+         }, 1500);
       } else {
         navigate("/userInfo");
         console.log("No such document!");
       }
     } catch (error) {
+      console.log('get google user error');
       console.error(error);
     }
   };
@@ -128,7 +133,8 @@ export default function SignUp() {
   // update user isOnline to true
   const updateIsOnline = async (id) => {
     try {
-     const docRef = doc(db, "users", id);
+      const firestore = getFirestore(app)
+     const docRef = doc(firestore, "users", id);
      await updateDoc(docRef, {
        isOnline: true,
        lastSeen :  new Date().getTime()
@@ -136,6 +142,7 @@ export default function SignUp() {
      console.log("Document successfully updated!");
     } catch (error) {
      console.log(error.message);
+     console.log('updateIsOnline problem');
     }
    }
 

@@ -14,10 +14,10 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app, storage } from "../config/firebase";
-import { doc, updateDoc , getFirestore} from "firebase/firestore/lite";
+import { doc, updateDoc, getFirestore } from "firebase/firestore/lite";
 import { useState } from "react";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function UserProfile() {
   // get current user
@@ -28,9 +28,6 @@ export default function UserProfile() {
 
   // set is profile show
   const setIsProfileShow = useUsers((state) => state.setIsProfileShow);
-
-  // is profile show
-  const isProfileShow = useUsers((state) => state.isProfileShow);
 
   // is name Arabic
   const isArabic = /[\u0600-\u06FF]/.test(user?.displayName);
@@ -94,13 +91,13 @@ export default function UserProfile() {
   // update the user info in firebase
   const updateUserInfo = (downloadURL, fullPath) => {
     const firestore = getFirestore(app);
-    const userRef = doc(firestore , "users", getCurrentUser().uid);
+    const userRef = doc(firestore, "users", getCurrentUser().uid);
     updateDoc(userRef, {
       photoURL: downloadURL,
       photoPath: fullPath,
     })
       .then(() => {
-        toast.success("تم تحديث الصورة بنجاح")
+        toast.success("تم تحديث الصورة بنجاح");
         setFile(null);
       })
       .catch((error) => {
@@ -110,8 +107,7 @@ export default function UserProfile() {
   };
 
   return (
-    <div className={`user-profile ${isProfileShow ? "profile-show" : ""}`}>
-      
+    <div className={`user-profile`}>
       <header className="user-profile--header">
         <div className="header--text">
           <BiArrowBack onClick={handelBack} className="r-180" />
@@ -198,19 +194,17 @@ export default function UserProfile() {
           <div className="icon">
             <MdOutlineLocalPhone />
           </div>
-          {
-            user?.phoneNumber ? (
-              <div className="display">
-                <h3>رقم الهاتف</h3>
-                <h4 className="dr-en">{user?.phoneNumber}</h4>
-              </div>
-            ) : (
-              <div className="display">
-                <h3>الإيميل</h3>
-                <h4>{user?.email}</h4>
-              </div>
-            )
-          }
+          {user?.phoneNumber ? (
+            <div className="display">
+              <h3>رقم الهاتف</h3>
+              <h4 className="dr-en">{user?.phoneNumber}</h4>
+            </div>
+          ) : (
+            <div className="display">
+              <h3>الإيميل</h3>
+              <h4>{user?.email}</h4>
+            </div>
+          )}
         </div>
       </div>
     </div>

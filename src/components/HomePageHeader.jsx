@@ -4,10 +4,10 @@ import useUsers from "../store/useUsers";
 import useUser from "../store/useUser";
 import { useEffect, useRef, useState } from "react";
 import "./styles/HeaderPopup.css";
-import { auth, db } from "../config/firebase";
+import { app, auth } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore/lite";
 import useSelectedUser from "../store/useSelectedUser";
 
 export default function HomePageHeader() {
@@ -27,8 +27,6 @@ export default function HomePageHeader() {
   // set selected user
   const setSelectedUser = useSelectedUser((state) => state.setSelectedUser);
 
-  // user profile state
-  const [userProfile , setUserProfile] = useState(null)
 
   // navigate
   const navigate = useNavigate();
@@ -79,7 +77,8 @@ export default function HomePageHeader() {
   // update the user isOnline property to true
   const updateIsOnline = async () => {
     try {
-      const docRef = doc(db, "users", getCurrentUser().uid);
+      const firestore = getFirestore(app)
+      const docRef = doc(firestore, "users", getCurrentUser().uid);
       await updateDoc(docRef, {
         isOnline: false,
         lastSeen: new Date().getTime(),
@@ -91,14 +90,18 @@ export default function HomePageHeader() {
 
   useEffect(() => {
     // listen to real time profile update
-    const unsub = onSnapshot(doc(db, "users", getCurrentUser().uid), (doc) => {
-      setUserProfile(doc.data())
-      setCurrentUser(doc.data())
-    });
-    return () => {
-      unsub();
+    const getcurrentUserData = async () => {
+      const firestore = getFirestore(app)
+      const docRef = doc(firestore, "users", getCurrentUser()?.uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setCurrentUser(docSnap.data());
+      } else {
+        console.log("No such document!");
+      }
     };
-  }, []);
+    getcurrentUserData();
+  }, [setCurrentUser]);
 
   return (
     <header>
