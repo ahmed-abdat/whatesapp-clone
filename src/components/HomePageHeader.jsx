@@ -114,7 +114,7 @@ export default function HomePageHeader() {
       </div>
       {isPopupShow && (
         <div className="popup--container" ref={popupContainerRef}>
-          <ul className="popup--item">
+          <ul className="popup--item f-ar">
             <li> مجموعة جديدة </li>
             <li>الإعدادات</li>
             <li onClick={handelSignout}>تسجيل الخروج</li>

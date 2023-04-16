@@ -26,6 +26,7 @@
 
 
 .popup--container ul li {
+  font-family: inherit;
   cursor: pointer;
   padding: 0.7rem 1rem;
   width: 100%;
