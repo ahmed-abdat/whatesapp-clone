@@ -35,6 +35,12 @@ const useUser = create((set , get) => ({
   setIsLogoutLoading : (boolean) => {
     set(() => ({ isLogoutLoading : boolean }));
   },
+  updateProfile : (user) => {
+    const currentUser = get().currentUser
+    const updatedUser = {...currentUser , ...user}
+    set(() => ({ currentUser: updatedUser }));
+    localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+  },
 }));
 
 export default useUser;

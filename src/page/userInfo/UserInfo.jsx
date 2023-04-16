@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import "./userInfo.css";
 import useUser from "../../store/useUser";
 import { useEffect, useState } from "react";
-import {  getFirestore, doc, updateDoc } from "firebase/firestore/lite";
+import {  getFirestore, doc, setDoc  } from "firebase/firestore/lite";
 import {app} from '../../config/firebase'
 import { ToastContainer, toast } from "react-toastify";
 import {
@@ -158,11 +158,11 @@ export default function UserInfo() {
         lastSeen: new Date().getTime(),
       };
 
-      const firestore = getFirestore(app);
-
+      
       const userData = getIsEmailUser() ? emailUserData : phoneUseData;
+      const firestore = getFirestore(app);
       const docRef = doc(firestore, 'users', uid);
-      await updateDoc(docRef, userData);
+      await setDoc(docRef, userData);
       console.log('userData', userData);
       setCurrentUser(userData);
       setIsPhoneUserVerified(true);

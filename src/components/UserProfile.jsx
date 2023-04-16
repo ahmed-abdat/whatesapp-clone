@@ -18,11 +18,15 @@ import { doc, updateDoc, getFirestore } from "firebase/firestore/lite";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import defaultAvatar from '../assets/img/default-avatar.svg'
 export default function UserProfile() {
   // get current user
   const getCurrentUser = useUser((state) => state.getCurrentUser);
   const user = getCurrentUser();
+
+  // set update profile
+  const updateProfile = useUser(state => state.updateProfile)
+
 
   const [file, setFile] = useState(null);
   const [isImageLoading ,setIsImageLoading] = useState(false)
@@ -92,6 +96,11 @@ export default function UserProfile() {
 
   // update the user info in firebase
   const updateUserInfo = (downloadURL, fullPath) => {
+    const updatedFeild = {
+      photoURL: downloadURL,
+      photoPath: fullPath,
+    }
+    updateProfile(updatedFeild)
     const firestore = getFirestore(app);
     const userRef = doc(firestore, "users", getCurrentUser().uid);
     updateDoc(userRef, {
@@ -124,9 +133,9 @@ export default function UserProfile() {
             src={
               file
                 ? URL.createObjectURL(file)
-                : user?.photoURL
-                ? user?.photoURL
-                : "/default-avatar.svg"
+                : getCurrentUser()?.photoURL
+                ? getCurrentUser().photoURL
+                : defaultAvatar
             }
             alt="avatar"
           />

@@ -9,6 +9,7 @@ import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore/lite";
 import useSelectedUser from "../store/useSelectedUser";
+import defaultAvatar from "../assets/img/default-avatar.svg";
 
 export default function HomePageHeader() {
   const getCurrentUser = useUser((state) => state.getCurrentUser);
@@ -100,7 +101,7 @@ export default function HomePageHeader() {
         console.log("No such document!");
       }
     };
-    getcurrentUserData();
+    getCurrentUser() && getcurrentUserData();
   }, [setCurrentUser]);
 
   return (
@@ -108,7 +109,7 @@ export default function HomePageHeader() {
       <div className="header--container">
         <div className="header--logo" onClick={() => setIsProfileShow(true)}>
           <img
-            src={ getCurrentUser()?.photoURL || "/default-avatar.svg"}
+            src={ getCurrentUser()?.photoURL || defaultAvatar}
             alt="avatar"
           />
         </div>

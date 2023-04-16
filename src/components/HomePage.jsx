@@ -3,8 +3,15 @@ import HomePageUser from "./HomePageUser";
 import HomePageHeader from "./HomePageHeader";
 import useUser from "../store/useUser";
 import { useEffect, useState } from "react";
-import { collection, limit, onSnapshot, query, where } from "firebase/firestore";
-import { db } from "../config/firebase";
+import {
+  collection,
+  limit,
+  getDocs,
+  query,
+  where,
+  getFirestore,
+} from "firebase/firestore/lite";
+import { app} from "../config/firebase";
 import { lazy } from "react";
 import { Suspense } from "react";
 import SpinerLoader from "./SpinerLoader";
@@ -13,15 +20,12 @@ import useUsers from "../store/useUsers";
 // lazy loade
 const UserProfile = lazy(() => import("./UserProfile"));
 
-
-
 export default function HomePage() {
   const [allUsers, setAllUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-    // is profile show
-    const isProfileShow = useUsers((state) => state.isProfileShow);
-
+  // is profile show
+  const isProfileShow = useUsers((state) => state.isProfileShow);
 
   // get current user
   const getCurrentUser = useUser((state) => state.getCurrentUser);
@@ -32,23 +36,23 @@ export default function HomePage() {
 
   // get all user in firebase except the current user
   useEffect(() => {
-    setIsLoading(true);
-    const q = query(
-      collection(db, "users"),
-      where("uid", "!=", currentUser.uid),
-      limit(6)
-    );
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const usereData = [];
+    const getAllUsers = async () => {
+      setIsLoading(true);
+      const firestore = getFirestore(app);
+      const q = query(
+        collection(firestore, "users"),
+        where("uid", "!=", currentUser.uid),
+        limit(6)
+      );
+      const querySnapshot = await getDocs(q);
+      const users = [];
       querySnapshot.forEach((doc) => {
-        usereData.push({ ...doc.data(), id: doc.id });
+        users.push({...doc.data() , id: doc.id});
       });
-      setAllUsers(usereData);
+      setAllUsers(users);
       setIsLoading(false);
-    });
-    return () => unsubscribe();
-
-
+    };
+    getAllUsers();
   }, []);
 
   return (
@@ -60,11 +64,11 @@ export default function HomePage() {
       ) : (
         <>
           {/* profile */}
-           {
-            isProfileShow &&  <Suspense fallback={<SpinerLoader />}>
-            <UserProfile />
-          </Suspense>
-           }
+          {isProfileShow && (
+            <Suspense fallback={<SpinerLoader />}>
+              <UserProfile />
+            </Suspense>
+          )}
           {/* home page header */}
           <HomePageHeader />
           {/* home page search */}
@@ -73,7 +77,7 @@ export default function HomePage() {
           <div className="user-profile--container">
             {!isLoading ? (
               allUsers.map((user) => {
-                return <HomePageUser key={user.id} {...user} />
+                return <HomePageUser key={user.id} {...user} />;
               })
             ) : (
               <SpinerLoader />
