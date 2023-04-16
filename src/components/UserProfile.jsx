@@ -2,7 +2,7 @@ import "./styles/userProfile.css";
 import { BiArrowBack } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import { RiInformationLine } from "react-icons/ri";
-import { MdOutlineLocalPhone } from "react-icons/md";
+import { MdOutlineEmail, MdOutlineLocalPhone } from "react-icons/md";
 import { HiPencil } from "react-icons/hi";
 import useUsers from "../store/useUsers";
 import useUser from "../store/useUser";
@@ -205,29 +205,27 @@ export default function UserProfile() {
           <div className="icon">
             <MdOutlineLocalPhone />
           </div>
-          {user?.phoneNumber && user?.email ? (
-            <>
-              <div className="display">
-                <h3>رقم الهاتف</h3>
-                <h4 className="dr-en">{user?.phoneNumber}</h4>
-              </div>
-              <div className="display">
-                <h3>الإيميل</h3>
-                <h4>{user?.email}</h4>
-              </div>
-            </>
-          ) : user?.phoneNumber ? (
+          {user?.phoneNumber && (
             <div className="display">
               <h3>رقم الهاتف</h3>
               <h4 className="dr-en">{user?.phoneNumber}</h4>
             </div>
-          ) : (
-            <div className="display">
-              <h3>الإيميل</h3>
-              <h4>{user?.email}</h4>
-            </div>
           )}
         </div>
+        {/* profile email */}
+       {
+        user?.email && (
+          <div className="profile--phone-number">
+          <div className="icon">
+            <MdOutlineEmail />
+          </div>
+          <div className="display">
+            <h3>البريد الإلكتروني</h3>
+            <h4 className="dr-en">{user?.email}</h4>
+          </div>
+        </div>
+        )
+       }
       </div>
     </div>
   );
