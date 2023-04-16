@@ -18,18 +18,17 @@ import { doc, updateDoc, getFirestore } from "firebase/firestore/lite";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import defaultAvatar from '../assets/img/default-avatar.svg'
+import defaultAvatar from "../assets/img/default-avatar.svg";
 export default function UserProfile() {
   // get current user
   const getCurrentUser = useUser((state) => state.getCurrentUser);
   const user = getCurrentUser();
 
   // set update profile
-  const updateProfile = useUser(state => state.updateProfile)
-
+  const updateProfile = useUser((state) => state.updateProfile);
 
   const [file, setFile] = useState(null);
-  const [isImageLoading ,setIsImageLoading] = useState(false)
+  const [isImageLoading, setIsImageLoading] = useState(false);
 
   // set is profile show
   const setIsProfileShow = useUsers((state) => state.setIsProfileShow);
@@ -47,7 +46,7 @@ export default function UserProfile() {
     // unique image name
     const imageName = new Date().getTime() + file.name;
     const storageRef = ref(storage, `profile/${imageName}`);
-    setIsImageLoading(true)
+    setIsImageLoading(true);
     if (getCurrentUser().photoPath) {
       const oldRef = ref(storage, getCurrentUser().photoPath);
       // Delete the file
@@ -99,8 +98,8 @@ export default function UserProfile() {
     const updatedFeild = {
       photoURL: downloadURL,
       photoPath: fullPath,
-    }
-    updateProfile(updatedFeild)
+    };
+    updateProfile(updatedFeild);
     const firestore = getFirestore(app);
     const userRef = doc(firestore, "users", getCurrentUser().uid);
     updateDoc(userRef, {
@@ -109,10 +108,10 @@ export default function UserProfile() {
     })
       .then(() => {
         toast.success("تم تحديث الصورة بنجاح");
-        setIsImageLoading(false)
+        setIsImageLoading(false);
       })
       .catch((error) => {
-        setIsImageLoading(false)
+        setIsImageLoading(false);
         console.error("Error updating document: ", error);
         toast.error("حدث خطأ أثناء تحديث الصورة رجاءا حاول مرة أخرى");
       });
@@ -206,7 +205,18 @@ export default function UserProfile() {
           <div className="icon">
             <MdOutlineLocalPhone />
           </div>
-          {user?.phoneNumber ? (
+          {user?.phoneNumber && user?.email ? (
+            <>
+              <div className="display">
+                <h3>رقم الهاتف</h3>
+                <h4 className="dr-en">{user?.phoneNumber}</h4>
+              </div>
+              <div className="display">
+                <h3>الإيميل</h3>
+                <h4>{user?.email}</h4>
+              </div>
+            </>
+          ) : user?.phoneNumber ? (
             <div className="display">
               <h3>رقم الهاتف</h3>
               <h4 className="dr-en">{user?.phoneNumber}</h4>
