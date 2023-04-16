@@ -10,6 +10,7 @@ import { useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import ChatImg from '../assets/img/chat-img.png'
+import defaultAvatar from '../assets/img/default-avatar.svg'
 
 export default function ChatPageUser() {
   // navigate 
@@ -70,7 +71,7 @@ export default function ChatPageUser() {
             <BiArrowBack className="r-180" />
             </div>
           <div className="img">
-            <img src={selectedUser?.photoURL} alt="avatar" />
+            <img src={selectedUser?.photoURL || defaultAvatar} alt="avatar" />
           </div>
             </div>
           <div className="info">
