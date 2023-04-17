@@ -5,12 +5,11 @@ import useSelectedUser from '../store/useSelectedUser';
 import defaultAvatar from '../assets/img/default-avatar.svg'
 
 export default function HomePageUser({ displayName, photoURL, isOnline, lastSeen }) {
-  moment.locale('ar');
-  const [timeAgo, setTimeAgo] = useState(moment(lastSeen).locale('ar').fromNow("DD/MM/YYYY, hh:mm A"));
+  const [timeAgo, setTimeAgo] = useState(moment(lastSeen).local('ar').fromNow("DD/MM/YYYY, hh:mm A"));
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeAgo(moment(lastSeen).locale('ar').fromNow("DD/MM/YYYY, hh:mm A"));
+      setTimeAgo(moment(lastSeen).local('ar').fromNow("DD/MM/YYYY, hh:mm A"));
     }, 10000); 
 
     return () => clearInterval(interval);
@@ -35,7 +34,7 @@ export default function HomePageUser({ displayName, photoURL, isOnline, lastSeen
       <div className="user--profile--info">
         <div className="info">
             <h3>{displayName || 'Ahmed Abdat'}</h3>
-            <p className='dr-en f-en'>{isOnline ? 'متصل الآن' : timeAgo}</p>
+            <p className='dr-en f-en'>{isOnline ? 'متصل الآن' : 'آخر ظهور قبل ' + timeAgo}</p>
         </div>
         <div className="last-message">
             <p>أهلا بك في واتساب</p>
