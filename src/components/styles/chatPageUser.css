@@ -53,12 +53,11 @@
   }
 
   .chat-page--container header .info p {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: #667781;
   }
 
   .chat-page--container header .icons {
-    margin-right: 10px;
     color: #54656f;
     display: flex;
     align-items: center;

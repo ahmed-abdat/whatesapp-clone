@@ -15,6 +15,7 @@ import { lazy } from "react";
 import { Suspense } from "react";
 import SpinerLoader from "./SpinerLoader";
 import useUsers from "../store/useUsers";
+import useSelectedUser from "../store/useSelectedUser";
 
 // lazy loade
 const UserProfile = lazy(() => import("./UserProfile"));
@@ -32,6 +33,10 @@ export default function HomePage() {
 
   // get logout loading
   const isLogoutLoading = useUser((state) => state.isLogoutLoading);
+  // get selected user
+  const getSelectedUser = useSelectedUser((state) => state.getSelectedUser);
+  // set selected user
+  const setSelectedUser = useSelectedUser((state) => state.setSelectedUser);
 
   // get all user in firebase except the current user
   useEffect(() => {
@@ -46,6 +51,11 @@ export default function HomePage() {
       querySnapshot.forEach((doc) => {
         users.push({...doc.data() , id: doc.id});
       });
+      const findUser = users.find((user) => user.uid === getSelectedUser()?.uid);
+      if (findUser) {
+        setSelectedUser(findUser);
+      }
+
       setAllUsers(users);
       setIsLoading(false);
     });

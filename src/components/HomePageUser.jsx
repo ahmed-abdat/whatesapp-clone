@@ -9,6 +9,7 @@ export default function HomePageUser({
   photoURL,
   isOnline,
   lastSeen,
+  uid
 }) {
   moment.locale("ar_SA");
   moment.updateLocale("ar_SA", {
@@ -63,7 +64,7 @@ export default function HomePageUser({
   const setIsSelectedUser = useSelectedUser((state) => state.setIsSelectedUser);
 
   const handelSelectedUser = () => {
-    setSelectedUser({ displayName, photoURL, isOnline, lastSeen });
+    setSelectedUser({ displayName, photoURL, isOnline, lastSeen , uid});
     setIsSelectedUser(true);
   };
 

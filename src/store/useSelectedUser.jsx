@@ -9,7 +9,13 @@ const useSelectedUser = create((set, get) => ({
   },
   setIsSelectedUser : (isSelectedUser) => {
     set(() => ({ isSelectedUser }));
-  }
+  },
+  getSelectedUser: () => {
+    const { selectedUser } = get();
+    const savedUser = JSON.parse(localStorage.getItem("SelectedUser"));
+    const selectedUsere = selectedUser ? selectedUser : savedUser;
+    return selectedUsere;
+  },
 }));
 
 export default useSelectedUser;
