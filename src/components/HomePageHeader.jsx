@@ -32,6 +32,7 @@ export default function HomePageHeader() {
   // navigate
   const navigate = useNavigate();
 
+  // handle outside click
   useEffect(() => {
     function handleOutsideClick(e) {
       if (

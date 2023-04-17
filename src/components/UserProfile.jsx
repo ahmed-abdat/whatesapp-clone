@@ -41,7 +41,7 @@ export default function UserProfile() {
   // profile state
   const [profile, setProfile] = useState({
     displayName: user?.displayName || "",
-    userStatus: "جديد في واتساب",
+    userStatus: user?.userStatus || "",
   });
 
   // displayName Ref
@@ -49,9 +49,18 @@ export default function UserProfile() {
   // userStatus Ref
   const userStatusRef = useRef(null);
 
+  // max displayName length
+  const maxDisplayNameLength = 30;
+  // max userStatus length
+  const maxUserStatusLength = 50;
+
   // handel profile change
   const handelProfileChange = (e) => {
     const { name, value } = e.target;
+    if (name === "displayName" && value.length > maxDisplayNameLength)
+      return toast.error(`الحد الأقصى للإسم ${maxDisplayNameLength} حرف`);
+    if (name === "userStatus" && value.length > maxUserStatusLength)
+      return toast.error(`الحد الأقصى للحالة ${maxUserStatusLength} حرف`);
 
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
@@ -86,23 +95,12 @@ export default function UserProfile() {
         });
     }
     const uploadTask = uploadBytesResumable(storageRef, file);
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      },
-      (error) => {
-        console.error(error);
-        toast.error("حدث خطأ أثناء تحميل الصورة رجاءا حاول مرة أخرى");
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          const fullPath = uploadTask.snapshot.ref.fullPath;
-          updateUserInfo(downloadURL, fullPath);
-        });
-      }
-    );
+    uploadTask.on("state_changed", () => {
+      getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+        const fullPath = uploadTask.snapshot.ref.fullPath;
+        updateUserInfo(downloadURL, fullPath);
+      });
+    });
   };
 
   // handel file
@@ -258,7 +256,11 @@ export default function UserProfile() {
                 className={isArabicName ? "f-ar dr-ar" : "f-en dr-en"}
                 disabled={!isDisplayNameEdit}
                 ref={displayNameRef}
+                onKeyDown={(e) => e.key === "Enter" && handelDisplayNameEdit()}
               />
+              {isDisplayNameEdit && (
+                <spna className="length">{maxDisplayNameLength - profile.displayName.length}</spna>
+              )}
               <div className="edit" onClick={handelDisplayNameEdit}>
                 {isDisplayNameEdit ? (
                   <BiCheck className="check" />
@@ -290,7 +292,11 @@ export default function UserProfile() {
                 value={profile.userStatus}
                 onChange={handelProfileChange}
                 className={isArabicStatus ? "f-ar dr-ar" : "f-en dr-en"}
+                onKeyDown={(e) => e.key === "Enter" && handelUserStatusEdit()}
               />
+              {isUserStatusEdit && (
+                <spna className="length">{maxUserStatusLength - profile.userStatus.length}</spna>
+              )}
               <div className="edit d-f" onClick={handelUserStatusEdit}>
                 {isUserStatusEdit ? (
                   <BiCheck className="check" />

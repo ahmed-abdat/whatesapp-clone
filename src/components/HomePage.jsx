@@ -39,7 +39,7 @@ export default function HomePage() {
       const q = query(
         collection(db, "users"),
         where("uid", "!=", currentUser.uid),
-        limit(6)
+        limit(10)
       );
       const querySnapshot = onSnapshot(q, (querySnapshot) => {
       const users = [];
