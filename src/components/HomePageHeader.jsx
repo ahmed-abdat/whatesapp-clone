@@ -99,7 +99,7 @@ export default function HomePageHeader() {
       <div className="header--container">
         <div className="header--logo" onClick={() => setIsProfileShow(true)}>
           <img
-            src={ getCurrentUser() ? getCurrentUser().photoURL : defaultAvatar}
+            src={ getCurrentUser()?.photoURL || defaultAvatar}
             alt="avatar"
           />
         </div>

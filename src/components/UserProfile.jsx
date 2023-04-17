@@ -35,8 +35,8 @@ export default function UserProfile() {
   const setIsProfileShow = useUsers((state) => state.setIsProfileShow);
 
   // is name Arabic
-  const isArabicName = /[\u0600-\u06FF]/.test(user?.displayName);
-  const isArabicStatus = /[\u0600-\u06FF]/.test(user?.userStatus);
+  const [isNameArabic, setIsNameArabic] = useState(/[\u0600-\u06FF]/.test(user?.displayName));
+  const [isStatusArabic, setIsStatusArabic] = useState(/[\u0600-\u06FF]/.test(user?.userStatus));
 
   // profile state
   const [profile, setProfile] = useState({
@@ -57,6 +57,15 @@ export default function UserProfile() {
   // handel profile change
   const handelProfileChange = (e) => {
     const { name, value } = e.target;
+    if(name === 'displayName' && value.length > 0){
+      const isArabicName = /[\u0600-\u06FF]/.test(value);
+      setIsNameArabic(isArabicName)
+    }
+    if(name === 'userStatus' && value.length > 0){
+      const isArabicStatus = /[\u0600-\u06FF]/.test(value);
+      setIsStatusArabic(isArabicStatus)
+    }
+
     if (name === "displayName" && value.length > maxDisplayNameLength)
       return toast.error(`الحد الأقصى للإسم ${maxDisplayNameLength} حرف`);
     if (name === "userStatus" && value.length > maxUserStatusLength)
@@ -81,7 +90,7 @@ export default function UserProfile() {
     const imageName = new Date().getTime() + file.name;
     const storageRef = ref(storage, `profile/${imageName}`);
     setIsImageLoading(true);
-    if (getCurrentUser().photoPath) {
+    if (getCurrentUser()?.photoPath) {
       const oldRef = ref(storage, getCurrentUser().photoPath);
       // Delete the file
       deleteObject(oldRef)
@@ -95,7 +104,15 @@ export default function UserProfile() {
         });
     }
     const uploadTask = uploadBytesResumable(storageRef, file);
-    uploadTask.on("state_changed", () => {
+    uploadTask.on('state_changed', 
+    (snapshot) => {
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      console.log('Upload is ' + progress + '% done');
+    }, 
+    (error) => {
+      console.log(error.message);
+      // Handle unsuccessful uploads
+    }, () => {
       getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
         const fullPath = uploadTask.snapshot.ref.fullPath;
         updateUserInfo(downloadURL, fullPath);
@@ -125,10 +142,7 @@ export default function UserProfile() {
     updateProfile(updatedFeild);
     const firestore = getFirestore(app);
     const userRef = doc(firestore, "users", getCurrentUser().uid);
-    updateDoc(userRef, {
-      photoURL: downloadURL,
-      photoPath: fullPath,
-    })
+    updateDoc(userRef,updatedFeild)
       .then(() => {
         toast.success("تم تحديث الصورة بنجاح");
         setIsImageLoading(false);
@@ -143,7 +157,7 @@ export default function UserProfile() {
   // handel display name edit
   const handelDisplayNameEdit = () => {
     setIsDisplayNameEdit((prev) => !prev);
-    if (isDisplayNameEdit && profile.displayName.trim() !== user?.displayName) {
+    if (isDisplayNameEdit && profile.displayName.trim() !== user?.displayName && profile.displayName !== '') {
       const firestore = getFirestore(app);
       const userRef = doc(firestore, "users", getCurrentUser().uid);
       updateDoc(userRef, {
@@ -167,7 +181,7 @@ export default function UserProfile() {
   // handel user status edit
   const handelUserStatusEdit = () => {
     setIsUserStatusEdit((prev) => !prev);
-    if (isUserStatusEdit && profile.userStatus.trim() !== user?.userStatus) {
+    if (isUserStatusEdit && profile.userStatus.trim() !== user?.userStatus && profile.userStatus !== '') {
       const firestore = getFirestore(app);
       const userRef = doc(firestore, "users", getCurrentUser().uid);
       updateDoc(userRef, {
@@ -253,13 +267,13 @@ export default function UserProfile() {
                 value={profile.displayName}
                 name="displayName"
                 onChange={handelProfileChange}
-                className={isArabicName ? "f-ar dr-ar" : "f-en dr-en"}
+                className={isNameArabic ? "f-ar dr-ar" : "f-en dr-en"}
                 disabled={!isDisplayNameEdit}
                 ref={displayNameRef}
                 onKeyDown={(e) => e.key === "Enter" && handelDisplayNameEdit()}
               />
               {isDisplayNameEdit && (
-                <spna className="length">{maxDisplayNameLength - profile.displayName.length}</spna>
+                <span className="length">{maxDisplayNameLength - profile.displayName.length}</span>
               )}
               <div className="edit" onClick={handelDisplayNameEdit}>
                 {isDisplayNameEdit ? (
@@ -291,11 +305,11 @@ export default function UserProfile() {
                 name="userStatus"
                 value={profile.userStatus}
                 onChange={handelProfileChange}
-                className={isArabicStatus ? "f-ar dr-ar" : "f-en dr-en"}
+                className={isStatusArabic ? "f-ar dr-ar" : "f-en dr-en"}
                 onKeyDown={(e) => e.key === "Enter" && handelUserStatusEdit()}
               />
               {isUserStatusEdit && (
-                <spna className="length">{maxUserStatusLength - profile.userStatus.length}</spna>
+                <span className="length">{maxUserStatusLength - profile.userStatus.length}</span>
               )}
               <div className="edit d-f" onClick={handelUserStatusEdit}>
                 {isUserStatusEdit ? (

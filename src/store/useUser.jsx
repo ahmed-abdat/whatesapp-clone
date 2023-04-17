@@ -35,10 +35,12 @@ const useUser = create((set , get) => ({
   setIsLogoutLoading : (boolean) => {
     set(() => ({ isLogoutLoading : boolean }));
   },
-  updateProfile : (user) => {
-    const currentUsere = get().currentUser
-    const updatedUser = {...currentUsere , ...user}
-    set(() => ({ currentUser: updatedUser }));
+  updateProfile : (user ) => {
+    const savedUser = localStorage.getItem('currentUser') === 'undefined' ? null : JSON.parse(localStorage.getItem('currentUser'))
+    const curentUser = get().currentUser ? get().currentUser : savedUser
+    const updatedUser = { ...curentUser , ...user };
+    console.log(curentUser);
+    set(() => ({ currentUser : updatedUser })),
     localStorage.setItem("currentUser", JSON.stringify(updatedUser));
   },
 }));
