@@ -7,11 +7,11 @@ import defaultAvatar from '../assets/img/default-avatar.svg'
 
 export default function HomePageUser({ displayName, photoURL, isOnline, lastSeen }) {
   moment.locale('ar_SA');
-  const [timeAgo, setTimeAgo] = useState(moment(lastSeen).locale('ar').fromNow("DD/MM/YYYY, hh:mm A"));
+  const [timeAgo, setTimeAgo] = useState(moment(lastSeen).fromNow("DD/MM/YYYY, hh:mm A"));
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeAgo(moment(lastSeen).locale('ar').fromNow("DD/MM/YYYY, hh:mm A"));
+      setTimeAgo(moment(lastSeen).fromNow("DD/MM/YYYY, hh:mm A"));
     }, 10000); 
 
     return () => clearInterval(interval);
