@@ -1,5 +1,5 @@
 import "./styles/userProfile.css";
-import { BiArrowBack } from "react-icons/bi";
+import { BiArrowBack, BiCheck } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import { RiInformationLine } from "react-icons/ri";
 import { MdOutlineEmail, MdOutlineLocalPhone } from "react-icons/md";
@@ -15,10 +15,11 @@ import {
 } from "firebase/storage";
 import { app, storage } from "../config/firebase";
 import { doc, updateDoc, getFirestore } from "firebase/firestore/lite";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import defaultAvatar from "../assets/img/default-avatar.svg";
+
 export default function UserProfile() {
   // get current user
   const getCurrentUser = useUser((state) => state.getCurrentUser);
@@ -34,7 +35,31 @@ export default function UserProfile() {
   const setIsProfileShow = useUsers((state) => state.setIsProfileShow);
 
   // is name Arabic
-  const isArabic = /[\u0600-\u06FF]/.test(user?.displayName);
+  const isArabicName = /[\u0600-\u06FF]/.test(user?.displayName);
+  const isArabicStatus = /[\u0600-\u06FF]/.test(user?.userStatus);
+
+  // profile state
+  const [profile, setProfile] = useState({
+    displayName: user?.displayName || "",
+    userStatus: "جديد في واتساب",
+  });
+
+  // displayName Ref
+  const displayNameRef = useRef(null);
+  // userStatus Ref
+  const userStatusRef = useRef(null);
+
+  // handel profile change
+  const handelProfileChange = (e) => {
+    const { name, value } = e.target;
+
+    setProfile((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // is displayName edit
+  const [isDisplayNameEdit, setIsDisplayNameEdit] = useState(false);
+  // is userStatus edit
+  const [isUserStatusEdit, setIsUserStatusEdit] = useState(false);
 
   // handle back
   const handelBack = () => {
@@ -117,6 +142,54 @@ export default function UserProfile() {
       });
   };
 
+  // handel display name edit
+  const handelDisplayNameEdit = () => {
+    setIsDisplayNameEdit((prev) => !prev);
+    if (isDisplayNameEdit && profile.displayName.trim() !== user?.displayName) {
+      const firestore = getFirestore(app);
+      const userRef = doc(firestore, "users", getCurrentUser().uid);
+      updateDoc(userRef, {
+        displayName: profile.displayName,
+      })
+        .then(() => {
+          updateProfile({ displayName: profile.displayName });
+          toast.success("تم تحديث الاسم بنجاح");
+        })
+        .catch((error) => {
+          console.error("Error updating document: ", error);
+          toast.error("حدث خطأ أثناء تحديث الاسم رجاءا حاول مرة أخرى");
+        });
+    } else {
+      setTimeout(() => {
+        displayNameRef.current.focus();
+      }, 0);
+    }
+  };
+
+  // handel user status edit
+  const handelUserStatusEdit = () => {
+    setIsUserStatusEdit((prev) => !prev);
+    if (isUserStatusEdit && profile.userStatus.trim() !== user?.userStatus) {
+      const firestore = getFirestore(app);
+      const userRef = doc(firestore, "users", getCurrentUser().uid);
+      updateDoc(userRef, {
+        userStatus: profile.userStatus,
+      })
+        .then(() => {
+          updateProfile({ userStatus: profile.userStatus });
+          toast.success("تم تحديث الحالة بنجاح");
+        })
+        .catch((error) => {
+          console.error("Error updating document: ", error);
+          toast.error("حدث خطأ أثناء تحديث الحالة رجاءا حاول مرة أخرى");
+        });
+    } else {
+      setTimeout(() => {
+        userStatusRef.current.focus();
+      }, 0);
+    }
+  };
+
   return (
     <div className={`user-profile`}>
       <header className="user-profile--header">
@@ -176,10 +249,24 @@ export default function UserProfile() {
           </div>
           <div className="display">
             <h3>الإسم</h3>
-            <h4 className={isArabic ? "f-ar" : "f-en"}>{user?.displayName}</h4>
-          </div>
-          <div className="edit">
-            <HiPencil />
+            <div className="input">
+              <input
+                type="text"
+                value={profile.displayName}
+                name="displayName"
+                onChange={handelProfileChange}
+                className={isArabicName ? "f-ar dr-ar" : "f-en dr-en"}
+                disabled={!isDisplayNameEdit}
+                ref={displayNameRef}
+              />
+              <div className="edit" onClick={handelDisplayNameEdit}>
+                {isDisplayNameEdit ? (
+                  <BiCheck className="check" />
+                ) : (
+                  <HiPencil />
+                )}
+              </div>
+            </div>
           </div>
           <div></div>
           <p className="info">
@@ -194,16 +281,30 @@ export default function UserProfile() {
           </div>
           <div className="display">
             <h3>الحالة</h3>
-            <h4>مالايدرك كله لايترك جله</h4>
-          </div>
-          <div className="edit">
-            <HiPencil />
+            <div className="input">
+              <input
+                disabled={!isUserStatusEdit}
+                ref={userStatusRef}
+                type="text"
+                name="userStatus"
+                value={profile.userStatus}
+                onChange={handelProfileChange}
+                className={isArabicStatus ? "f-ar dr-ar" : "f-en dr-en"}
+              />
+              <div className="edit d-f" onClick={handelUserStatusEdit}>
+                {isUserStatusEdit ? (
+                  <BiCheck className="check" />
+                ) : (
+                  <HiPencil />
+                )}
+              </div>
+            </div>
           </div>
         </div>
         {/* profile phone number */}
-        
-          {user?.phoneNumber && (
-            <div className="profile--phone-number">
+
+        {user?.phoneNumber && (
+          <div className="profile--phone-number">
             <div className="icon">
               <MdOutlineLocalPhone />
             </div>
@@ -212,21 +313,19 @@ export default function UserProfile() {
               <h4 className="dr-en">{user?.phoneNumber}</h4>
             </div>
           </div>
-          )}
+        )}
         {/* profile email */}
-       {
-        user?.email && (
+        {user?.email && (
           <div className="profile--phone-number">
-          <div className="icon">
-            <MdOutlineEmail />
+            <div className="icon">
+              <MdOutlineEmail />
+            </div>
+            <div className="display">
+              <h3>البريد الإلكتروني</h3>
+              <h4 className="dr-en">{user?.email}</h4>
+            </div>
           </div>
-          <div className="display">
-            <h3>البريد الإلكتروني</h3>
-            <h4 className="dr-en">{user?.email}</h4>
-          </div>
-        </div>
-        )
-       }
+        )}
       </div>
     </div>
   );

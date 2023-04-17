@@ -94,6 +94,7 @@ export default function Otp({}) {
       lastSeen: new Date().getTime(),
       photoPath : null,
       isOnline : true,
+      userStatus : 'جديد في واتساب'
     });
   };
 

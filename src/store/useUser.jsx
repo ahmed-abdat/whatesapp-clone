@@ -38,6 +38,7 @@ const useUser = create((set , get) => ({
   updateProfile : (user) => {
     const currentUsere = get().currentUser
     const updatedUser = {...currentUsere , ...user}
+    console.log(updatedUser);
     set(() => ({ currentUser: updatedUser }));
     localStorage.setItem("currentUser", JSON.stringify(updatedUser));
   },

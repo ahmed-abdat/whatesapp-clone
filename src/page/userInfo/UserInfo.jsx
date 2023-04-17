@@ -153,6 +153,7 @@ export default function UserInfo() {
         isOnline: true,
         photoPath: imageFullPath ? imageFullPath : null,
         lastSeen: new Date().getTime(),
+        userStatus : 'جديد في واتساب'
       };
       const emailUserData = {
         email,
@@ -163,6 +164,7 @@ export default function UserInfo() {
         photoURL: photoURL ? photoURL : null,
         photoPath: imageFullPath ? imageFullPath : null,
         lastSeen: new Date().getTime(),
+        userStatus : 'جديد في واتساب'
       };
 
       

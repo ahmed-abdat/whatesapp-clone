@@ -72,7 +72,7 @@ export default function HomePageHeader() {
           console.log(error.message);
         });
       navigate("/welcoome");
-    }, 3000);
+    }, 2000);
   };
 
   // update the user isOnline property to true
