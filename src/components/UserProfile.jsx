@@ -302,7 +302,6 @@ export default function UserProfile() {
           </div>
         </div>
         {/* profile phone number */}
-
         {user?.phoneNumber && (
           <div className="profile--phone-number">
             <div className="icon">
