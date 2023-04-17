@@ -1,35 +1,58 @@
-import moment from 'moment';
-import 'moment/locale/ar-sa';
-import { useState, useEffect } from 'react';
-import useSelectedUser from '../store/useSelectedUser';
-import defaultAvatar from '../assets/img/default-avatar.svg'
+import moment from "moment";
+import "moment/locale/ar-sa";
+import { useState, useEffect } from "react";
+import useSelectedUser from "../store/useSelectedUser";
+import defaultAvatar from "../assets/img/default-avatar.svg";
 
-export default function HomePageUser({ displayName, photoURL, isOnline, lastSeen }) {
-  moment.locale('ar_SA');
-  moment.updateLocale('ar_SA', {
+export default function HomePageUser({
+  displayName,
+  photoURL,
+  isOnline,
+  lastSeen,
+}) {
+  moment.locale("ar_SA");
+  moment.updateLocale("ar_SA", {
     relativeTime: {
-      future: 'في %s',
-      past: 'منذ %s',
-      s: 'ثوان',
-      ss: '%d ثانية',
-      m: 'دقيقة',
-      mm: '%d دقائق',
-      h: 'ساعة',
-      hh: '%d ساعات',
-      d: 'يوم',
-      dd: '%d أيام',
-      M: 'شهر',
-      MM: '%d أشهر',
-      y: 'سنة',
-      yy: '%d سنوات',
-      },
-      });
-  const [timeAgo, setTimeAgo] = useState(moment(lastSeen).locale('ar__SA').fromNow("DD/MM/YYYY, hh:mm A"));
+      future: "في %s",
+      past: "منذ %s",
+      s: "ثوان",
+      ss: "%d ثانية",
+      m: "دقيقة",
+      mm: "%d دقائق",
+      h: "ساعة",
+      hh: "%d ساعات",
+      d: "يوم",
+      dd: "%d أيام",
+      M: "شهر",
+      MM: "%d أشهر",
+      y: "سنة",
+      yy: "%d سنوات",
+    },
+  });
+  const now = moment();
+  const lastSeenMoment = moment(lastSeen);
+
+  const HourAndMinitFormat = lastSeenMoment.locale("ar-SA").format("hh:mm A");
+  const dateFormat = lastSeenMoment.locale("ar-SA").format("DD/MM/YYYY");
+
+  // function to check if the last seen is today or yesterday
+  const currentDate = () => {
+    if (lastSeenMoment.isSame(now, "day")) {
+      return ` آخر ظهور اليوم عند الساعة ${HourAndMinitFormat}`;
+    } else if (lastSeenMoment.isSame(now.clone().subtract(1, "day"), "day")) {
+      return `آخر ظهور أمس عند الساعة ${HourAndMinitFormat}`;
+    } else {
+      return `آخر ظهور بتاريخ ${dateFormat}`;
+    }
+  };
+
+  const [timeAgo, setTimeAgo] = useState(currentDate());
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeAgo(moment(lastSeen).locale('ar__SA').fromNow("DD/MM/YYYY, hh:mm A"));
-    }, 10000); 
+      const currentTime = currentDate();
+      setTimeAgo(currentTime);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [lastSeen]);
@@ -40,16 +63,15 @@ export default function HomePageUser({ displayName, photoURL, isOnline, lastSeen
   const setIsSelectedUser = useSelectedUser((state) => state.setIsSelectedUser);
 
   const handelSelectedUser = () => {
-    setSelectedUser({ displayName, photoURL, isOnline, lastSeen })
+    setSelectedUser({ displayName, photoURL, isOnline, lastSeen });
     setIsSelectedUser(true);
   };
 
-  // is arabic Name 
+  // is arabic Name
   const isArabic = (str) => {
     const arabic = /[\u0600-\u06FF]/;
     return arabic.test(str);
   };
-
 
   return (
     <div className="user--profile" onClick={handelSelectedUser}>
@@ -58,11 +80,13 @@ export default function HomePageUser({ displayName, photoURL, isOnline, lastSeen
       </div>
       <div className="user--profile--info">
         <div className="info">
-            <h3 className={isArabic(displayName) ? 'f-ar dr-ar' : 'f-en dr-en'}>{displayName || 'Ahmed Abdat'}</h3>
-            <p className='dr-ar f-ar'>{isOnline ? 'متصل الآن' : 'آخر ظهور قبل ' + timeAgo}</p>
+          <h3 className={isArabic(displayName) ? "f-ar dr-ar" : "f-en dr-en"}>
+            {displayName || "Ahmed Abdat"}
+          </h3>
+          <p className="dr-ar f-ar">{isOnline ? "متصل الآن" : timeAgo}</p>
         </div>
         <div className="last-message">
-            <p>أهلا بك في واتساب</p>
+          <p>أهلا بك في واتساب</p>
         </div>
       </div>
     </div>
