@@ -6,6 +6,24 @@ import defaultAvatar from '../assets/img/default-avatar.svg'
 
 export default function HomePageUser({ displayName, photoURL, isOnline, lastSeen }) {
   moment.locale('ar_SA');
+  moment.updateLocale('ar_SA', {
+    relativeTime: {
+      future: "في %s",
+      past: "منذ %s",
+      s: "ثوان",
+      ss: "%d ثانية",
+      m: "دقيقة",
+      mm: "%d دقائق",
+      h: "ساعة",
+      hh: "%d ساعات",
+      d: "يوم",
+      dd: "%d أيام",
+      M: "شهر",
+      MM: "%d أشهر",
+      y: "سنة",
+      yy: "%d سنوات"
+    }
+  });
   const [timeAgo, setTimeAgo] = useState(moment(lastSeen).fromNow("DD/MM/YYYY, hh:mm A"));
 
   useEffect(() => {
