@@ -32,13 +32,13 @@ export default function HomePageUser({
   const now = moment();
   const lastSeenMoment = moment(lastSeen);
 
-  const HourAndMinitFormat = lastSeenMoment.locale("ar-SA").format("hh:mm A");
-  const dateFormat = lastSeenMoment.locale("ar-SA").format("DD/MM/YYYY");
+  const HourAndMinitFormat = lastSeenMoment.format("hh:mm");
+  const dateFormat = lastSeenMoment.format("DD/MM/YYYY");
 
   // function to check if the last seen is today or yesterday
   const currentDate = () => {
     if (lastSeenMoment.isSame(now, "day")) {
-      return ` آخر ظهور اليوم عند الساعة ${HourAndMinitFormat}`;
+      return ` آخر ظهور اليوم عند الساعة ${HourAndMinitFormat} ${lastSeenMoment.format("a") === "am" ? "ص" : "م"}`;
     } else if (lastSeenMoment.isSame(now.clone().subtract(1, "day"), "day")) {
       return `آخر ظهور أمس عند الساعة ${HourAndMinitFormat}`;
     } else {
