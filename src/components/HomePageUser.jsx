@@ -5,6 +5,7 @@ import useSelectedUser from '../store/useSelectedUser';
 import defaultAvatar from '../assets/img/default-avatar.svg'
 
 export default function HomePageUser({ displayName, photoURL, isOnline, lastSeen }) {
+  moment.localeData('ar');
   const [timeAgo, setTimeAgo] = useState(moment(lastSeen).local('ar').fromNow("DD/MM/YYYY, hh:mm A"));
 
   useEffect(() => {
@@ -34,7 +35,7 @@ export default function HomePageUser({ displayName, photoURL, isOnline, lastSeen
       <div className="user--profile--info">
         <div className="info">
             <h3>{displayName || 'Ahmed Abdat'}</h3>
-            <p className='dr-en f-en'>{isOnline ? 'متصل الآن' : 'آخر ظهور قبل ' + timeAgo}</p>
+            <p className='dr-ar f-ar'>{isOnline ? 'متصل الآن' : 'آخر ظهور قبل ' + timeAgo}</p>
         </div>
         <div className="last-message">
             <p>أهلا بك في واتساب</p>
