@@ -1,11 +1,12 @@
 import moment from 'moment';
 import 'moment/locale/ar'; 
+import 'moment/locale/ar-sa';
 import { useState, useEffect } from 'react';
 import useSelectedUser from '../store/useSelectedUser';
 import defaultAvatar from '../assets/img/default-avatar.svg'
 
 export default function HomePageUser({ displayName, photoURL, isOnline, lastSeen }) {
-  moment.locale('ar');
+  moment.locale('ar_SA');
   const [timeAgo, setTimeAgo] = useState(moment(lastSeen).locale('ar').fromNow("DD/MM/YYYY, hh:mm A"));
 
   useEffect(() => {
