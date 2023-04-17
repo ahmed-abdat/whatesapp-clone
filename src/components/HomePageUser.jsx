@@ -1,5 +1,4 @@
 import moment from 'moment';
-import 'moment/locale/ar'; 
 import 'moment/locale/ar-sa';
 import { useState, useEffect } from 'react';
 import useSelectedUser from '../store/useSelectedUser';
