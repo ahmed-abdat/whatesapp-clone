@@ -5,12 +5,12 @@ import useSelectedUser from '../store/useSelectedUser';
 import defaultAvatar from '../assets/img/default-avatar.svg'
 
 export default function HomePageUser({ displayName, photoURL, isOnline, lastSeen }) {
-  moment.locale('ar_SA');
-  const [timeAgo, setTimeAgo] = useState(moment(lastSeen).fromNow("DD/MM/YYYY, hh:mm A"));
+  moment.locale('ar');
+  const [timeAgo, setTimeAgo] = useState(moment(lastSeen).local('ar').fromNow("DD/MM/YYYY, hh:mm A"));
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeAgo(moment(lastSeen).fromNow("DD/MM/YYYY, hh:mm A"));
+      setTimeAgo(moment(lastSeen).local('ar').fromNow("DD/MM/YYYY, hh:mm A"));
     }, 10000); 
 
     return () => clearInterval(interval);
@@ -26,6 +26,12 @@ export default function HomePageUser({ displayName, photoURL, isOnline, lastSeen
     setIsSelectedUser(true);
   };
 
+  // is arabic Name 
+  const isArabic = (str) => {
+    const arabic = /[\u0600-\u06FF]/;
+    return arabic.test(str);
+  };
+
 
   return (
     <div className="user--profile" onClick={handelSelectedUser}>
@@ -34,7 +40,7 @@ export default function HomePageUser({ displayName, photoURL, isOnline, lastSeen
       </div>
       <div className="user--profile--info">
         <div className="info">
-            <h3>{displayName || 'Ahmed Abdat'}</h3>
+            <h3 className={isArabic(displayName) ? 'f-ar dr-ar' : 'f-en dr-en'}>{displayName || 'Ahmed Abdat'}</h3>
             <p className='dr-ar f-ar'>{isOnline ? 'متصل الآن' : 'آخر ظهور قبل ' + timeAgo}</p>
         </div>
         <div className="last-message">
