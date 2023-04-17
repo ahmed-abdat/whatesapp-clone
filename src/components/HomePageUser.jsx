@@ -25,11 +25,11 @@ export default function HomePageUser({ displayName, photoURL, isOnline, lastSeen
       yy: '%d سنوات',
       },
       });
-  const [timeAgo, setTimeAgo] = useState(moment(lastSeen).fromNow("DD/MM/YYYY, hh:mm A"));
+  const [timeAgo, setTimeAgo] = useState(moment(lastSeen).locale('ar__SA').fromNow("DD/MM/YYYY, hh:mm A"));
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeAgo(moment(lastSeen).fromNow("DD/MM/YYYY, hh:mm A"));
+      setTimeAgo(moment(lastSeen).locale('ar__SA').fromNow("DD/MM/YYYY, hh:mm A"));
     }, 10000); 
 
     return () => clearInterval(interval);
