@@ -109,7 +109,9 @@ export default function HomePageUser({
        }
         </div>
         <div className="last-message">
-          <p className={contentClass()}> {lastMessage?.content} </p>
+         {
+          lastMessage &&  <p className={contentClass()}> {lastMessage?.content} </p>
+         }
         </div>
       </div>
     </div>
