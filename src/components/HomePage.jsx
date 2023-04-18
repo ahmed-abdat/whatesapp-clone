@@ -10,6 +10,7 @@ import {
   where,
   onSnapshot,
   doc,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { lazy } from "react";
@@ -35,13 +36,6 @@ export default function HomePage() {
   // get logout loading
   const isLogoutLoading = useUser((state) => state.isLogoutLoading);
 
-
-
-
-
-  
-
-
   // get all user in firebase except the current user
   useEffect(() => {
     setIsLoading(true);
@@ -52,17 +46,35 @@ export default function HomePage() {
     );
     const querySnapshot = onSnapshot(q, (querySnapshot) => {
       const users = [];
-      querySnapshot.forEach((doc) => {
-        users.push({ ...doc.data(), id: doc.id });
+      querySnapshot.forEach((doce) => {
+        users.push({ ...doce.data(), id: doce.id });
       });
       setAllUsers(users);
       setIsLoading(false);
-    })
-  
-    return () => querySnapshot();
+    });
 
+    return () => querySnapshot();
   }, []);
 
+
+  useEffect(()=> {
+    // listen to last message for each user
+    allUsers.forEach(async (user) => {
+      const lastMessageRef = doc(db, "users", currentUser.uid, "lastMessage", user.uid);
+      const lastMessageDoc = await getDoc(lastMessageRef);
+      if(lastMessageDoc.exists()) {
+        const lastMessage = lastMessageDoc.data();
+        const updatedUsers = allUsers.map((user) => {
+          if(user.uid === lastMessage.to || user.uid === lastMessage.from) {
+            return {...user, lastMessage}
+          }
+          return user;
+        })
+        setAllUsers(updatedUsers);
+      }
+    })
+
+  }, [allUsers])
 
 
   return (

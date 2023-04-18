@@ -21,6 +21,7 @@ import {
   orderBy,
   doc,
   updateDoc,
+  setDoc,
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import SpinerLoader from '../SpinerLoader'
@@ -164,15 +165,11 @@ export default function ChatPageUser() {
         isRead: false,
       };
       await addDoc(messageRef, messageData);
-      // update last message in both user
-      const currentUserRef = doc(db, "users", currentUserId);
-      const selectedUserRef = doc(db, "users", selectedUserId);
-      await updateDoc(currentUserRef, {
-        lastMessage: messageData, 
-      });
-      await updateDoc(selectedUserRef, {
-        lastMessage: messageData,
-      });
+      // update last message in both user lastMessage collection
+      const currentUserLastMessageRef = collection(db, "users", currentUserId, "lastMessage");
+      const selectedUserLastMessageRef = collection(db, "users", selectedUserId, "lastMessage");
+      await setDoc(doc(currentUserLastMessageRef, selectedUserId), messageData);
+      await setDoc(doc(selectedUserLastMessageRef, currentUserId), messageData);
     } catch (error) {
       console.log(error.message);
     }
@@ -180,7 +177,6 @@ export default function ChatPageUser() {
 
   // get messages
   useEffect(() => {
-
     const selectedUserId = getSelectedUser().uid;
     const currentUserId = getCurrentUser().uid;
     const uniqueChatId =

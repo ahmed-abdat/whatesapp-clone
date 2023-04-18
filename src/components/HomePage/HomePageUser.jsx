@@ -88,10 +88,6 @@ export default function HomePageUser({
     }
   }
 
-  console.log(lastMessage);
-
-
-
 
   return (
     <div className="user--profile" onClick={handelSelectedUser}>
