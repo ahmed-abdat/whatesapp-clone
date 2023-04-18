@@ -172,9 +172,9 @@
   color: inherit;
 }
 
-.chat-page--container .chat-content .content {
+/* .chat-page--container .chat-content .content {
   padding: 0.15rem 0 0.5rem;
-}
+} */
 
 .chat-page--container .chat-content .content p {
   font-size: 14px;
@@ -286,7 +286,7 @@ textarea::-webkit-scrollbar{
   }
 
   .chat-page--container .chat-content .message--container .after {
-    top: -1px;
+    top: 0;
   }
   .chat-page--container .back .icon {
     display: block;
