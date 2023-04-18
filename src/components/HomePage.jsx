@@ -9,15 +9,12 @@ import {
   query,
   where,
   onSnapshot,
-  doc,
-  getDoc,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { lazy } from "react";
 import { Suspense } from "react";
 import SpinerLoader from "./SpinerLoader";
 import useUsers from "../store/useUsers";
-import useSelectedUser from "../store/useSelectedUser";
 
 // lazy loade
 const UserProfile = lazy(() => import("./UserProfile"));
@@ -36,6 +33,25 @@ export default function HomePage() {
   // get logout loading
   const isLogoutLoading = useUser((state) => state.isLogoutLoading);
 
+  const [lastMessage , setLastMessage] = useState([])
+
+  
+  // function that handel update all the users with the last Message
+  useEffect(() => {
+    const q = query(
+      collection(db, "users" , currentUser.uid, "lastMessage")
+    );
+    const querySnapshot = onSnapshot(q, (querySnapshot) => {
+      const users = [];
+      querySnapshot.forEach((doce) => {
+        users.push({ ...doce.data(), id: doce.id });
+      });
+      setLastMessage(users);
+    });
+
+    return () => querySnapshot();
+  }, []);
+  
   // get all user in firebase except the current user
   useEffect(() => {
     setIsLoading(true);
@@ -52,29 +68,21 @@ export default function HomePage() {
       setAllUsers(users);
       setIsLoading(false);
     });
-
+  
     return () => querySnapshot();
   }, []);
 
 
-  useEffect(()=> {
-    // listen to last message for each user
-    allUsers.forEach(async (user) => {
-      const lastMessageRef = doc(db, "users", currentUser.uid, "lastMessage", user.uid);
-      const lastMessageDoc = await getDoc(lastMessageRef);
-      if(lastMessageDoc.exists()) {
-        const lastMessage = lastMessageDoc.data();
-        const updatedUsers = allUsers.map((user) => {
-          if(user.uid === lastMessage.to || user.uid === lastMessage.from) {
-            return {...user, lastMessage}
-          }
-          return user;
+  // merge the lastMessage with the his user
+  useEffect(() => {
+    const users = allUsers.map(user => {
+      const lastMessages = lastMessage.find(lastMessage => lastMessage.from === user.uid || lastMessage.to === user.uid)
+      return {...user , lastMessage : lastMessages}
         })
-        setAllUsers(updatedUsers);
-      }
-    })
+        setAllUsers(users)
+  }, [lastMessage])
+  
 
-  }, [allUsers])
 
 
   return (

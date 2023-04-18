@@ -12,7 +12,6 @@ import Message from "./Message";
 import defaultAvatar from "../../assets/img/default-avatar.svg";
 import { useEffect } from "react";
 import { useRef } from "react";
-import useUser from "../../store/useUser";
 import {
   collection,
   addDoc,
@@ -20,11 +19,11 @@ import {
   query,
   orderBy,
   doc,
-  updateDoc,
   setDoc,
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
-import SpinerLoader from '../SpinerLoader'
+import SpinerLoader from "../SpinerLoader";
+import useUser from "../../store/useUser";
 import "../styles/chatPageUser.css";
 
 export default function ChatPageUser() {
@@ -118,7 +117,7 @@ export default function ChatPageUser() {
   };
 
   const [messages, setMessages] = useState([]);
-  const [isMessagesLoaded , setIsMessagesLoaded] = useState(false)
+  const [isMessagesLoaded, setIsMessagesLoaded] = useState(false);
 
   // get unique id for chat
   const getUniqueId = () => {
@@ -131,7 +130,7 @@ export default function ChatPageUser() {
     e && e.preventDefault();
     if (message.length > 0 && message.trim().length > 0) {
       const messageData = {
-        id : getUniqueId(),
+        id: getUniqueId(),
         content: message,
         createdAt: new Date().getTime(),
         isRead: false,
@@ -144,7 +143,6 @@ export default function ChatPageUser() {
       setIsArabic(true);
     }
   };
-
 
   // add message to database
   const addMessageTODataBase = async (message) => {
@@ -166,8 +164,18 @@ export default function ChatPageUser() {
       };
       await addDoc(messageRef, messageData);
       // update last message in both user lastMessage collection
-      const currentUserLastMessageRef = collection(db, "users", currentUserId, "lastMessage");
-      const selectedUserLastMessageRef = collection(db, "users", selectedUserId, "lastMessage");
+      const currentUserLastMessageRef = collection(
+        db,
+        "users",
+        currentUserId,
+        "lastMessage"
+      );
+      const selectedUserLastMessageRef = collection(
+        db,
+        "users",
+        selectedUserId,
+        "lastMessage"
+      );
       await setDoc(doc(currentUserLastMessageRef, selectedUserId), messageData);
       await setDoc(doc(selectedUserLastMessageRef, currentUserId), messageData);
     } catch (error) {
@@ -185,16 +193,16 @@ export default function ChatPageUser() {
         : `${selectedUserId + currentUserId}`;
     const messageRef = collection(db, "messages", uniqueChatId, "chat");
     const q = query(messageRef, orderBy("createdAt", "asc"));
-    setIsMessagesLoaded(true)
+    setIsMessagesLoaded(true);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const messages = [];
       querySnapshot.forEach((doc) => {
         messages.push({ ...doc.data(), id: doc.id });
       });
       setMessages(messages);
-      setIsMessagesLoaded(false)
+      setIsMessagesLoaded(false);
     });
-    return ()=> unsubscribe();
+    return () => unsubscribe();
   }, [getSelectedUser()]);
 
   const scrollRef = useRef(null);
@@ -219,8 +227,10 @@ export default function ChatPageUser() {
           </div>
         </div>
         <div className="info">
-          <h3>{getSelectedUser()?.displayName}</h3>
-          <p className="f-ar dr">{getSelectedUser()?.isOnline ? "متصل الآن" : timeAgo}</p>
+          <h3>{getSelectedUser()?.displayName || 'ahmed'}</h3>
+          <p className="f-ar dr">
+            {getSelectedUser()?.isOnline ? "متصل الآن" : timeAgo}
+          </p>
         </div>
         <div className="icons">
           <div className="icon">
@@ -239,7 +249,7 @@ export default function ChatPageUser() {
         ></div>
         <div className="message--container">
           <div className="container">
-            {messages.length > 0 && 
+            {messages.length > 0 &&
               messages.map((message) => (
                 <Message
                   key={message.id}
@@ -248,10 +258,8 @@ export default function ChatPageUser() {
                   createdAt={message.createdAt}
                   isRead={message.isRead}
                 />
-              )) }
-              {
-                isMessagesLoaded && <SpinerLoader />
-              }
+              ))}
+            {isMessagesLoaded && <SpinerLoader />}
             <div ref={scrollRef}></div>
           </div>
         </div>
