@@ -117,6 +117,7 @@ export default function ChatPageUser() {
   };
 
   const [messages, setMessages] = useState([]);
+  const [isMessagesLoaded , setIsMessagesLoaded] = useState(false)
 
   // get unique id for chat
   const getUniqueId = () => {
@@ -179,6 +180,7 @@ export default function ChatPageUser() {
 
   // get messages
   useEffect(() => {
+
     const selectedUserId = getSelectedUser().uid;
     const currentUserId = getCurrentUser().uid;
     const uniqueChatId =
@@ -187,12 +189,14 @@ export default function ChatPageUser() {
         : `${selectedUserId + currentUserId}`;
     const messageRef = collection(db, "messages", uniqueChatId, "chat");
     const q = query(messageRef, orderBy("createdAt", "asc"));
+    setIsMessagesLoaded(true)
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const messages = [];
       querySnapshot.forEach((doc) => {
         messages.push({ ...doc.data(), id: doc.id });
       });
       setMessages(messages);
+      setIsMessagesLoaded(false)
     });
     return ()=> unsubscribe();
   }, [getSelectedUser()]);
@@ -249,6 +253,9 @@ export default function ChatPageUser() {
                   isRead={message.isRead}
                 />
               )) }
+              {
+                isMessagesLoaded && <SpinerLoader />
+              }
             <div ref={scrollRef}></div>
           </div>
         </div>
