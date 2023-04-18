@@ -3,7 +3,6 @@ import "moment/locale/ar-sa";
 import { useState, useEffect } from "react";
 import useSelectedUser from "../../store/useSelectedUser";
 import defaultAvatar from "../../assets/img/default-avatar.svg";
-import useUsers from "../../store/useUsers";
 
 export default function HomePageUser({
   displayName,
