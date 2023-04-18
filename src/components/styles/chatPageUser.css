@@ -118,7 +118,6 @@
   position: relative;
   max-width: 70%;
   line-height: 24px;
-  background-color: #fff;
   width: fit-content;
   padding: 0.3rem 0.5rem;
   box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
@@ -127,7 +126,14 @@
   -moz-border-radius: 7.5px;
   -ms-border-radius: 7.5px;
   -o-border-radius: 7.5px;
+}
+
+
+.chat-page--container .chat-content .message--container .message.receiver {
+  background-color: #fff;
   border-top-right-radius: 0;
+  align-self: flex-start;
+  border-top-left-radius: 7.5px;
 }
 
 
@@ -276,6 +282,10 @@ textarea::-webkit-scrollbar{
 
   .chat-page--container .chat-content .message--container .message{
     max-width: 100%;
+  }
+
+  .chat-page--container .chat-content .message--container .after {
+    top: 0;
   }
   .chat-page--container .back .icon {
     display: block;

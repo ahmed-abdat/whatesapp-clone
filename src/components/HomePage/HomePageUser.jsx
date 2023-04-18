@@ -103,7 +103,7 @@ export default function HomePageUser({
             {displayName || "Ahmed Abdat"}
           </h3>
        {
-        lastMessage?.createdAt &&    <p className="dr-ar f-ar">{`${timeAgo} ${
+        lastMessage  &&  <p className="dr-ar f-ar">{`${timeAgo} ${
           lastSeanMessage.format("a") === "am" ? "ص" : "م"
         }`}</p>
        }
