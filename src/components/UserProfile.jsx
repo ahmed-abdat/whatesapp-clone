@@ -2,7 +2,7 @@ import "./styles/userProfile.css";
 import { BiArrowBack, BiCheck } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import { RiInformationLine } from "react-icons/ri";
-import { MdOutlineEmail, MdOutlineLocalPhone } from "react-icons/md";
+import { MdDelete, MdOutlineEmail, MdOutlineLocalPhone } from "react-icons/md";
 import { HiPencil } from "react-icons/hi";
 import useUsers from "../store/useUsers";
 import useUser from "../store/useUser";
@@ -237,6 +237,9 @@ export default function UserProfile() {
             name="file"
             style={{ display: "none" }}
           />
+          {/* <div className="deleteImg">
+            <MdDelete />
+          </div> */}
         </div>
       </div>
       <ToastContainer
