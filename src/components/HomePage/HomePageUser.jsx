@@ -3,6 +3,7 @@ import "moment/locale/ar-sa";
 import { useState, useEffect } from "react";
 import useSelectedUser from "../../store/useSelectedUser";
 import defaultAvatar from "../../assets/img/default-avatar.svg";
+import useUsers from "../../store/useUsers";
 
 export default function HomePageUser({
   displayName,
@@ -32,22 +33,30 @@ export default function HomePageUser({
     },
   });
 
-  const lastSeanMessage = moment(lastMessage.createdAt);
+     
+
+  const lastSeanMessage = moment(lastMessage?.createdAt);
   const HourAndMinitFormat = lastSeanMessage.format("hh:mm");
 
   const [timeAgo, setTimeAgo] = useState(HourAndMinitFormat);
-
+  
   // track the time ago
   useEffect(() => {
+    const lastSeanMessage = moment(lastMessage?.createdAt);
+    const HourAndMinitFormate = lastSeanMessage.format("hh:mm");
     const interval = setInterval(() => {
-      const lastSeanMessage = moment(lastMessage.createdAt);
-      const HourAndMinitFormat = lastSeanMessage.format("hh:mm");
-      setTimeAgo(HourAndMinitFormat);
-    }, 10000);
-
+      if(HourAndMinitFormate !== timeAgo) {
+        setTimeAgo(HourAndMinitFormate)
+        return
+      }
+    }, 1000);
+    
+    
     return () => clearInterval(interval);
-  }, [lastSeen]);
+  }, [lastMessage?.createdAt]);
+  
 
+  
   // get the selected user
   const setSelectedUser = useSelectedUser((state) => state.setSelectedUser);
   // set is selected user
@@ -64,7 +73,24 @@ export default function HomePageUser({
     return arabic.test(str);
   };
 
-  // console.log(lastMessage.content);
+  // content display class
+  const contentClass = ()=> {
+    const isArabic = /[\u0600-\u06FF]/.test(lastMessage?.content);
+    const content = lastMessage?.content;
+    const maxLength = 50
+    if(isArabic && content?.length > maxLength) {
+      return "f-ar dr-ar"
+    } else if(isArabic && content?.length < maxLength) {
+      return "f-ar"
+    } else if(!isArabic && content?.length > maxLength) {
+      return "f-en dr-en"
+    } else if(!isArabic && content?.length < maxLength) {
+      return "f-en"
+    }
+  }
+
+
+
 
   return (
     <div className="user--profile" onClick={handelSelectedUser}>
@@ -76,12 +102,14 @@ export default function HomePageUser({
           <h3 className={isArabic(displayName) ? "f-ar dr-ar" : "f-en dr-en"}>
             {displayName || "Ahmed Abdat"}
           </h3>
-          <p className="dr-ar f-ar">{`${timeAgo} ${
-            lastSeanMessage.format("a") === "am" ? "ص" : "م"
-          }`}</p>
+       {
+        lastMessage?.createdAt &&    <p className="dr-ar f-ar">{`${timeAgo} ${
+          lastSeanMessage.format("a") === "am" ? "ص" : "م"
+        }`}</p>
+       }
         </div>
         <div className="last-message">
-          <p className={isArabic(lastMessage.content) ? 'f-ar dr-ar' : 'f-en dr-en'}> {lastMessage.content} </p>
+          <p className={contentClass()}> {lastMessage?.content} </p>
         </div>
       </div>
     </div>

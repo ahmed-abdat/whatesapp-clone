@@ -34,10 +34,13 @@ export default function HomePage() {
 
   // get logout loading
   const isLogoutLoading = useUser((state) => state.isLogoutLoading);
-  // get selected user
-  const getSelectedUser = useSelectedUser((state) => state.getSelectedUser);
-  // set selected user
-  const setSelectedUser = useSelectedUser((state) => state.setSelectedUser);
+
+
+
+
+
+  
+
 
   // get all user in firebase except the current user
   useEffect(() => {

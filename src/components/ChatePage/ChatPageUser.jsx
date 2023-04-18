@@ -20,7 +20,6 @@ import {
   query,
   orderBy,
   doc,
-  setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
@@ -220,7 +219,7 @@ export default function ChatPageUser() {
         </div>
         <div className="info">
           <h3>{getSelectedUser()?.displayName}</h3>
-          <p>{getSelectedUser()?.isOnline ? "متصل الآن" : timeAgo}</p>
+          <p className="f-ar dr">{getSelectedUser()?.isOnline ? "متصل الآن" : timeAgo}</p>
         </div>
         <div className="icons">
           <div className="icon">

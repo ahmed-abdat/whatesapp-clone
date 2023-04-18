@@ -196,7 +196,7 @@ export default function SignUp() {
           defaultCountry="MR"
           international
           limitMaxLength
-          countries={["MR", "MA", "TN", "DZ", "LY", "EG", "SD", "SA"]}
+          // countries={["MR", "MA", "TN", "DZ", "LY", "EG", "SD", "SA"]}
           labels={ar}
         />
         <button type="submit" className="btn" disabled={isLoading}>
