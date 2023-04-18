@@ -9,6 +9,7 @@ import {
   query,
   where,
   onSnapshot,
+  doc,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { lazy } from "react";
@@ -51,18 +52,15 @@ export default function HomePage() {
       querySnapshot.forEach((doc) => {
         users.push({ ...doc.data(), id: doc.id });
       });
-      const findUser = users.find(
-        (user) => user.uid === getSelectedUser()?.uid
-      );
-      if (findUser) {
-        setSelectedUser(findUser);
-      }
-
       setAllUsers(users);
       setIsLoading(false);
-    });
+    })
+  
     return () => querySnapshot();
+
   }, []);
+
+
 
   return (
     <div className="home-page">

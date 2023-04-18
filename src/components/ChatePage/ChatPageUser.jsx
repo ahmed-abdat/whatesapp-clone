@@ -13,7 +13,16 @@ import defaultAvatar from "../../assets/img/default-avatar.svg";
 import { useEffect } from "react";
 import { useRef } from "react";
 import useUser from "../../store/useUser";
-import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  onSnapshot,
+  query,
+  orderBy,
+  doc,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../config/firebase";
 import "../styles/chatPageUser.css";
 
@@ -109,11 +118,18 @@ export default function ChatPageUser() {
 
   const [messages, setMessages] = useState([]);
 
+  // get unique id for chat
+  const getUniqueId = () => {
+    let timestamp = new Date().getTime().toString(16); // Convert the current time to a hexadecimal string
+    let random = Math.random().toString(16).slice(2); // Generate a random number and convert it to a hexadecimal string
+    return timestamp + random;
+  };
   // handel send message
-  const handelSendMessage =  (e) => {
+  const handelSendMessage = (e) => {
     e && e.preventDefault();
     if (message.length > 0 && message.trim().length > 0) {
       const messageData = {
+        id : getUniqueId(),
         content: message,
         createdAt: new Date().getTime(),
         isRead: false,
@@ -127,6 +143,7 @@ export default function ChatPageUser() {
     }
   };
 
+
   // add message to database
   const addMessageTODataBase = async (message) => {
     const selectedUserId = getSelectedUser().uid;
@@ -138,6 +155,7 @@ export default function ChatPageUser() {
     try {
       const messageRef = collection(db, "messages", uniqueChatId, "chat");
       const messageData = {
+        id: getUniqueId(),
         content: message,
         from: currentUserId,
         to: selectedUserId,
@@ -145,13 +163,21 @@ export default function ChatPageUser() {
         isRead: false,
       };
       await addDoc(messageRef, messageData);
+      // update last message in both user
+      const currentUserRef = doc(db, "users", currentUserId);
+      const selectedUserRef = doc(db, "users", selectedUserId);
+      await updateDoc(currentUserRef, {
+        lastMessage: messageData, 
+      });
+      await updateDoc(selectedUserRef, {
+        lastMessage: messageData,
+      });
     } catch (error) {
       console.log(error.message);
     }
   };
 
-
-  // get messages 
+  // get messages
   useEffect(() => {
     const selectedUserId = getSelectedUser().uid;
     const currentUserId = getCurrentUser().uid;
@@ -159,16 +185,16 @@ export default function ChatPageUser() {
       currentUserId > selectedUserId
         ? `${currentUserId + selectedUserId}`
         : `${selectedUserId + currentUserId}`;
-        const messageRef = collection(db, "messages", uniqueChatId, "chat");
-        const q = query(messageRef, orderBy("createdAt", "asc"));
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
-          const messages = [];
-          querySnapshot.forEach((doc) => {
-            messages.push({...doc.data() , id : doc.id});
-          });
-          setMessages(messages);
-        });
-        return unsubscribe;
+    const messageRef = collection(db, "messages", uniqueChatId, "chat");
+    const q = query(messageRef, orderBy("createdAt", "asc"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const messages = [];
+      querySnapshot.forEach((doc) => {
+        messages.push({ ...doc.data(), id: doc.id });
+      });
+      setMessages(messages);
+    });
+    return ()=> unsubscribe();
   }, [getSelectedUser()]);
 
   const scrollRef = useRef(null);

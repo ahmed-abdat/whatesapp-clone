@@ -10,6 +10,7 @@ export default function HomePageUser({
   isOnline,
   lastSeen,
   uid,
+  lastMessage,
 }) {
   moment.locale("ar_SA");
   moment.updateLocale("ar_SA", {
@@ -30,31 +31,18 @@ export default function HomePageUser({
       yy: "%d سنوات",
     },
   });
-  const now = moment();
-  const lastSeenMoment = moment(lastSeen);
 
-  const HourAndMinitFormat = lastSeenMoment.format("hh:mm");
-  const dateFormat = lastSeenMoment.format("DD/MM/YYYY");
+  const lastSeanMessage = moment(lastMessage.createdAt);
+  const HourAndMinitFormat = lastSeanMessage.format("hh:mm");
 
-  // function to check if the last seen is today or yesterday
-  const currentDate = () => {
-    if (lastSeenMoment.isSame(now, "day")) {
-      return ` آخر ظهور اليوم عند الساعة ${HourAndMinitFormat} ${
-        lastSeenMoment.format("a") === "am" ? "ص" : "م"
-      }`;
-    } else if (lastSeenMoment.isSame(now.clone().subtract(1, "day"), "day")) {
-      return `آخر ظهور أمس عند الساعة ${HourAndMinitFormat}`;
-    } else {
-      return `آخر ظهور بتاريخ ${dateFormat}`;
-    }
-  };
+  const [timeAgo, setTimeAgo] = useState(HourAndMinitFormat);
 
-  const [timeAgo, setTimeAgo] = useState(currentDate());
-
+  // track the time ago
   useEffect(() => {
     const interval = setInterval(() => {
-      const currentTime = currentDate();
-      setTimeAgo(currentTime);
+      const lastSeanMessage = moment(lastMessage.createdAt);
+      const HourAndMinitFormat = lastSeanMessage.format("hh:mm");
+      setTimeAgo(HourAndMinitFormat);
     }, 10000);
 
     return () => clearInterval(interval);
@@ -76,6 +64,8 @@ export default function HomePageUser({
     return arabic.test(str);
   };
 
+  // console.log(lastMessage.content);
+
   return (
     <div className="user--profile" onClick={handelSelectedUser}>
       <div className="user--profile--img">
@@ -86,10 +76,12 @@ export default function HomePageUser({
           <h3 className={isArabic(displayName) ? "f-ar dr-ar" : "f-en dr-en"}>
             {displayName || "Ahmed Abdat"}
           </h3>
-          <p className="dr-ar f-ar">{isOnline ? "متصل الآن" : timeAgo}</p>
+          <p className="dr-ar f-ar">{`${timeAgo} ${
+            lastSeanMessage.format("a") === "am" ? "ص" : "م"
+          }`}</p>
         </div>
         <div className="last-message">
-          <p>أهلا بك في واتساب</p>
+          <p className={isArabic(lastMessage.content) ? 'f-ar dr-ar' : 'f-en dr-en'}> {lastMessage.content} </p>
         </div>
       </div>
     </div>

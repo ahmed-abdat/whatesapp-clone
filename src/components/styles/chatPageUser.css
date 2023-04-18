@@ -53,7 +53,7 @@
 
 .chat-page--container header .info p {
   font-size: 0.75rem;
-  color: #667781;
+  color: #3b4a54;
 }
 
 .chat-page--container header .icons {
@@ -76,20 +76,28 @@
   position: relative;
   flex-grow: 1;
   z-index: 1;
-  overflow-y: auto;
+  overflow : hidden;
   height: 100%;
-  max-height: calc(100vh - 126px);
   background-color: #efeae2;
 }
 
+.chat-page--container .message--container {
+  max-height: calc(100vh - 126px);
+    overflow: auto;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
 .chat-page--container .chat-content .bgi {
-  background-repeat: no-repeat;
   opacity: 0.4;
-  background-size: cover;
   position: absolute;
   top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 
@@ -105,8 +113,10 @@
 }
 
 .chat-page--container .chat-content .message--container .message {
+  padding-left: 19px;
+  padding-right: 25px;
   position: relative;
-  max-width: 50%;
+  max-width: 70%;
   line-height: 24px;
   background-color: #fff;
   width: fit-content;
@@ -120,6 +130,8 @@
   border-top-right-radius: 0;
 }
 
+
+
 .chat-page--container .chat-content .message--container .message.sender {
   align-self: flex-end;
   background-color: #d9fdd3;
@@ -131,7 +143,7 @@
 {
   content: "";
   position: absolute;
-  top: -5px;
+  top: -6px;
   z-index: 100;
   display: block;
   width: 8px;
@@ -260,6 +272,10 @@ textarea::-webkit-scrollbar{
     z-index: 230;
     inset: 0;
     height: 100%;
+  }
+
+  .chat-page--container .chat-content .message--container .message{
+    max-width: 100%;
   }
   .chat-page--container .back .icon {
     display: block;
