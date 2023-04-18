@@ -1,23 +1,22 @@
 .user-profile {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100vh;
-    background-color: #fff;
-    z-index: 200;
-    display: flex;
-    flex-direction: column;
-    gap: 1.8rem;
-    font-family: "Vazirmatn" , 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: #fff;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+  font-family: "Vazirmatn", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .user-profile.profile-show {
-    transform: translateX(0);
-    -webkit-transform: translateX(0);
-    -moz-transform: translateX(0);
-    -ms-transform: translateX(0);
-    -o-transform: translateX(0);
-
+  transform: translateX(0);
+  -webkit-transform: translateX(0);
+  -moz-transform: translateX(0);
+  -ms-transform: translateX(0);
+  -o-transform: translateX(0);
 }
 
 .user-profile header.user-profile--header {
@@ -47,7 +46,7 @@
   font-size: 2.1rem;
 }
 
-.user-profile .profile--image .img{
+.user-profile .profile--image .img {
   position: relative;
 }
 
@@ -62,7 +61,7 @@
 .user-profile .profile--image .icon {
   cursor: pointer;
   position: absolute;
-  left: 0.5rem;
+  left: 0;
   bottom: 1rem;
   padding: 0.5rem;
   background: #00a884;
@@ -72,10 +71,27 @@
   height: 40px;
 }
 
-.user-profile .profile--image .img svg {
+.user-profile .profile--image .img label svg {
   color: #fff;
   width: 100%;
   height: 100%;
+}
+
+.user-profile .profile--image .img .deleteImg {
+  position: absolute;
+  right: 0;
+  bottom: 1rem;
+  padding: 0.5rem;
+  background-color: #e74c3c;
+  text-align: center;
+  border-radius: 50%;
+  width: 40px;
+  display: flex;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.3rem;
 }
 
 .user-profile .profile--name,
@@ -94,7 +110,7 @@
 
 /* phone number exception */
 .user-profile .profile--phone-number {
-    grid-template-columns: 50px 1fr;
+  grid-template-columns: 50px 1fr;
 }
 
 .user-profile .profile--name {
@@ -106,19 +122,19 @@
   color: #8696a0;
 }
 
-.user-profile  .display {
+.user-profile .display {
   display: flex;
   flex-direction: column;
   gap: 0.3rem 0;
 }
 
-.user-profile  .display h3 {
+.user-profile .display h3 {
   font-size: 0.9rem;
   font-weight: 400;
   color: #8696a0;
 }
 
-.user-profile  .display h4 {
+.user-profile .display h4 {
   align-self: flex-start;
   font-size: 0.95rem;
   font-weight: 400;
@@ -135,21 +151,20 @@
 
 .user-profile .display .input input {
   border: none;
-    outline: none;
-    width: 100%;
-    height: 100%;
-    padding: 0.3rem 0.6rem 0.3rem 0.2rem;
-    border-bottom: 1px solid #00a884;
-    font-size: 17px;
-    line-height: 20px;
-    color: #3b4a54;
+  outline: none;
+  width: 100%;
+  height: 100%;
+  padding: 0.3rem 0.6rem 0.3rem 0.2rem;
+  border-bottom: 1px solid #00a884;
+  font-size: 17px;
+  line-height: 20px;
+  color: #3b4a54;
 }
 
 .user-profile .display .length {
   font-size: 14px;
-    line-height: 22px;
-    color: #d1d7db;
-
+  line-height: 22px;
+  color: #d1d7db;
 }
 
 .user-profile .display .input input:disabled {
@@ -164,8 +179,8 @@
   color: #667781;
 }
 
-.user-profile  .edit {
-    cursor: pointer;
+.user-profile .edit {
+  cursor: pointer;
   text-align: center;
 }
 

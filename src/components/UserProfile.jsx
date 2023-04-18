@@ -237,9 +237,9 @@ export default function UserProfile() {
             name="file"
             style={{ display: "none" }}
           />
-          {/* <div className="deleteImg">
+          <div className="deleteImg">
             <MdDelete />
-          </div> */}
+          </div>
         </div>
       </div>
       <ToastContainer
