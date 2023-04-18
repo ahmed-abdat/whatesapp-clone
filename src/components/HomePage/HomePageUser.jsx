@@ -88,6 +88,8 @@ export default function HomePageUser({
     }
   }
 
+  console.log(lastMessage);
+
 
 
 
@@ -102,14 +104,14 @@ export default function HomePageUser({
             {displayName || "Ahmed Abdat"}
           </h3>
        {
-        lastMessage  &&  <p className="dr-ar f-ar">{`${timeAgo} ${
+        lastMessage?.createdAt  &&  <p className="dr-ar f-ar">{`${timeAgo} ${
           lastSeanMessage.format("a") === "am" ? "ص" : "م"
         }`}</p>
        }
         </div>
         <div className="last-message">
          {
-          lastMessage &&  <p className={contentClass()}> {lastMessage?.content} </p>
+          lastMessage?.content &&  <p className={contentClass()}> {lastMessage?.content} </p>
          }
         </div>
       </div>
