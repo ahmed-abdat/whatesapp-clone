@@ -78,6 +78,7 @@
 }
 
 .user-profile .profile--image .img .deleteImg {
+  cursor: pointer;
   position: absolute;
   right: 0;
   bottom: 1rem;

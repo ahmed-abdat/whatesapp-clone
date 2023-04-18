@@ -202,6 +202,32 @@ export default function UserProfile() {
     }
   };
 
+  // handel delete user img 
+  const handelDeleteUserImg = async () => {
+  if (!getCurrentUser().photoPath) return;
+  const oldRef = ref(storage, getCurrentUser().photoPath);
+  try {
+    setIsImageLoading(true);
+    await deleteObject(oldRef);
+    console.log("fill deleted successfully");
+    const firestore = getFirestore(app);
+    console.log(getCurrentUser().uid);
+    const userRef = doc(firestore, "users", getCurrentUser().uid);
+    await updateDoc(userRef, {
+      photoPath : null,
+      photoURL : null
+    });
+    updateProfile({ photoPath: null, photoURL: null });
+    setFile(null)
+    toast.success("تم حذف الصورة بنجاح");
+    setIsImageLoading(false);
+  } catch (error) {
+    setIsImageLoading(false);
+    console.error("Error updating document: ", error);
+    toast.error("حدث خطأ أثناء تحديث الحالة رجاءا حاول مرة أخرى");
+  }
+};
+
   return (
     <div className={`user-profile`}>
       <header className="user-profile--header">
@@ -237,7 +263,7 @@ export default function UserProfile() {
             name="file"
             style={{ display: "none" }}
           />
-          <div className="deleteImg">
+          <div className={`deleteImg ${isImageLoading ? "disabel" : ""}`} onClick={handelDeleteUserImg}>
             <MdDelete />
           </div>
         </div>
