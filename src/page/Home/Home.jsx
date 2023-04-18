@@ -1,4 +1,3 @@
-import "./home.css";
 // import HomePage from "../../components/HomePage";
 // import ChatPage from "../../components/ChatPage";
 import useSelectedUser from "../../store/useSelectedUser";
@@ -8,9 +7,10 @@ import { lazy } from "react";
 import { Suspense } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
+import "./home.css";
 
 // lazy load
-const ChatPageUser = lazy(() => import("../../components/ChatPageUser"));
+const ChatPageUser = lazy(() => import("../../components/ChatePage/ChatPageUser"));
 const ChatPage = lazy(() => import("../../components/ChatPage"));
 const HomePage = lazy(() => import("../../components/HomePage"));
 

@@ -1,6 +1,6 @@
-import HomepageSearch from "./HomePageSearch";
-import HomePageUser from "./HomePageUser";
-import HomePageHeader from "./HomePageHeader";
+import HomepageSearch from "./HomePage/HomePageSearch";
+import HomePageUser from "./HomePage/HomePageUser";
+import HomePageHeader from "./HomePage/HomePageHeader";
 import useUser from "../store/useUser";
 import { useEffect, useState } from "react";
 import {
@@ -10,7 +10,7 @@ import {
   where,
   onSnapshot,
 } from "firebase/firestore";
-import { db} from "../config/firebase";
+import { db } from "../config/firebase";
 import { lazy } from "react";
 import { Suspense } from "react";
 import SpinerLoader from "./SpinerLoader";
@@ -41,17 +41,19 @@ export default function HomePage() {
   // get all user in firebase except the current user
   useEffect(() => {
     setIsLoading(true);
-      const q = query(
-        collection(db, "users"),
-        where("uid", "!=", currentUser.uid),
-        limit(10)
-      );
-      const querySnapshot = onSnapshot(q, (querySnapshot) => {
+    const q = query(
+      collection(db, "users"),
+      where("uid", "!=", currentUser.uid),
+      limit(10)
+    );
+    const querySnapshot = onSnapshot(q, (querySnapshot) => {
       const users = [];
       querySnapshot.forEach((doc) => {
-        users.push({...doc.data() , id: doc.id});
+        users.push({ ...doc.data(), id: doc.id });
       });
-      const findUser = users.find((user) => user.uid === getSelectedUser()?.uid);
+      const findUser = users.find(
+        (user) => user.uid === getSelectedUser()?.uid
+      );
       if (findUser) {
         setSelectedUser(findUser);
       }

@@ -1,15 +1,15 @@
 import { BsFillChatRightTextFill } from "react-icons/bs";
 import { HiDotsVertical } from "react-icons/hi";
-import useUsers from "../store/useUsers";
-import useUser from "../store/useUser";
+import useUsers from "../../store/useUsers";
+import useUser from "../../store/useUser";
 import { useEffect, useRef, useState } from "react";
-import "./styles/HeaderPopup.css";
-import { app, auth } from "../config/firebase";
+import { app, auth } from "../../config/firebase";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { doc, getFirestore, updateDoc } from "firebase/firestore/lite";
-import useSelectedUser from "../store/useSelectedUser";
-import defaultAvatar from "../assets/img/default-avatar.svg";
+import useSelectedUser from "../../store/useSelectedUser";
+import defaultAvatar from "../../assets/img/default-avatar.svg";
+import "../styles/HeaderPopup.css";
 
 export default function HomePageHeader() {
   const getCurrentUser = useUser((state) => state.getCurrentUser);
@@ -27,7 +27,6 @@ export default function HomePageHeader() {
 
   // set selected user
   const setSelectedUser = useSelectedUser((state) => state.setSelectedUser);
-
 
   // navigate
   const navigate = useNavigate();
@@ -79,7 +78,7 @@ export default function HomePageHeader() {
   // update the user isOnline property to true
   const updateIsOnline = async () => {
     try {
-      const firestore = getFirestore(app)
+      const firestore = getFirestore(app);
       const docRef = doc(firestore, "users", getCurrentUser().uid);
       await updateDoc(docRef, {
         isOnline: false,
@@ -90,18 +89,11 @@ export default function HomePageHeader() {
     }
   };
 
- 
-
-
-
   return (
     <header>
       <div className="header--container">
         <div className="header--logo" onClick={() => setIsProfileShow(true)}>
-          <img
-            src={ getCurrentUser()?.photoURL || defaultAvatar}
-            alt="avatar"
-          />
+          <img src={getCurrentUser()?.photoURL || defaultAvatar} alt="avatar" />
         </div>
         <div className="header--icons" ref={headerIconsRef}>
           <BsFillChatRightTextFill />

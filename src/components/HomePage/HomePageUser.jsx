@@ -1,15 +1,15 @@
 import moment from "moment";
 import "moment/locale/ar-sa";
 import { useState, useEffect } from "react";
-import useSelectedUser from "../store/useSelectedUser";
-import defaultAvatar from "../assets/img/default-avatar.svg";
+import useSelectedUser from "../../store/useSelectedUser";
+import defaultAvatar from "../../assets/img/default-avatar.svg";
 
 export default function HomePageUser({
   displayName,
   photoURL,
   isOnline,
   lastSeen,
-  uid
+  uid,
 }) {
   moment.locale("ar_SA");
   moment.updateLocale("ar_SA", {
@@ -39,7 +39,9 @@ export default function HomePageUser({
   // function to check if the last seen is today or yesterday
   const currentDate = () => {
     if (lastSeenMoment.isSame(now, "day")) {
-      return ` آخر ظهور اليوم عند الساعة ${HourAndMinitFormat} ${lastSeenMoment.format("a") === "am" ? "ص" : "م"}`;
+      return ` آخر ظهور اليوم عند الساعة ${HourAndMinitFormat} ${
+        lastSeenMoment.format("a") === "am" ? "ص" : "م"
+      }`;
     } else if (lastSeenMoment.isSame(now.clone().subtract(1, "day"), "day")) {
       return `آخر ظهور أمس عند الساعة ${HourAndMinitFormat}`;
     } else {
@@ -64,7 +66,7 @@ export default function HomePageUser({
   const setIsSelectedUser = useSelectedUser((state) => state.setIsSelectedUser);
 
   const handelSelectedUser = () => {
-    setSelectedUser({ displayName, photoURL, isOnline, lastSeen , uid});
+    setSelectedUser({ displayName, photoURL, isOnline, lastSeen, uid });
     setIsSelectedUser(true);
   };
 
