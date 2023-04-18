@@ -284,9 +284,9 @@ textarea::-webkit-scrollbar{
     max-width: 100%;
   }
 
-  .chat-page--container .chat-content .message--container .after {
+  /* .chat-page--container .chat-content .message--container .after {
     top: 0;
-  }
+  } */
   .chat-page--container .back .icon {
     display: block;
     margin-left: 5px;
