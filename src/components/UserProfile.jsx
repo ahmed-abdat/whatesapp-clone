@@ -263,9 +263,12 @@ export default function UserProfile() {
             name="file"
             style={{ display: "none" }}
           />
-          <div className={`deleteImg ${isImageLoading ? "disabel" : ""}`} onClick={handelDeleteUserImg}>
+          {
+            getCurrentUser()?.photoURL && (
+              <div className={`deleteImg ${isImageLoading ? "disabel" : ""}`} onClick={handelDeleteUserImg}>
             <MdDelete />
-          </div>
+          </div>)
+          }
         </div>
       </div>
       <ToastContainer
