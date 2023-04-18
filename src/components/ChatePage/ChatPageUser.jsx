@@ -23,6 +23,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
+import SpinerLoader from '../SpinerLoader'
 import "../styles/chatPageUser.css";
 
 export default function ChatPageUser() {
@@ -238,7 +239,7 @@ export default function ChatPageUser() {
         ></div>
         <div className="message--container">
           <div className="container">
-            {messages.length > 0 &&
+            {messages.length > 0 ? 
               messages.map((message) => (
                 <Message
                   key={message.id}
@@ -247,7 +248,7 @@ export default function ChatPageUser() {
                   createdAt={message.createdAt}
                   isRead={message.isRead}
                 />
-              ))}
+              )) : <SpinerLoader />}
             <div ref={scrollRef}></div>
           </div>
         </div>
