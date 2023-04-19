@@ -188,6 +188,19 @@ export default function ChatPageUser() {
       .catch((error) => {
         console.log("Error getting documents: ", error);
       });
+       // update last message read in both user lastMessage collection
+       const currentUserLastMessageRef = collection(
+        db,
+        "users",
+        curretnUserId,
+        "lastMessage"
+      );
+      updateDoc(doc(currentUserLastMessageRef, selectedUserId) , {
+        isRead: true,
+      })
+      .catch((e)=> {
+        console.log(e.message);
+      })
   };
 
   // update how is view this chat
