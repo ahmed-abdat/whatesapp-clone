@@ -3,7 +3,7 @@ import "moment/locale/ar-sa";
 import { useState, useEffect } from "react";
 import useSelectedUser from "../../store/useSelectedUser";
 import defaultAvatar from "../../assets/img/default-avatar.svg";
-import { collection, doc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import useUser from "../../store/useUser";
 import Check from "../svg/Check";
@@ -70,23 +70,28 @@ export default function HomePageUser({
 
   const handelSelectedUser = () => {
     setSelectedUser({ displayName, photoURL, isOnline, lastSeen, uid });
-    // update the isRead status the last message if the last message is not from the current user
-    if (lastMessage?.from !== getCurrentUser().uid) {
-      console.log(lastMessage?.to);
-      const lastMessageRef = collection(db, "users" , getCurrentUser().uid, "lastMessage")
-      updateDoc(doc(lastMessageRef, lastMessage?.to), {
-        isRead: true,
-      })
-      .then(() => {
-        console.log("Document successfully updated!");
-      }
-      )
-      .catch((error) => {
-        // The document probably doesn't exist.
-        console.error("Error updating document: ", error);
-      }
-      );
-    }
+    // make a query to get all unread message from the selected user
+    const curretnUserId = getCurrentUser().uid;
+    const selectedUserId = uid;
+    const uniqueChatId =
+    curretnUserId > selectedUserId
+      ? `${curretnUserId + selectedUserId}`
+      : `${selectedUserId + curretnUserId}`;
+
+    const collectionRef = collection(db, 'messages' , uniqueChatId , 'chat');
+    const q = query(collectionRef , where('isRead' , '==' , false) , where('from' , '==' , selectedUserId));
+    getDocs(q).then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        updateDoc(doc.ref, {
+          isRead: true,
+        });
+      });
+    })
+    .catch((error) => {
+      console.log("Error getting documents: ", error);
+    });
+
+    
     
     
     setIsSelectedUser(true);

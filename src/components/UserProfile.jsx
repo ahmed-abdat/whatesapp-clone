@@ -204,7 +204,17 @@ export default function UserProfile() {
 
   // handel delete user img 
   const handelDeleteUserImg = async () => {
-  if (!getCurrentUser().photoPath) return;
+  if (!getCurrentUser().photoPath) {
+    updateProfile({ photoPath: null, photoURL: null });
+    setFile(null)
+    const firestore = getFirestore(app);
+    const userRef = doc(firestore, "users", getCurrentUser().uid);
+    await updateDoc(userRef, {
+      photoPath : null,
+      photoURL : null
+    });
+    return
+  };
   const oldRef = ref(storage, getCurrentUser().photoPath);
   try {
     setIsImageLoading(true);
