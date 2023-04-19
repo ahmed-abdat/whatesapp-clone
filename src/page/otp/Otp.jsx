@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./Opt.css";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Link, useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
 import useUser from "../../store/useUser";
@@ -16,18 +16,17 @@ export default function Otp({}) {
 
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [isOtpVerifie, setIsotpVerifie] = useState(false);
-  const [isLoading , setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
   // set phoneUserVerified
-  const setIsPhoneUserVerified = useUser((state) => state.setIsPhoneUserVerified);
-
+  const setIsPhoneUserVerified = useUser(
+    (state) => state.setIsPhoneUserVerified
+  );
 
   // first input ref
   const firstInputRef = useRef(null);
-  
-
 
   const handleOtpChange = (element, index) => {
     // If the entered value is not a number, don't update the state
@@ -52,7 +51,18 @@ export default function Otp({}) {
       element.nextSibling.focus();
     }
   };
-  
+
+  // handel delte input value
+  const handelDeleteInput = (e, index) => {
+    // if the user click backspace or delete key and the input is empty then focus to the previous input and clear it
+    if (e.key === "Backspace" && otp[index] === "") {
+      if (index !== 0) {
+        otp[index - 1] = "";
+        setOtp([...otp]);
+        e.target.previousSibling.focus();
+      }
+    }
+  };
 
   // clear OTP
   const clearOtp = () => {
@@ -64,21 +74,21 @@ export default function Otp({}) {
 
   const handelSubmit = (e) => {
     e.preventDefault();
-    setIsLoading(true)
+    setIsLoading(true);
     confirmationResult
-      .confirm(otp.join(''))
+      .confirm(otp.join(""))
       .then((result) => {
-        setUser(result.user)
+        setUser(result.user);
         setCurrentUser(result.user);
         setIsPhoneUserVerified(true);
         toast.success("تمت المصادقة");
         setTimeout(() => {
           navigate("/userInfo");
-          setIsLoading(false)
+          setIsLoading(false);
         }, 2000);
       })
       .catch((error) => {
-        setIsLoading(false)
+        setIsLoading(false);
         if (error.code === "auth/code-expired") {
           toast.error("لقد إنتهت صلاحية رمز التأكيد");
           return;
@@ -88,19 +98,19 @@ export default function Otp({}) {
       });
   };
 
-  // set doc to the firebase 
+  // set doc to the firebase
   const setUser = async (user) => {
     const userRef = doc(db, "users", user.uid);
     await setDoc(userRef, {
-      uid : user.uid,
-      phoneNumber : getPhone(),
-      displayName : user.displayName,
-      photoURL : user.photoURL,
+      uid: user.uid,
+      phoneNumber: getPhone(),
+      displayName: user.displayName,
+      photoURL: user.photoURL,
       lastSeen: new Date().getTime(),
-      photoPath : null,
-      isOnline : true,
-      userStatus : 'جديد في واتساب',
-      lastMessage : ''
+      photoPath: null,
+      isOnline: true,
+      userStatus: "جديد في واتساب",
+      lastMessage: "",
     });
   };
 
@@ -121,7 +131,7 @@ export default function Otp({}) {
           <span>{getPhone()}</span>
           تم إرسال رمز التحقق إلى الرقم
         </p>
-        <form onSubmit={handelSubmit}  >
+        <form onSubmit={handelSubmit}>
           <div className="otp-inputs">
             {otp.map((data, index) => {
               return (
@@ -134,6 +144,7 @@ export default function Otp({}) {
                   key={index}
                   value={data}
                   onChange={(e) => handleOtpChange(e.target, index)}
+                  onKeyDown={(e) => handelDeleteInput(e, index)}
                   disabled={isOtpVerifie}
                   onFocus={(e) => e.target.select()}
                 />
@@ -145,7 +156,10 @@ export default function Otp({}) {
             ليس رقمي ؟ <Link to="/signup"> تغيير رقمك </Link>
           </p>
           <div className="btns">
-            <button className="btn otp-confiramtion" disabled={!isOtpVerifie || isLoading} >
+            <button
+              className="btn otp-confiramtion"
+              disabled={!isOtpVerifie || isLoading}
+            >
               تأكيد
             </button>
             <button
