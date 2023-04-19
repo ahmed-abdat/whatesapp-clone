@@ -177,7 +177,6 @@ export default function ChatPageUser() {
     getDocs(q)
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          console.log( doc.data());
           updateDoc(doc.ref, {
             isRead: true,
           })
@@ -197,7 +196,6 @@ export default function ChatPageUser() {
     getDoc(chatRef).then((doc) => {
       const document = doc.data();
       if(document.sender && document.receiver){
-        console.log('both are here');
         getUnreadMessage();
       }
         }
