@@ -3,6 +3,10 @@ import "moment/locale/ar-sa";
 import { useState, useEffect } from "react";
 import useSelectedUser from "../../store/useSelectedUser";
 import defaultAvatar from "../../assets/img/default-avatar.svg";
+import { collection, doc, updateDoc } from "firebase/firestore";
+import { db } from "../../config/firebase";
+import useUser from "../../store/useUser";
+import Check from "../svg/Check";
 
 export default function HomePageUser({
   displayName,
@@ -53,6 +57,9 @@ export default function HomePageUser({
     
     return () => clearInterval(interval);
   }, [lastMessage?.createdAt]);
+
+  // get current user
+  const getCurrentUser = useUser((state) => state.getCurrentUser);
   
 
   
@@ -63,6 +70,24 @@ export default function HomePageUser({
 
   const handelSelectedUser = () => {
     setSelectedUser({ displayName, photoURL, isOnline, lastSeen, uid });
+    // update the isRead status the last message if the last message is not from the current user
+    if (lastMessage?.from !== getCurrentUser.uid) {
+      const lastMessageRef = collection(db, "users" , getCurrentUser().uid, "lastMessage")
+      updateDoc(doc(lastMessageRef, lastMessage?.to), {
+        isRead: true,
+      })
+      .then(() => {
+        console.log("Document successfully updated!");
+      }
+      )
+      .catch((error) => {
+        // The document probably doesn't exist.
+        console.error("Error updating document: ", error);
+      }
+      );
+    }
+    
+    
     setIsSelectedUser(true);
   };
 
@@ -89,6 +114,8 @@ export default function HomePageUser({
   }
 
 
+
+
   return (
     <div className="user--profile" onClick={handelSelectedUser}>
       <div className="user--profile--img">
@@ -108,6 +135,11 @@ export default function HomePageUser({
         <div className="last-message">
          {
           lastMessage?.content &&  <p className={contentClass()}> {lastMessage?.content} </p>
+         }
+         {
+          lastMessage?.from === getCurrentUser().uid &&  <div className={`${lastMessage?.isRead ? "check" : "uncheck"} d-f`}>
+          <Check />
+        </div>
          }
         </div>
       </div>

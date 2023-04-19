@@ -247,6 +247,19 @@
   font-size: 0.9rem;
   font-weight: 400;
   color: #667781;
+  display: flex;
+  align-items: center;
+  gap: 0 0.5rem;
+}
+
+
+
+.main--container .user--profile--info .last-message  .uncheck {
+  color : #8696a0;
+}
+
+.main--container .user--profile--info .last-message  .check {
+  color: #53bdeb;
 }
 
 .main--container .user-profile--container img {
