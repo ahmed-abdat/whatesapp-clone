@@ -20,6 +20,11 @@ import {
   orderBy,
   doc,
   setDoc,
+  getDocs,
+  where,
+  getDoc,
+  updateDoc,
+  deleteField,
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import SpinerLoader from "../SpinerLoader";
@@ -112,8 +117,36 @@ export default function ChatPageUser() {
 
   // handel back
   const handelBack = () => {
-    setIsSelectedUser(false);
-    setSelectedUser(null);
+    const curretnUserId = getCurrentUser().uid;
+    const selectedUserId = getSelectedUser().uid;
+    const uniqueChatId =
+      curretnUserId > selectedUserId
+        ? `${curretnUserId + selectedUserId}`
+        : `${selectedUserId + curretnUserId}`;
+        const chatRef = doc(db, "messages", uniqueChatId);
+        getDoc(chatRef).then((doc) => {
+          const document = doc.data()
+          if(curretnUserId === document.sender){
+            updateDoc(chatRef, {
+              sender : deleteField()
+            })
+            .catch((error) => {
+              // The document probably doesn't exist.
+              console.error("Error updating document: ", error);
+            });
+          }else {
+            updateDoc(chatRef, {
+              receiver : deleteField()
+            })
+            .catch((error) => {
+              // The document probably doesn't exist.
+              console.error("Error updating document: ", error);
+            });
+          }
+        })
+        setIsSelectedUser(false);
+        setSelectedUser(null);
+    
   };
 
   const [messages, setMessages] = useState([]);
@@ -125,23 +158,50 @@ export default function ChatPageUser() {
     let random = Math.random().toString(16).slice(2); // Generate a random number and convert it to a hexadecimal string
     return timestamp + random;
   };
-  // handel send message
-  const handelSendMessage = (e) => {
-    e && e.preventDefault();
-    if (message.length > 0 && message.trim().length > 0) {
-      const messageData = {
-        id: getUniqueId(),
-        content: message,
-        createdAt: new Date().getTime(),
-        isRead: false,
-        from: getCurrentUser().uid,
-        to: getSelectedUser().uid,
-      };
-      addMessageTODataBase(message);
-      setMessages((prev) => [...prev, messageData]);
-      setMessage("");
-      setIsArabic(true);
-    }
+
+  // make a query to get all unread message from the selected user
+  const getUnreadMessage = async () => {
+    const curretnUserId = getCurrentUser().uid;
+    const selectedUserId = getSelectedUser().uid;
+    const uniqueChatId =
+      curretnUserId > selectedUserId
+        ? `${curretnUserId + selectedUserId}`
+        : `${selectedUserId + curretnUserId}`;
+
+    const collectionRef = collection(db, "messages", uniqueChatId, "chat");
+    const q = query(
+      collectionRef,
+      where("isRead", "==", false),
+      where("from", "==", curretnUserId)
+    );
+    getDocs(q)
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          console.log( doc.data());
+          updateDoc(doc.ref, {
+            isRead: true,
+          })
+            .catch((error) => {
+              console.error("Error updating document: ", error);
+            });
+        });
+      })
+      .catch((error) => {
+        console.log("Error getting documents: ", error);
+      });
+  };
+
+  // update how is view this chat
+  const updateChatView = (uniqueChatId) => {
+    const chatRef = doc(db, "messages", uniqueChatId);
+    getDoc(chatRef).then((doc) => {
+      const document = doc.data();
+      if(document.sender && document.receiver){
+        console.log('both are here');
+        getUnreadMessage();
+      }
+        }
+    )
   };
 
   // add message to database
@@ -178,8 +238,29 @@ export default function ChatPageUser() {
       );
       await setDoc(doc(currentUserLastMessageRef, selectedUserId), messageData);
       await setDoc(doc(selectedUserLastMessageRef, currentUserId), messageData);
+
+      updateChatView(uniqueChatId)
     } catch (error) {
       console.log(error.message);
+    }
+  };
+
+  // handel send message
+  const handelSendMessage = (e) => {
+    e && e.preventDefault();
+    if (message.length > 0 && message.trim().length > 0) {
+      const messageData = {
+        id: getUniqueId(),
+        content: message,
+        createdAt: new Date().getTime(),
+        isRead: false,
+        from: getCurrentUser().uid,
+        to: getSelectedUser().uid,
+      };
+      addMessageTODataBase(message);
+      setMessages((prev) => [...prev, messageData]);
+      setMessage("");
+      setIsArabic(true);
     }
   };
 
@@ -227,7 +308,7 @@ export default function ChatPageUser() {
           </div>
         </div>
         <div className="info">
-          <h3>{getSelectedUser()?.displayName || 'ahmed'}</h3>
+          <h3>{getSelectedUser()?.displayName || "ahmed"}</h3>
           <p className="f-ar dr">
             {getSelectedUser()?.isOnline ? "متصل الآن" : timeAgo}
           </p>
