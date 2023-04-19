@@ -143,9 +143,9 @@ export default function HomePageUser({
           lastMessage?.content &&  <p className={contentClass()}> {lastMessage?.content} </p>
          }
          {
-          lastMessage?.from === getCurrentUser().uid &&  <div className={`${lastMessage?.isRead ? "check" : "uncheck"} d-f`}>
+         getCurrentUser()?.uid ? lastMessage?.from === getCurrentUser()?.uid &&  <div className={`${lastMessage?.isRead ? "check" : "uncheck"} d-f`}>
           <Check />
-        </div>
+        </div> : null
          }
         </div>
       </div>
