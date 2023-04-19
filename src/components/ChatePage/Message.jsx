@@ -36,6 +36,8 @@ export default function Message({ content, isSender, createdAt, isRead }) {
 
   const isCurrentUserSender = isSender === getCurrentUser().uid;
 
+
+
   return (
     <div className={`message ${isCurrentUserSender ? "sender" : "receiver"}`}>
       <div className={`after ${isCurrentUserSender ? "send" : "receive"}`}>

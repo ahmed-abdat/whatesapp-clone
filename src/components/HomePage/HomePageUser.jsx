@@ -71,7 +71,8 @@ export default function HomePageUser({
   const handelSelectedUser = () => {
     setSelectedUser({ displayName, photoURL, isOnline, lastSeen, uid });
     // update the isRead status the last message if the last message is not from the current user
-    if (lastMessage?.from !== getCurrentUser.uid) {
+    if (lastMessage?.from !== getCurrentUser().uid) {
+      console.log(lastMessage?.to);
       const lastMessageRef = collection(db, "users" , getCurrentUser().uid, "lastMessage")
       updateDoc(doc(lastMessageRef, lastMessage?.to), {
         isRead: true,
