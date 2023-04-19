@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./Opt.css";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -20,20 +20,25 @@ export default function Otp({}) {
 
   const navigate = useNavigate();
 
-  // get phoneUserVerified
-  const getIsPhoneUserVerified = useUser((state) => state.getIsPhoneUserVerified);
   // set phoneUserVerified
   const setIsPhoneUserVerified = useUser((state) => state.setIsPhoneUserVerified);
-  // get the current user
-  const getCurrentUser = useUser((state) => state.getCurrentUser);
-  // get isemailuser
-  const getIsEmailUser = useUser((state) => state.getIsEmailUser);
+
+
+  // first input ref
+  const firstInputRef = useRef(null);
   
 
 
   const handleOtpChange = (element, index) => {
     // If the entered value is not a number, don't update the state
     if (isNaN(element.value)) return false;
+    // always start from the first input
+    if (index !== 0 && otp[index - 1] === "") {
+      // blur the current input and focus to the first input
+      element.blur();
+      firstInputRef.current.focus();
+      return;
+    }
     // Update the state with the new entered value
     setOtp([...otp.map((d, idx) => (idx === index ? element.value : d))]);
     // If the last input is filled, blur and disable the input
@@ -121,6 +126,7 @@ export default function Otp({}) {
             {otp.map((data, index) => {
               return (
                 <input
+                  ref={index === 0 ? firstInputRef : null}
                   itemType="number"
                   typeof="number"
                   type="tel"
