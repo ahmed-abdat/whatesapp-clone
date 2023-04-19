@@ -76,7 +76,7 @@ export default function HomePageUser({
   const handelSelectedUser = () => {
     setSelectedUser({ displayName, photoURL, isOnline, lastSeen, uid });
     getUnreadMessage(uid);
-    howIsView(uid)
+    howIsView(uid);
     setIsSelectedUser(true);
   };
 
@@ -107,31 +107,29 @@ export default function HomePageUser({
         console.log("Error getting documents: ", error);
       });
 
-            // update last message read in both user lastMessage collection
-            const currentUserLastMessageRef = collection(
-              db,
-              "users",
-              curretnUserId,
-              "lastMessage"
-            );
-            const selectedUserLastMessageRef = collection(
-              db,
-              "users",
-              selectedUserId,
-              "lastMessage"
-            );
-            updateDoc(doc(currentUserLastMessageRef, selectedUserId) , {
-              isRead: true,
-            })
-            .catch((e)=> {
-              console.log(e.message);
-            })
-            updateDoc(doc(selectedUserLastMessageRef, curretnUserId) , {
-              isRead: true,
-            })
-            .catch((e)=> {
-              console.log(e.message);
-            })
+    // update last message read in both user lastMessage collection
+    const currentUserLastMessageRef = collection(
+      db,
+      "users",
+      curretnUserId,
+      "lastMessage"
+    );
+    const selectedUserLastMessageRef = collection(
+      db,
+      "users",
+      selectedUserId,
+      "lastMessage"
+    );
+    updateDoc(doc(currentUserLastMessageRef, selectedUserId), {
+      isRead: true,
+    }).catch((e) => {
+      console.log(e.message);
+    });
+    updateDoc(doc(selectedUserLastMessageRef, curretnUserId), {
+      isRead: true,
+    }).catch((e) => {
+      console.log(e.message);
+    });
   };
 
   // update how view the chat content
@@ -139,32 +137,30 @@ export default function HomePageUser({
     const currentUserId = getCurrentUser().uid;
     const selectedUserId = uid;
     const uniqueChatId =
-    currentUserId > selectedUserId
+      currentUserId > selectedUserId
         ? `${currentUserId + selectedUserId}`
         : `${selectedUserId + currentUserId}`;
-  const chatRef = doc(db, "messages" , uniqueChatId);
-  getDoc(chatRef).then((doc) => {
-    if (doc.exists() && doc.data().hasOwnProperty('sender')) {
-      const document = doc.data();
-      const isCurrentUserViewThisChat = document.sender === currentUserId
-      if(isCurrentUserViewThisChat) return
-      updateDoc(chatRef, {
-        receiver : currentUserId,
-      })
-        .catch((error) => {
+    const chatRef = doc(db, "messages", uniqueChatId);
+    getDoc(chatRef).then((doc) => {
+      if (doc.exists() && doc.data().hasOwnProperty("sender")) {
+        const document = doc.data();
+        const isCurrentUserViewThisChat = document.sender === currentUserId;
+        if (isCurrentUserViewThisChat) return;
+        updateDoc(chatRef, {
+          receiver: currentUserId,
+        }).catch((error) => {
           // The document probably doesn't exist.
           console.error("Error updating document: ", error);
         });
-    } else {
-      setDoc(chatRef, {
-        sender : currentUserId,
-      })
-        .catch((error) => {
+      } else {
+        setDoc(chatRef, {
+          sender: currentUserId,
+        }).catch((error) => {
           // The document probably doesn't exist.
           console.error("Error updating document: ", error);
         });
-    }
-  });
+      }
+    });
   };
 
   // is arabic Name
