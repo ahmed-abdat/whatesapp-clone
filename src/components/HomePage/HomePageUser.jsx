@@ -106,6 +106,32 @@ export default function HomePageUser({
       .catch((error) => {
         console.log("Error getting documents: ", error);
       });
+
+            // update last message read in both user lastMessage collection
+            const currentUserLastMessageRef = collection(
+              db,
+              "users",
+              curretnUserId,
+              "lastMessage"
+            );
+            const selectedUserLastMessageRef = collection(
+              db,
+              "users",
+              selectedUserId,
+              "lastMessage"
+            );
+            updateDoc(doc(currentUserLastMessageRef, selectedUserId) , {
+              isRead: true,
+            })
+            .catch((e)=> {
+              console.log(e.message);
+            })
+            updateDoc(doc(selectedUserLastMessageRef, curretnUserId) , {
+              isRead: true,
+            })
+            .catch((e)=> {
+              console.log(e.message);
+            })
   };
 
   // update how view the chat content

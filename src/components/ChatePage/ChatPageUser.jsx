@@ -195,12 +195,26 @@ export default function ChatPageUser() {
         curretnUserId,
         "lastMessage"
       );
+      const selectedUserLastMessageRef = collection(
+        db,
+        "users",
+        selectedUserId,
+        "lastMessage"
+      );
       updateDoc(doc(currentUserLastMessageRef, selectedUserId) , {
         isRead: true,
       })
       .catch((e)=> {
         console.log(e.message);
       })
+      updateDoc(doc(selectedUserLastMessageRef, curretnUserId) , {
+        isRead: true,
+      })
+      .catch((e)=> {
+        console.log(e.message);
+      })
+
+
   };
 
   // update how is view this chat
