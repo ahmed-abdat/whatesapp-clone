@@ -250,6 +250,34 @@
   display: flex;
   align-items: center;
   gap: 0 0.5rem;
+  justify-content: space-between;
+}
+
+.main--container .user--profile .last-message .unread {
+  background: #25d366;
+    color: #fff;
+    text-align: center;
+    border-radius: 1.1em;
+    font-weight: 600;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    line-height: 20px;
+}
+
+.unread-color {
+  color: #25d366 !important;
+  font-weight: 600 !important;
+}
+
+.unread-message-content {
+  font-weight: 600  !important;
+  color: #3B4A5A !important;
+}
+
+.unread-name {
+  font-weight: 600 !important;
+  color: #111b21  !important;
 }
 
 

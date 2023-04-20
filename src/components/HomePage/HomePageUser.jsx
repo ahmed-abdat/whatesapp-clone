@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import useSelectedUser from "../../store/useSelectedUser";
 import defaultAvatar from "../../assets/img/default-avatar.svg";
 import {
-  addDoc,
   collection,
   doc,
   getDoc,
@@ -111,8 +110,6 @@ export default function HomePageUser({
 
   // update isRead to true in the currentUser and selectedUser lastMessage collection
   const updateLastMessage =  (curretnUserId , selectedUserId )=> {
-
-    console.log(curretnUserId , selectedUserId);
     const currentUserLastMessageRef = collection(
       db,
       "users",
@@ -139,6 +136,7 @@ export default function HomePageUser({
     })
  
   }
+
 
   // update how view the chat content
   const howIsView = (uid) => {
@@ -193,6 +191,8 @@ export default function HomePageUser({
     }
   };
 
+  const isMessageNotRead = lastMessage?.isRead === false && lastMessage?.from !== getCurrentUser().uid;
+
   
 
   return (
@@ -202,19 +202,22 @@ export default function HomePageUser({
       </div>
       <div className="user--profile--info">
         <div className="info">
-          <h3 className={isArabic(displayName) ? "f-ar dr-ar" : "f-en dr-en"}>
+          <h3 className={`${isArabic(displayName) ? "f-ar dr-ar" : "f-en dr-en"} ${isMessageNotRead ? 'unread-name' : ''}`}>
             {displayName || "Ahmed Abdat"}
           </h3>
           {lastMessage?.createdAt && (
-            <p className="dr-ar f-ar">{`${timeAgo} ${
+            <p className={`dr-ar f-ar ${isMessageNotRead ? "unread-color" : ''}`}>{`${timeAgo} ${
               lastSeanMessage.format("a") === "am" ? "ص" : "م"
             }`}</p>
           )}
         </div>
         <div className="last-message">
           {lastMessage?.content && (
-            <p className={contentClass()}> {lastMessage?.content} </p>
+            <p className={`${contentClass()} ${isMessageNotRead ? 'unread-message-content' : ""}`}> {lastMessage?.content} </p>
           )}
+          {
+           isMessageNotRead && <div className="unread">1</div>
+          }
           {getCurrentUser()?.uid
             ? lastMessage?.from === getCurrentUser()?.uid && (
                 <div
