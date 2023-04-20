@@ -74,11 +74,12 @@ export default function HomePage() {
       collection(db, "users" , currentUser.uid, "lastMessage")
     );
     const querySnapshot = onSnapshot(q, (querySnapshot) => {
-      const users = [];
+      const lastMessages = [];
       querySnapshot.forEach((doce) => {
-        users.push({ ...doce.data(), id: doce.id });
+       lastMessages.push({ ...doce.data(), id: doce.id });
       });
-      setLastMessage(users);
+      // console.log(lastMessages);
+      setLastMessage(lastMessages);
     });
 
     return () => querySnapshot();
@@ -95,6 +96,20 @@ export default function HomePage() {
     const querySnapshot = onSnapshot(q, (querySnapshot) => {
       const users = [];
       querySnapshot.forEach((doce) => {
+        const qe = query(
+          collection(db, "users" , currentUser.uid, "lastMessage")
+        );
+        let lastMessage = []
+        getDocs(qe).then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            if(doc.exists()){
+              lastMessage.push({ ...doc.data(), id: doc.id });
+            }
+          });
+
+          setLastMessage(lastMessage)
+        });
+
         users.push({ ...doce.data(), id: doce.id });
       });
       setAllUsers(users);
@@ -107,8 +122,6 @@ export default function HomePage() {
 
 
 
-
-
   // merge the lastMessage with the his user
   useEffect(() => {
     const users = allUsers.map(user => {
@@ -117,6 +130,7 @@ export default function HomePage() {
         })
         setAllUsers(users)
   }, [lastMessage])
+
   
 
 

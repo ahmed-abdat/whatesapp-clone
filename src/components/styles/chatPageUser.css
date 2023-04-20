@@ -29,9 +29,7 @@
   cursor: pointer;
 }
 
-.chat-page--container .back .icon {
-  display: none;
-}
+
 
 .chat-page--container header .img img {
   max-width: 100%;
