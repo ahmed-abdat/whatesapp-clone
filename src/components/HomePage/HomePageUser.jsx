@@ -188,6 +188,24 @@ export default function HomePageUser({
     }
   };
 
+  // useStatus class
+  const useStatusClass = () => {
+    const isArabic = /[\u0600-\u06FF]/.test(getCurrentUser().userStatus);
+    const content = getCurrentUser().userStatus;
+    const maxLength = 50;
+    if (isArabic && content?.length > maxLength) {
+      return "f-ar dr-ar";
+    } else if (isArabic && content?.length < maxLength) {
+      return "f-ar";
+    } else if (!isArabic && content?.length > maxLength) {
+      return "f-en dr-en";
+    } else if (!isArabic && content?.length < maxLength) {
+      return "f-en";
+    }
+  };
+
+    
+
   // get the  number of unread message from the selected user
   const getUnreadMessageNumber = async (uid) => {
     const curretnUserId = getCurrentUser().uid;
@@ -239,15 +257,16 @@ export default function HomePageUser({
           )}
         </div>
         <div className="last-message">
-          {lastMessage?.content && (
+          {lastMessage?.content ? (
             <p
               className={`${contentClass()} ${
                 isMessageNotRead ? "unread-message-content" : ""
               }`}
             >
-              {" "}
-              {lastMessage?.content}{" "}
+              {lastMessage?.content}
             </p>
+          ) : (
+            <p className={`${useStatusClass()}`}> {getCurrentUser()?.userStatus} </p>
           )}
           {isMessageNotRead && <div className="unread">{UnreadMessages}</div>}
           {getCurrentUser()?.uid

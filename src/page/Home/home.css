@@ -118,14 +118,36 @@
 
 
 .main--container header .header--icons > svg {
-  font-size: 1.2rem;
+  font-size: 1.7rem;
+  padding: 0.3rem;
 }
 
 .bg--hover {
   background: #0b141a1a;
 }
 
+/* ? home page button start chat */
 
+.main--container .button {
+  cursor: pointer;
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  padding: 0.3rem;
+  background: #00a884;
+  border-radius: 50%;
+  font-size: 1.35rem;
+}
+
+.main--container .button button {
+  all: unset;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
 
 /* ? home page search */
 .main--container .search--container {

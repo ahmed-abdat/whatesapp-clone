@@ -270,6 +270,29 @@ export default function ChatPageUser() {
     }
   };
 
+  // update user freinds list
+  const updateUserFreindsList = (selectedUserId) => {
+    const currentUserId = getCurrentUser().uid;
+    const currentUserFreindsListRef = collection( db, "users", currentUserId, "freindsList");
+    const selectedUserFreindsListRef = collection( db, "users", selectedUserId, "freindsList"); 
+    const currentUserFreindsListDoc = doc(currentUserFreindsListRef, selectedUserId);
+    const selectedUserFreindsListDoc = doc(selectedUserFreindsListRef, currentUserId);
+    setDoc(currentUserFreindsListDoc, {
+      uid: selectedUserId,
+    })
+    .then(() => {
+      console.log("Document successfully written!");
+    })
+    setDoc(selectedUserFreindsListDoc, {
+      uid: currentUserId,
+    })
+    .then(() => {
+      console.log("Document successfully written!");
+    }
+    )
+  };
+
+
   // handel send message
   const handelSendMessage = (e) => {
     e && e.preventDefault();
@@ -283,6 +306,7 @@ export default function ChatPageUser() {
         to: getSelectedUser().uid,
       };
       addMessageTODataBase(message);
+      updateUserFreindsList(getSelectedUser().uid);
       setMessages((prev) => [...prev, messageData]);
       setMessage("");
       setIsArabic(true);

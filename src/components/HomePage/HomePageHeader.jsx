@@ -11,7 +11,7 @@ import useSelectedUser from "../../store/useSelectedUser";
 import defaultAvatar from "../../assets/img/default-avatar.svg";
 import "../styles/HeaderPopup.css";
 
-export default function HomePageHeader() {
+export default function HomePageHeader({setIsAllUsersShow}) {
   const getCurrentUser = useUser((state) => state.getCurrentUser);
   const setIsProfileShow = useUsers((state) => state.setIsProfileShow);
 
@@ -89,6 +89,11 @@ export default function HomePageHeader() {
     }
   };
 
+  // handel show all the users
+  const handelShowAllTheUsers = () => {
+    setIsAllUsersShow(prev => !prev);
+  };
+
   return (
     <header>
       <div className="header--container">
@@ -96,7 +101,7 @@ export default function HomePageHeader() {
           <img src={getCurrentUser()?.photoURL || defaultAvatar} alt="avatar" />
         </div>
         <div className="header--icons" ref={headerIconsRef}>
-          <BsFillChatRightTextFill />
+          <BsFillChatRightTextFill onClick={handelShowAllTheUsers}/>
           <div className="d-f">
             <HiDotsVertical
               onClick={() => setIsPopupShow((prev) => !prev)}
