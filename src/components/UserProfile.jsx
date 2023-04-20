@@ -1,4 +1,3 @@
-import "./styles/userProfile.css";
 import { BiArrowBack, BiCheck } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import { RiInformationLine } from "react-icons/ri";
@@ -17,8 +16,10 @@ import { app, storage } from "../config/firebase";
 import { doc, updateDoc, getFirestore } from "firebase/firestore/lite";
 import { useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import defaultAvatar from "../assets/img/default-avatar.svg";
+import ViewImage from "./ViewImage";
+import "react-toastify/dist/ReactToastify.css";
+import "./styles/userProfile.css";
 
 export default function UserProfile() {
   // get current user
@@ -30,13 +31,18 @@ export default function UserProfile() {
 
   const [file, setFile] = useState(null);
   const [isImageLoading, setIsImageLoading] = useState(false);
+  const [isImageView, setIsImageView] = useState(false);
 
   // set is profile show
   const setIsProfileShow = useUsers((state) => state.setIsProfileShow);
 
   // is name Arabic
-  const [isNameArabic, setIsNameArabic] = useState(/[\u0600-\u06FF]/.test(user?.displayName));
-  const [isStatusArabic, setIsStatusArabic] = useState(/[\u0600-\u06FF]/.test(user?.userStatus));
+  const [isNameArabic, setIsNameArabic] = useState(
+    /[\u0600-\u06FF]/.test(user?.displayName)
+  );
+  const [isStatusArabic, setIsStatusArabic] = useState(
+    /[\u0600-\u06FF]/.test(user?.userStatus)
+  );
 
   // profile state
   const [profile, setProfile] = useState({
@@ -57,13 +63,13 @@ export default function UserProfile() {
   // handel profile change
   const handelProfileChange = (e) => {
     const { name, value } = e.target;
-    if(name === 'displayName' && value.length > 0){
+    if (name === "displayName" && value.length > 0) {
       const isArabicName = /[\u0600-\u06FF]/.test(value);
-      setIsNameArabic(isArabicName)
+      setIsNameArabic(isArabicName);
     }
-    if(name === 'userStatus' && value.length > 0){
+    if (name === "userStatus" && value.length > 0) {
       const isArabicStatus = /[\u0600-\u06FF]/.test(value);
-      setIsStatusArabic(isArabicStatus)
+      setIsStatusArabic(isArabicStatus);
     }
 
     if (name === "displayName" && value.length > maxDisplayNameLength)
@@ -104,20 +110,24 @@ export default function UserProfile() {
         });
     }
     const uploadTask = uploadBytesResumable(storageRef, file);
-    uploadTask.on('state_changed', 
-    (snapshot) => {
-      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      console.log('Upload is ' + progress + '% done');
-    }, 
-    (error) => {
-      console.log(error.message);
-      // Handle unsuccessful uploads
-    }, () => {
-      getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-        const fullPath = uploadTask.snapshot.ref.fullPath;
-        updateUserInfo(downloadURL, fullPath);
-      });
-    });
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log("Upload is " + progress + "% done");
+      },
+      (error) => {
+        console.log(error.message);
+        // Handle unsuccessful uploads
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          const fullPath = uploadTask.snapshot.ref.fullPath;
+          updateUserInfo(downloadURL, fullPath);
+        });
+      }
+    );
   };
 
   // handel file
@@ -142,7 +152,7 @@ export default function UserProfile() {
     updateProfile(updatedFeild);
     const firestore = getFirestore(app);
     const userRef = doc(firestore, "users", getCurrentUser().uid);
-    updateDoc(userRef,updatedFeild)
+    updateDoc(userRef, updatedFeild)
       .then(() => {
         toast.success("تم تحديث الصورة بنجاح");
         setIsImageLoading(false);
@@ -157,7 +167,11 @@ export default function UserProfile() {
   // handel display name edit
   const handelDisplayNameEdit = () => {
     setIsDisplayNameEdit((prev) => !prev);
-    if (isDisplayNameEdit && profile.displayName.trim() !== user?.displayName && profile.displayName !== '') {
+    if (
+      isDisplayNameEdit &&
+      profile.displayName.trim() !== user?.displayName &&
+      profile.displayName !== ""
+    ) {
       const firestore = getFirestore(app);
       const userRef = doc(firestore, "users", getCurrentUser().uid);
       updateDoc(userRef, {
@@ -181,7 +195,11 @@ export default function UserProfile() {
   // handel user status edit
   const handelUserStatusEdit = () => {
     setIsUserStatusEdit((prev) => !prev);
-    if (isUserStatusEdit && profile.userStatus.trim() !== user?.userStatus && profile.userStatus !== '') {
+    if (
+      isUserStatusEdit &&
+      profile.userStatus.trim() !== user?.userStatus &&
+      profile.userStatus !== ""
+    ) {
       const firestore = getFirestore(app);
       const userRef = doc(firestore, "users", getCurrentUser().uid);
       updateDoc(userRef, {
@@ -202,192 +220,224 @@ export default function UserProfile() {
     }
   };
 
-  // handel delete user img 
+  // handel delete user img
   const handelDeleteUserImg = async () => {
-  if (!getCurrentUser().photoPath) {
-    updateProfile({ photoPath: null, photoURL: null });
-    setFile(null)
-    const firestore = getFirestore(app);
-    const userRef = doc(firestore, "users", getCurrentUser().uid);
-    await updateDoc(userRef, {
-      photoPath : null,
-      photoURL : null
-    });
-    return
+    if (!getCurrentUser().photoPath) {
+      updateProfile({ photoPath: null, photoURL: null });
+      setFile(null);
+      const firestore = getFirestore(app);
+      const userRef = doc(firestore, "users", getCurrentUser().uid);
+      await updateDoc(userRef, {
+        photoPath: null,
+        photoURL: null,
+      });
+      return;
+    }
+    const oldRef = ref(storage, getCurrentUser().photoPath);
+    try {
+      setIsImageLoading(true);
+      await deleteObject(oldRef);
+      console.log("fill deleted successfully");
+      const firestore = getFirestore(app);
+      const userRef = doc(firestore, "users", getCurrentUser().uid);
+      await updateDoc(userRef, {
+        photoPath: null,
+        photoURL: null,
+      });
+      updateProfile({ photoPath: null, photoURL: null });
+      setFile(null);
+      toast.success("تم حذف الصورة بنجاح");
+      setIsImageLoading(false);
+      setTimeout(() => {
+        setIsImageView(false);
+      }, 3000);
+    } catch (error) {
+      setIsImageLoading(false);
+      console.error("Error updating document: ", error);
+      toast.error("حدث خطأ أثناء تحديث الحالة رجاءا حاول مرة أخرى");
+    }
   };
-  const oldRef = ref(storage, getCurrentUser().photoPath);
-  try {
-    setIsImageLoading(true);
-    await deleteObject(oldRef);
-    console.log("fill deleted successfully");
-    const firestore = getFirestore(app);
-    console.log(getCurrentUser().uid);
-    const userRef = doc(firestore, "users", getCurrentUser().uid);
-    await updateDoc(userRef, {
-      photoPath : null,
-      photoURL : null
-    });
-    updateProfile({ photoPath: null, photoURL: null });
-    setFile(null)
-    toast.success("تم حذف الصورة بنجاح");
-    setIsImageLoading(false);
-  } catch (error) {
-    setIsImageLoading(false);
-    console.error("Error updating document: ", error);
-    toast.error("حدث خطأ أثناء تحديث الحالة رجاءا حاول مرة أخرى");
-  }
-};
+
+  // handel view image
+  const handelViewImage = () => {
+    if (file || getCurrentUser().photoURL) {
+      setIsImageView(true);
+    }
+  };
 
   return (
     <div className={`user-profile`}>
-      <header className="user-profile--header">
-        <div className="header--text">
-          <BiArrowBack onClick={handelBack} className="r-180" />
-          <h4>الملف الشخصي</h4>
-        </div>
-      </header>
-      {/* profile imagae */}
-      <div className="profile--image d-f">
-        <div className="img">
-          <img
-            src={
-              file
-                ? URL.createObjectURL(file)
-                : getCurrentUser()?.photoURL
-                ? getCurrentUser().photoURL
-                : defaultAvatar
-            }
-            alt="avatar"
+      {!isImageView ? (
+        <>
+          <header className="user-profile--header">
+            <div className="header--text">
+              <BiArrowBack onClick={handelBack} className="r-180" />
+              <h4>الملف الشخصي</h4>
+            </div>
+          </header>
+          {/* profile imagae */}
+          <div className="profile--image d-f">
+            <div className="img">
+              <img
+                onClick={handelViewImage}
+                className={`${isImageLoading ? "disabel" : ""}`}
+                src={
+                  file
+                    ? URL.createObjectURL(file)
+                    : getCurrentUser()?.photoURL
+                    ? getCurrentUser().photoURL
+                    : defaultAvatar
+                }
+                alt="avatar"
+              />
+              {/* upload file */}
+              <label
+                htmlFor="file-input"
+                className={`icon d-f ${isImageLoading ? "disabel" : ""}`}
+              >
+                <Camera />
+              </label>
+              <input
+                onChange={handleFile}
+                id="file-input"
+                type="file"
+                name="file"
+                style={{ display: "none" }}
+              />
+              {getCurrentUser()?.photoURL && (
+                <div
+                  className={`deleteImg ${isImageLoading ? "disabel" : ""}`}
+                  onClick={handelDeleteUserImg}
+                >
+                  <MdDelete />
+                </div>
+              )}
+            </div>
+          </div>
+          <ToastContainer
+            position="top-center"
+            autoClose={2000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
           />
-          {/* upload file */}
-          <label
-            htmlFor="file-input"
-            className={`icon d-f ${isImageLoading ? "disabel" : ""}`}
-          >
-            <Camera />
-          </label>
-          <input
-            onChange={handleFile}
-            id="file-input"
-            type="file"
-            name="file"
-            style={{ display: "none" }}
-          />
-          {
-            getCurrentUser()?.photoURL && (
-              <div className={`deleteImg ${isImageLoading ? "disabel" : ""}`} onClick={handelDeleteUserImg}>
-            <MdDelete />
-          </div>)
-          }
-        </div>
-      </div>
-      <ToastContainer
-        position="top-center"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
 
-      {/* profile info */}
-      <div className="profile--info">
-        {/* profile name */}
-        <div className="profile--name">
-          <div className="icon">
-            <CgProfile />
-          </div>
-          <div className="display">
-            <h3>الإسم</h3>
-            <div className="input">
-              <input
-                type="text"
-                value={profile.displayName}
-                name="displayName"
-                onChange={handelProfileChange}
-                className={isNameArabic ? "f-ar dr-ar" : "f-en dr-en"}
-                disabled={!isDisplayNameEdit}
-                ref={displayNameRef}
-                onKeyDown={(e) => e.key === "Enter" && handelDisplayNameEdit()}
-              />
-              {isDisplayNameEdit && (
-                <span className="length">{maxDisplayNameLength - profile.displayName.length}</span>
-              )}
-              <div className="edit" onClick={handelDisplayNameEdit}>
-                {isDisplayNameEdit ? (
-                  <BiCheck className="check" />
-                ) : (
-                  <HiPencil />
-                )}
+          {/* profile info */}
+          <div className="profile--info">
+            {/* profile name */}
+            <div className="profile--name">
+              <div className="icon">
+                <CgProfile />
+              </div>
+              <div className="display">
+                <h3>الإسم</h3>
+                <div className="input">
+                  <input
+                    type="text"
+                    value={profile.displayName}
+                    name="displayName"
+                    onChange={handelProfileChange}
+                    className={isNameArabic ? "f-ar dr-ar" : "f-en dr-en"}
+                    disabled={!isDisplayNameEdit}
+                    ref={displayNameRef}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && handelDisplayNameEdit()
+                    }
+                  />
+                  {isDisplayNameEdit && (
+                    <span className="length">
+                      {maxDisplayNameLength - profile.displayName.length}
+                    </span>
+                  )}
+                  <div className="edit" onClick={handelDisplayNameEdit}>
+                    {isDisplayNameEdit ? (
+                      <BiCheck className="check" />
+                    ) : (
+                      <HiPencil />
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div></div>
+              <p className="info">
+                هذا الاسم ليس كلمة مرور ولا رقم تعريف. إنما يكون هذا الاسم
+                ظاهراً لجهات اتصالك في واتساب.
+              </p>
+            </div>
+            {/* profile status */}
+            <div className="profile--status">
+              <div className="icon">
+                <RiInformationLine />
+              </div>
+              <div className="display">
+                <h3>الحالة</h3>
+                <div className="input">
+                  <input
+                    disabled={!isUserStatusEdit}
+                    ref={userStatusRef}
+                    type="text"
+                    name="userStatus"
+                    value={profile.userStatus}
+                    onChange={handelProfileChange}
+                    className={isStatusArabic ? "f-ar dr-ar" : "f-en dr-en"}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && handelUserStatusEdit()
+                    }
+                  />
+                  {isUserStatusEdit && (
+                    <span className="length">
+                      {maxUserStatusLength - profile.userStatus.length}
+                    </span>
+                  )}
+                  <div className="edit d-f" onClick={handelUserStatusEdit}>
+                    {isUserStatusEdit ? (
+                      <BiCheck className="check" />
+                    ) : (
+                      <HiPencil />
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          <div></div>
-          <p className="info">
-            هذا الاسم ليس كلمة مرور ولا رقم تعريف. إنما يكون هذا الاسم ظاهراً
-            لجهات اتصالك في واتساب.
-          </p>
-        </div>
-        {/* profile status */}
-        <div className="profile--status">
-          <div className="icon">
-            <RiInformationLine />
-          </div>
-          <div className="display">
-            <h3>الحالة</h3>
-            <div className="input">
-              <input
-                disabled={!isUserStatusEdit}
-                ref={userStatusRef}
-                type="text"
-                name="userStatus"
-                value={profile.userStatus}
-                onChange={handelProfileChange}
-                className={isStatusArabic ? "f-ar dr-ar" : "f-en dr-en"}
-                onKeyDown={(e) => e.key === "Enter" && handelUserStatusEdit()}
-              />
-              {isUserStatusEdit && (
-                <span className="length">{maxUserStatusLength - profile.userStatus.length}</span>
-              )}
-              <div className="edit d-f" onClick={handelUserStatusEdit}>
-                {isUserStatusEdit ? (
-                  <BiCheck className="check" />
-                ) : (
-                  <HiPencil />
-                )}
+            {/* profile phone number */}
+            {user?.phoneNumber && (
+              <div className="profile--phone-number">
+                <div className="icon">
+                  <MdOutlineLocalPhone />
+                </div>
+                <div className="display">
+                  <h3>رقم الهاتف</h3>
+                  <h4 className="dr-en">{user?.phoneNumber}</h4>
+                </div>
               </div>
-            </div>
+            )}
+            {/* profile email */}
+            {user?.email && (
+              <div className="profile--phone-number">
+                <div className="icon">
+                  <MdOutlineEmail />
+                </div>
+                <div className="display">
+                  <h3>البريد الإلكتروني</h3>
+                  <h4 className="dr-en">{user?.email}</h4>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-        {/* profile phone number */}
-        {user?.phoneNumber && (
-          <div className="profile--phone-number">
-            <div className="icon">
-              <MdOutlineLocalPhone />
-            </div>
-            <div className="display">
-              <h3>رقم الهاتف</h3>
-              <h4 className="dr-en">{user?.phoneNumber}</h4>
-            </div>
-          </div>
-        )}
-        {/* profile email */}
-        {user?.email && (
-          <div className="profile--phone-number">
-            <div className="icon">
-              <MdOutlineEmail />
-            </div>
-            <div className="display">
-              <h3>البريد الإلكتروني</h3>
-              <h4 className="dr-en">{user?.email}</h4>
-            </div>
-          </div>
-        )}
-      </div>
+        </>
+      ) : (
+        <ViewImage
+          isImageLoading={isImageLoading}
+          handelDeleteUserImg={handelDeleteUserImg}
+          handleFile={handleFile}
+          setIsImageView={setIsImageView}
+        />
+      )}
     </div>
   );
 }

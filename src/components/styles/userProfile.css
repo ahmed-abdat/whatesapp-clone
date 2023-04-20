@@ -11,14 +11,6 @@
   font-family: "Vazirmatn", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.user-profile.profile-show {
-  transform: translateX(0);
-  -webkit-transform: translateX(0);
-  -moz-transform: translateX(0);
-  -ms-transform: translateX(0);
-  -o-transform: translateX(0);
-}
-
 .user-profile header.user-profile--header {
   color: #fff;
   background-color: #008069;

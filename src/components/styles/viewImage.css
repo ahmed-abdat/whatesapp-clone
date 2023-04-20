@@ -1,0 +1,69 @@
+.view-image-container {
+  background-color: #000000e0;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  font-family: "Vazirmatn", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.view-image-container header.header {
+  margin-top: 0.5rem;
+  color: #fff;
+  background-color: transparent;
+  padding-inline: 1rem;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.view-image-container .header--left,
+.view-image-container .header--right {
+  display: flex;
+  align-items: center;
+  gap: 0 1rem;
+}
+
+.view-image-container .header--left svg {
+  font-size: 1.3rem;
+}
+
+.view-image-container .header--left h4 {
+  font-size: 1.15rem;
+  font-weight: 400;
+}
+
+.view-image-container .header--right label,
+.view-image-container .header--right .deleteImg {
+  cursor: pointer;
+  text-align: center;
+}
+
+.view-image-container .header--right label svg {
+  width: 26px;
+  height: 26px;
+  color: #fff;
+}
+
+.view-image-container .header--right .deleteImg svg {
+  font-size: 1.45rem;
+}
+
+.view-image-container .view-image {
+  width: 100%;
+  height: 100%;
+}
+
+.view-image-container .view-image .view-image--img {
+    width: 100%;
+}
+
+.view-image-container .view-image img {
+  width: 100%;
+  max-height: 50vh;
+  object-fit: cover;
+}
