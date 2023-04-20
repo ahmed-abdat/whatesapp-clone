@@ -49,6 +49,7 @@ export default function HomePageUser({
   const HourAndMinitFormat = lastSeanMessage.format("hh:mm");
 
   const [timeAgo, setTimeAgo] = useState(HourAndMinitFormat);
+  const [UnreadMessages, setUnreadMessages] = useState(0);
 
   // track the time ago
   useEffect(() => {
@@ -97,19 +98,19 @@ export default function HomePageUser({
     getDocs(q)
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          updateLastMessage(curretnUserId , selectedUserId)
+          updateLastMessage(curretnUserId, selectedUserId);
           updateDoc(doc.ref, {
             isRead: true,
           });
-        })
-        })
+        });
+      })
       .catch((error) => {
         console.log("Error getting documents: ", error);
       });
   };
 
   // update isRead to true in the currentUser and selectedUser lastMessage collection
-  const updateLastMessage =  (curretnUserId , selectedUserId )=> {
+  const updateLastMessage = (curretnUserId, selectedUserId) => {
     const currentUserLastMessageRef = collection(
       db,
       "users",
@@ -122,21 +123,17 @@ export default function HomePageUser({
       selectedUserId,
       "lastMessage"
     );
-    updateDoc(doc(currentUserLastMessageRef, selectedUserId) , {
+    updateDoc(doc(currentUserLastMessageRef, selectedUserId), {
       isRead: true,
-    })
-    .catch((e)=> {
+    }).catch((e) => {
       console.log(e.message);
-    })
-    updateDoc(doc(selectedUserLastMessageRef, curretnUserId) , {
+    });
+    updateDoc(doc(selectedUserLastMessageRef, curretnUserId), {
       isRead: true,
-    })
-    .catch((e)=> {
+    }).catch((e) => {
       console.log(e.message);
-    })
- 
-  }
-
+    });
+  };
 
   // update how view the chat content
   const howIsView = (uid) => {
@@ -191,9 +188,33 @@ export default function HomePageUser({
     }
   };
 
-  const isMessageNotRead = lastMessage?.isRead === false && lastMessage?.from !== getCurrentUser().uid;
+  // get the  number of unread message from the selected user
+  const getUnreadMessageNumber = async (uid) => {
+    const curretnUserId = getCurrentUser().uid;
+    const selectedUserId = uid;
+    const uniqueChatId =
+      curretnUserId > selectedUserId
+        ? `${curretnUserId + selectedUserId}`
+        : `${selectedUserId + curretnUserId}`;
+    const collectionRef = collection(db, "messages", uniqueChatId, "chat");
+    const q = query(
+      collectionRef,
+      where("isRead", "==", false),
+      where("from", "==", selectedUserId)
+    );
+    const querySnapshot = await getDocs(q);
+    let unreadMessages = 0;
+    querySnapshot.forEach((doc) => {
+      unreadMessages++;
+    });
+    setUnreadMessages(unreadMessages);
+  };
 
-  
+  const isMessageNotRead =
+    lastMessage?.isRead === false && lastMessage?.from !== getCurrentUser().uid;
+  if (isMessageNotRead) {
+    getUnreadMessageNumber(uid);
+  }
 
   return (
     <div className="user--profile" onClick={handelSelectedUser}>
@@ -202,22 +223,33 @@ export default function HomePageUser({
       </div>
       <div className="user--profile--info">
         <div className="info">
-          <h3 className={`${isArabic(displayName) ? "f-ar dr-ar" : "f-en dr-en"} ${isMessageNotRead ? 'unread-name' : ''}`}>
+          <h3
+            className={`${
+              isArabic(displayName) ? "f-ar dr-ar" : "f-en dr-en"
+            } ${isMessageNotRead ? "unread-name" : ""}`}
+          >
             {displayName || "Ahmed Abdat"}
           </h3>
           {lastMessage?.createdAt && (
-            <p className={`dr-ar f-ar ${isMessageNotRead ? "unread-color" : ''}`}>{`${timeAgo} ${
+            <p
+              className={`dr-ar f-ar ${isMessageNotRead ? "unread-color" : ""}`}
+            >{`${timeAgo} ${
               lastSeanMessage.format("a") === "am" ? "ص" : "م"
             }`}</p>
           )}
         </div>
         <div className="last-message">
           {lastMessage?.content && (
-            <p className={`${contentClass()} ${isMessageNotRead ? 'unread-message-content' : ""}`}> {lastMessage?.content} </p>
+            <p
+              className={`${contentClass()} ${
+                isMessageNotRead ? "unread-message-content" : ""
+              }`}
+            >
+              {" "}
+              {lastMessage?.content}{" "}
+            </p>
           )}
-          {
-           isMessageNotRead && <div className="unread">1</div>
-          }
+          {isMessageNotRead && <div className="unread">{UnreadMessages}</div>}
           {getCurrentUser()?.uid
             ? lastMessage?.from === getCurrentUser()?.uid && (
                 <div
