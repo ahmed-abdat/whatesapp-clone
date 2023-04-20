@@ -25,7 +25,7 @@
 .view-image-container .header--right {
   display: flex;
   align-items: center;
-  gap: 0 1rem;
+  gap: 0 1.5rem;
 }
 
 .view-image-container .header--left svg {
@@ -43,6 +43,7 @@
 .view-image-container .header--right .deleteImg {
   cursor: pointer;
   text-align: center;
+  padding: 0.3rem;
 }
 
 .view-image-container .header--right label svg {
