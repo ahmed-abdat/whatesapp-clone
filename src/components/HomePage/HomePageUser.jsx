@@ -98,16 +98,21 @@ export default function HomePageUser({
     getDocs(q)
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
+          updateLastMessage(curretnUserId , selectedUserId)
           updateDoc(doc.ref, {
             isRead: true,
           });
-        });
-      })
+        })
+        })
       .catch((error) => {
         console.log("Error getting documents: ", error);
       });
+  };
 
-    // update last message read in both user lastMessage collection
+  // update isRead to true in the currentUser and selectedUser lastMessage collection
+  const updateLastMessage =  (curretnUserId , selectedUserId )=> {
+
+    console.log(curretnUserId , selectedUserId);
     const currentUserLastMessageRef = collection(
       db,
       "users",
@@ -120,17 +125,20 @@ export default function HomePageUser({
       selectedUserId,
       "lastMessage"
     );
-    updateDoc(doc(currentUserLastMessageRef, selectedUserId), {
+    updateDoc(doc(currentUserLastMessageRef, selectedUserId) , {
       isRead: true,
-    }).catch((e) => {
+    })
+    .catch((e)=> {
       console.log(e.message);
-    });
-    updateDoc(doc(selectedUserLastMessageRef, curretnUserId), {
+    })
+    updateDoc(doc(selectedUserLastMessageRef, curretnUserId) , {
       isRead: true,
-    }).catch((e) => {
+    })
+    .catch((e)=> {
       console.log(e.message);
-    });
-  };
+    })
+ 
+  }
 
   // update how view the chat content
   const howIsView = (uid) => {
@@ -184,6 +192,8 @@ export default function HomePageUser({
       return "f-en";
     }
   };
+
+  
 
   return (
     <div className="user--profile" onClick={handelSelectedUser}>
