@@ -318,6 +318,20 @@ export default function ChatPageUser() {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  //listen to change in selected user
+  useEffect(() => {
+    const q = query(collection(db, "users"), where("uid", "==", getSelectedUser().uid));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const user = {...doc.data() , id: doc.id};
+        setSelectedUser(user);
+      });
+    });
+    return () => unsubscribe();
+  }, []);
+
+
+
   return (
     <div className={`chat-page--container ${!isSelectedUser ? "hide" : ""}`}>
       <header>
