@@ -38,9 +38,38 @@ export default function HomePage() {
 
   const [lastMessage , setLastMessage] = useState([])
 
+    // delete the current user from the all the chat view 
+    const deleteTheCurrentUserFromAllChat = async () => {
+      const q = query(collection(db, 'messages'))
+    //  get all the chat
+      const querySnapshot = await getDocs(q)
+      querySnapshot.forEach( (doc) => {
+         // chcek if the current user is in the chat view whetever is it sender or receiver and update the chat view 
+         const docData = doc.data()
+         if(docData.sender === currentUser.uid || docData.receiver === currentUser.uid){
+          const isSender = docData.sender === currentUser.uid
+          // if the user is the sender delete the field sender and if the user is the receiver delete the field receiver
+          if(isSender){
+            updateDoc(doc.ref , {
+              sender : deleteField()
+            })
+            .catch(err => console.log(err))
+          }else {
+            updateDoc(doc.ref , {
+              receiver : deleteField()  
+            })
+            .catch(err => console.log(err))
+          }
+         
+         }
+      })
+    }
+
   
   // function that handel update all the users with the last Message
   useEffect(() => {
+    // delete the current user from the all the chat view
+    deleteTheCurrentUserFromAllChat()
     const q = query(
       collection(db, "users" , currentUser.uid, "lastMessage")
     );
@@ -75,37 +104,8 @@ export default function HomePage() {
     return () => querySnapshot();
   }, []);
 
-  // delete the current user from the all the chat view 
-  const deleteTheCurrentUserFromAllChat = async () => {
-    const q = query(collection(db, 'messages'))
-  //  get all the chat
-    const querySnapshot = await getDocs(q)
-    querySnapshot.forEach( (doc) => {
-       // chcek if the current user is in the chat view whetever is it sender or receiver and update the chat view 
-       const docData = doc.data()
-       if(docData.sender === currentUser.uid || docData.receiver === currentUser.uid){
-        const isSender = docData.sender === currentUser.uid
-        // if the user is the sender delete the field sender and if the user is the receiver delete the field receiver
-        if(isSender){
-          updateDoc(doc.ref , {
-            sender : deleteField()
-          })
-          .catch(err => console.log(err))
-        }else {
-          updateDoc(doc.ref , {
-            receiver : deleteField()  
-          })
-          .catch(err => console.log(err))
-        }
-       
-       }
-    })
-  }
 
 
-  useEffect(() => {
-    deleteTheCurrentUserFromAllChat()
-  }, [])
 
 
 
