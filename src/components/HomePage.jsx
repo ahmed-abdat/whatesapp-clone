@@ -78,7 +78,6 @@ export default function HomePage() {
       querySnapshot.forEach((doce) => {
        lastMessages.push({ ...doce.data(), id: doce.id });
       });
-      // console.log(lastMessages);
       setLastMessage(lastMessages);
     });
 
