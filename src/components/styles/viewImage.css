@@ -29,7 +29,9 @@
 }
 
 .view-image-container .header--left svg {
-  font-size: 1.3rem;
+    padding: 0.3rem;
+    font-size: 2rem;
+    cursor: pointer;
 }
 
 .view-image-container .header--left h4 {
