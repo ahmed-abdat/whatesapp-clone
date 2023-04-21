@@ -12,6 +12,7 @@ import {
   updateDoc,
   deleteField,
   getDocs,
+  doc,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { lazy } from "react";
@@ -165,6 +166,31 @@ export default function HomePage() {
     });
     setFreindsList(users);
   }, [lastMessage]);
+
+  // add event listener to know if the use view the page or not
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        // update isOnline to false 
+        updateDoc(doc(db, "users", currentUser.uid), {
+          isOnline: true,
+          lastSeen : new Date().getTime()
+        }).catch((err) => console.log(err));
+      }else {
+      // delete the current user from the all the chat view
+        deleteTheCurrentUserFromAllChat();
+        // update isOnline to false
+        updateDoc(doc(db, "users", currentUser.uid), {
+          isOnline: false,
+          lastSeen : new Date().getTime()
+        }).catch((err) => console.log(err));
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
 
 
 

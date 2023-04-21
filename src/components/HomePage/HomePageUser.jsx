@@ -16,6 +16,7 @@ import {
 import { db } from "../../config/firebase";
 import useUser from "../../store/useUser";
 import Check from "../svg/Check";
+import receiveMessageSound from '../../assets/sounds/receiveMessage.mp3'
 
 export default function HomePageUser({
   displayName,
@@ -50,6 +51,7 @@ export default function HomePageUser({
 
   const [timeAgo, setTimeAgo] = useState(HourAndMinitFormat);
   const [UnreadMessages, setUnreadMessages] = useState(0);
+  const [playSound, setPlaySound] = useState(false);
 
   // track the time ago
   useEffect(() => {
@@ -233,6 +235,35 @@ export default function HomePageUser({
   if (isMessageNotRead) {
     getUnreadMessageNumber(uid);
   }
+
+  const receiveMessageSoundPlay = () => {
+    try {
+      const sound = new Audio(receiveMessageSound);
+      sound.play();
+    } catch (error) {
+      console.log("Error playing sound:", error);
+    }
+  };
+
+  useEffect(() => {
+    const handleClick = () => {
+      setPlaySound(true);
+    };
+
+    document.addEventListener("click", handleClick);
+
+    return () => {
+      document.removeEventListener("click", handleClick);
+    };
+  }, []);
+  
+  useEffect(() => {
+    if (isMessageNotRead && playSound && UnreadMessages > 0) {
+      receiveMessageSoundPlay();
+    }
+  }, [isMessageNotRead , UnreadMessages]);
+  
+
 
   return (
     <div className="user--profile" onClick={handelSelectedUser}>
