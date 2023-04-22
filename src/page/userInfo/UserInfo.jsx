@@ -15,6 +15,7 @@ import { storage } from "../../config/firebase";
 import DefaultAvatar from '../../assets/img/default-avatar.svg'
 
 import "react-toastify/dist/ReactToastify.css";
+import { serverTimestamp } from "firebase/firestore";
 
 export default function UserInfo() {
   // get current user
@@ -152,7 +153,7 @@ export default function UserInfo() {
         photoURL: photoURL ? photoURL : null,
         isOnline: true,
         photoPath: imageFullPath ? imageFullPath : null,
-        lastSeen: new Date().getTime(),
+        lastSeen: serverTimestamp(),
         userStatus : 'جديد في واتساب',
         lastMessage : ''
       };
@@ -164,7 +165,7 @@ export default function UserInfo() {
         isOnline: true,
         photoURL: photoURL ? photoURL : null,
         photoPath: imageFullPath ? imageFullPath : null,
-        lastSeen: new Date().getTime(),
+        lastSeen: serverTimestamp(),
         userStatus : 'جديد في واتساب',
         lastMessage : ''
       };

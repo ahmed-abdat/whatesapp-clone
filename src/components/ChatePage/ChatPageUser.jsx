@@ -25,6 +25,7 @@ import {
   getDoc,
   updateDoc,
   deleteField,
+  serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import SpinerLoader from "../SpinerLoader";
@@ -244,7 +245,7 @@ export default function ChatPageUser() {
         content: message,
         from: currentUserId,
         to: selectedUserId,
-        createdAt: new Date().getTime(),
+        createdAt: serverTimestamp(),
         isRead: false,
       };
       await addDoc(messageRef, messageData);
@@ -300,7 +301,7 @@ export default function ChatPageUser() {
       const messageData = {
         id: getUniqueId(),
         content: message,
-        createdAt: new Date().getTime(),
+        createdAt: serverTimestamp(),
         isRead: false,
         from: getCurrentUser().uid,
         to: getSelectedUser().uid,

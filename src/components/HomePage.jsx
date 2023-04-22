@@ -13,6 +13,7 @@ import {
   deleteField,
   getDocs,
   doc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { lazy } from "react";
@@ -174,7 +175,7 @@ export default function HomePage() {
         // update isOnline to false 
         updateDoc(doc(db, "users", currentUser.uid), {
           isOnline: true,
-          lastSeen : new Date().getTime()
+          lastSeen : serverTimestamp()
         }).catch((err) => console.log(err));
       }else {
       // delete the current user from the all the chat view
@@ -182,7 +183,7 @@ export default function HomePage() {
         // update isOnline to false
         updateDoc(doc(db, "users", currentUser.uid), {
           isOnline: false,
-          lastSeen : new Date().getTime()
+          lastSeen : serverTimestamp()
         }).catch((err) => console.log(err));
       }
     };

@@ -23,6 +23,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import './SignUp.css'
+import { serverTimestamp } from "firebase/firestore";
 
 export default function SignUp() {
   const [phone, setPhone] = useState("");
@@ -136,7 +137,7 @@ export default function SignUp() {
      const docRef = doc(firestore, "users", id);
      await updateDoc(docRef, {
        isOnline: true,
-       lastSeen :  new Date().getTime()
+       lastSeen :  serverTimestamp()
      })
     } catch (error) {
      console.log(error.message);

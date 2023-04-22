@@ -46,7 +46,7 @@ export default function HomePageUser({
     },
   });
 
-  const lastSeanMessage = moment(lastMessage?.createdAt);
+  const lastSeanMessage = moment(lastMessage?.createdAt?.seconds * 1000);
   const HourAndMinitFormat = lastSeanMessage.format("hh:mm");
 
   const [timeAgo, setTimeAgo] = useState(HourAndMinitFormat);
@@ -55,7 +55,7 @@ export default function HomePageUser({
 
   // track the time ago
   useEffect(() => {
-    const lastSeanMessage = moment(lastMessage?.createdAt);
+    const lastSeanMessage = moment(lastMessage?.createdAt?.seconds * 1000);
     const HourAndMinitFormate = lastSeanMessage.format("hh:mm");
     const interval = setInterval(() => {
       if (HourAndMinitFormate !== timeAgo) {
