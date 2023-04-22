@@ -55,11 +55,13 @@ export default function ChatPageUser() {
     },
   });
   const now = moment();
-  const lastSeen = getSelectedUser()?.lastSeen;
+  const lastSeen = getSelectedUser()?.lastSeen?.seconds * 1000;
   const lastSeenMoment = moment(lastSeen);
 
   const HourAndMinitFormat = lastSeenMoment.format("hh:mm");
   const dateFormat = lastSeenMoment.format("DD/MM/YYYY");
+
+
 
   // function to check if the last seen is today or yesterday
   const currentDate = () => {
@@ -354,6 +356,8 @@ export default function ChatPageUser() {
     });
     return () => unsubscribe();
   }, []);
+
+
 
 
 

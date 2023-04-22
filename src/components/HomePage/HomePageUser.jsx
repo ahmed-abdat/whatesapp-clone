@@ -225,7 +225,9 @@ export default function HomePageUser({
     const querySnapshot = await getDocs(q);
     let unreadMessages = 0;
     querySnapshot.forEach((doc) => {
-      unreadMessages++;
+      if(doc.exists()){
+        unreadMessages++;
+      }
     });
     setUnreadMessages(unreadMessages);
   };
@@ -299,7 +301,7 @@ export default function HomePageUser({
           ) : (
             <p className={`${useStatusClass()}`}> {getCurrentUser()?.userStatus} </p>
           )}
-          {isMessageNotRead && <div className="unread">{UnreadMessages}</div>}
+          {isMessageNotRead && <div className="unread">{UnreadMessages > 0 && UnreadMessages}</div>}
           {getCurrentUser()?.uid
             ? lastMessage?.from === getCurrentUser()?.uid && (
                 <div

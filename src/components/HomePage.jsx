@@ -170,21 +170,20 @@ export default function HomePage() {
 
   // add event listener to know if the use view the page or not
   useEffect(() => {
+     // update isOnline to false 
+     updateDoc(doc(db, "users", currentUser.uid), {
+      isOnline: true,
+      lastSeen : serverTimestamp()
+    }).catch((err) => console.log(err));
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        // update isOnline to false 
-        updateDoc(doc(db, "users", currentUser.uid), {
-          isOnline: true,
-          lastSeen : serverTimestamp()
-        }).catch((err) => console.log(err));
-      }else {
-      // delete the current user from the all the chat view
-        deleteTheCurrentUserFromAllChat();
-        // update isOnline to false
-        updateDoc(doc(db, "users", currentUser.uid), {
-          isOnline: false,
-          lastSeen : serverTimestamp()
-        }).catch((err) => console.log(err));
+      if (document.visibilityState === "hidden") {
+        // delete the current user from the all the chat view
+          deleteTheCurrentUserFromAllChat();
+          // update isOnline to false
+          updateDoc(doc(db, "users", currentUser.uid), {
+            isOnline: false,
+            lastSeen : serverTimestamp()
+          }).catch((err) => console.log(err));
       }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -212,7 +211,7 @@ export default function HomePage() {
           {/* home page header */}
           {
             isAllUsersShow ?  (
-              <ViewAllUsersHeader setIsAllUsersShow={setIsAllUsersShow}/>
+              <ViewAllUsersHeader setIsAllUsersShow={setIsAllUsersShow} usersLength={allUsers.length}/>
             ) : (
               <HomePageHeader setIsAllUsersShow={setIsAllUsersShow} />
             )
