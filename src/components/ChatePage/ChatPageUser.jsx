@@ -55,9 +55,8 @@ export default function ChatPageUser() {
     },
   });
   const now = moment();
-  const lastSeen = getSelectedUser()?.lastSeen?.seconds * 1000;
+  const lastSeen = getSelectedUser()?.lastSeen;
   const lastSeenMoment = moment(lastSeen);
-
   const HourAndMinitFormat = lastSeenMoment.format("hh:mm");
   const dateFormat = lastSeenMoment.format("DD/MM/YYYY");
 

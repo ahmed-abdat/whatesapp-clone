@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import "./userInfo.css";
 import useUser from "../../store/useUser";
 import { useEffect, useState } from "react";
-import {  getFirestore, doc, setDoc  } from "firebase/firestore/lite";
+import {  getFirestore, doc, setDoc  , serverTimestamp} from "firebase/firestore/lite";
 import {app} from '../../config/firebase'
 import { ToastContainer, toast } from "react-toastify";
 import {
@@ -15,7 +15,6 @@ import { storage } from "../../config/firebase";
 import DefaultAvatar from '../../assets/img/default-avatar.svg'
 
 import "react-toastify/dist/ReactToastify.css";
-import { serverTimestamp } from "firebase/firestore";
 
 export default function UserInfo() {
   // get current user

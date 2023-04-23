@@ -176,11 +176,6 @@ export default function HomePage() {
 
   // add event listener to know if the use view the page or not
   useEffect(() => {
-     // update isOnline to false 
-     updateDoc(doc(db, "users", currentUser.uid), {
-      isOnline: true,
-      lastSeen : serverTimestamp()
-    }).catch((err) => console.log(err));
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
           // update isOnline to false
