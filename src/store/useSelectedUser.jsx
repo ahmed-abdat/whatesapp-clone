@@ -4,7 +4,7 @@ const useSelectedUser = create((set, get) => ({
   selectedUser: null,
   isSelectedUser : false,
   setSelectedUser: (selectedUser) => {
-    localStorage.setItem("SelectedUser", JSON.stringify(selectedUser));
+    // localStorage.setItem("SelectedUser", JSON.stringify(selectedUser));
     set(() => ({ selectedUser }));
   },
   setIsSelectedUser : (isSelectedUser) => {
@@ -12,9 +12,9 @@ const useSelectedUser = create((set, get) => ({
   },
   getSelectedUser: () => {
     const { selectedUser } = get();
-    const savedUser = JSON.parse(localStorage.getItem("SelectedUser"));
-    const selectedUsere = selectedUser ? selectedUser : savedUser;
-    return selectedUsere;
+    // const savedUser = JSON.parse(localStorage.getItem("SelectedUser"));
+    // const selectedUsere = selectedUser ? selectedUser : savedUser;
+    return selectedUser;
   },
 }));
 

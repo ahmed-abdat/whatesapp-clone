@@ -14,6 +14,8 @@ import {
   getDocs,
   doc,
   serverTimestamp,
+  getDoc,
+  setDoc,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { lazy } from "react";
@@ -22,6 +24,7 @@ import SpinerLoader from "./SpinerLoader";
 import useUsers from "../store/useUsers";
 import { BsFillChatRightTextFill } from "react-icons/bs";
 import ViewAllUsersHeader from "./HomePage/ViewAllUsersHeader";
+import useSelectedUser from "../store/useSelectedUser";
 
 // lazy loade
 const UserProfile = lazy(() => import("./UserProfile"));
@@ -39,6 +42,9 @@ export default function HomePage() {
   // get current user
   const getCurrentUser = useUser((state) => state.getCurrentUser);
   const currentUser = getCurrentUser();
+
+  // get selcted user
+  const getSelectedUser = useSelectedUser((state) => state.getSelectedUser);
 
   // get logout loading
   const isLogoutLoading = useUser((state) => state.isLogoutLoading);
@@ -177,13 +183,17 @@ export default function HomePage() {
     }).catch((err) => console.log(err));
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
-        // delete the current user from the all the chat view
-          deleteTheCurrentUserFromAllChat();
           // update isOnline to false
           updateDoc(doc(db, "users", currentUser.uid), {
             isOnline: false,
             lastSeen : serverTimestamp()
           }).catch((err) => console.log(err));
+      }else {
+        // update isOnline to true
+        updateDoc(doc(db, "users", currentUser.uid), {
+          isOnline: true,
+          lastSeen : serverTimestamp()
+        }).catch((err) => console.log(err));
       }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -191,6 +201,49 @@ export default function HomePage() {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
+  const selectedUser = getSelectedUser()
+
+    // update how is view this chat
+   // update how view the chat content
+   const howIsView = (uid) => {
+    const currentUserId = getCurrentUser().uid;
+    const selectedUserId = uid;
+    const uniqueChatId =
+      currentUserId > selectedUserId
+        ? `${currentUserId + selectedUserId}`
+        : `${selectedUserId + currentUserId}`;
+    const chatRef = doc(db, "messages", uniqueChatId);
+    getDoc(chatRef).then((doc) => {
+      if (doc.exists() && doc.data().hasOwnProperty("sender")) {
+        const document = doc.data();
+        const isCurrentUserViewThisChat = document.sender === currentUserId;
+        if (isCurrentUserViewThisChat) return;
+        updateDoc(chatRef, {
+          receiver: currentUserId,
+        }).catch((error) => {
+          // The document probably doesn't exist.
+          console.error("Error updating document: ", error);
+        });
+      } else {
+        setDoc(chatRef, {
+          sender: currentUserId,
+        }).catch((error) => {
+          // The document probably doesn't exist.
+          console.error("Error updating document: ", error);
+        });
+      }
+    });
+  };
+
+
+
+  // listen if the selcted user is changed
+  useEffect(() => {
+    if(selectedUser) {
+      howIsView(selectedUser.uid)
+    }
+  }, [selectedUser])
+
 
 
 

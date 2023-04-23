@@ -264,6 +264,7 @@ export default function HomePageUser({
       receiveMessageSoundPlay();
     }
   }, [isMessageNotRead , UnreadMessages]);
+
   
 
 
@@ -296,12 +297,12 @@ export default function HomePageUser({
                 isMessageNotRead ? "unread-message-content" : ""
               }`}
             >
-              {lastMessage?.content}
+              {lastMessage.content}
             </p>
           ) : (
             <p className={`${useStatusClass()}`}> {getCurrentUser()?.userStatus} </p>
           )}
-          {isMessageNotRead && <div className="unread">{UnreadMessages > 0 && UnreadMessages}</div>}
+          {(isMessageNotRead && UnreadMessages > 0) && <div className="unread">{UnreadMessages}</div>}
           {getCurrentUser()?.uid
             ? lastMessage?.from === getCurrentUser()?.uid && (
                 <div
