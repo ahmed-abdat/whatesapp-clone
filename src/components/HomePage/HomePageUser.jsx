@@ -233,7 +233,7 @@ export default function HomePageUser({
   };
 
   const isMessageNotRead =
-    lastMessage?.isRead === false && lastMessage?.from !== getCurrentUser().uid;
+    lastMessage?.isRead === false && lastMessage?.from !== getCurrentUser()?.uid;
   if (isMessageNotRead) {
     getUnreadMessageNumber(uid);
   }
