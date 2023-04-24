@@ -83,6 +83,37 @@ export default function HomePage() {
     });
   };
 
+ // update how view the chat content
+ const howIsView = (uid) => {
+  const currentUserId = getCurrentUser().uid;
+  const selectedUserId = uid;
+  const uniqueChatId =
+    currentUserId > selectedUserId
+      ? `${currentUserId + selectedUserId}`
+      : `${selectedUserId + currentUserId}`;
+  const chatRef = doc(db, "messages", uniqueChatId);
+  getDoc(chatRef).then((doc) => {
+    if (doc.exists() && doc.data().hasOwnProperty("sender")) {
+      const document = doc.data();
+      const isCurrentUserViewThisChat = document.sender === currentUserId;
+      if (isCurrentUserViewThisChat) return;
+      updateDoc(chatRef, {
+        receiver: currentUserId,
+      }).catch((error) => {
+        // The document probably doesn't exist.
+        console.error("Error updating document: ", error);
+      });
+    } else {
+      setDoc(chatRef, {
+        sender: currentUserId,
+      }).catch((error) => {
+        // The document probably doesn't exist.
+        console.error("Error updating document: ", error);
+      });
+    }
+  });
+};
+
   // function that handel update all the users with the last Message
   useEffect(() => {
     // delete the current user from the all the chat view
@@ -100,7 +131,6 @@ export default function HomePage() {
   }, []);
 
   // get all user in firebase except the current user
-
   useEffect(() => {
     setIsLoading(true);
 
@@ -174,16 +204,23 @@ export default function HomePage() {
     setFreindsList(usersFilter);
   }, [lastMessage]);
 
+  const selectedUser = getSelectedUser()
+
   // add event listener to know if the use view the page or not
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
+        deleteTheCurrentUserFromAllChat()
           // update isOnline to false
           updateDoc(doc(db, "users", currentUser.uid), {
             isOnline: false,
             lastSeen : serverTimestamp()
           }).catch((err) => console.log(err));
       }else {
+        // update how is view the chat
+        if(selectedUser) {
+          howIsView(selectedUser.uid)
+        }
         // update isOnline to true
         updateDoc(doc(db, "users", currentUser.uid), {
           isOnline: true,
@@ -196,39 +233,10 @@ export default function HomePage() {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
-  const selectedUser = getSelectedUser()
 
-    // update how is view this chat
-   // update how view the chat content
-   const howIsView = (uid) => {
-    const currentUserId = getCurrentUser().uid;
-    const selectedUserId = uid;
-    const uniqueChatId =
-      currentUserId > selectedUserId
-        ? `${currentUserId + selectedUserId}`
-        : `${selectedUserId + currentUserId}`;
-    const chatRef = doc(db, "messages", uniqueChatId);
-    getDoc(chatRef).then((doc) => {
-      if (doc.exists() && doc.data().hasOwnProperty("sender")) {
-        const document = doc.data();
-        const isCurrentUserViewThisChat = document.sender === currentUserId;
-        if (isCurrentUserViewThisChat) return;
-        updateDoc(chatRef, {
-          receiver: currentUserId,
-        }).catch((error) => {
-          // The document probably doesn't exist.
-          console.error("Error updating document: ", error);
-        });
-      } else {
-        setDoc(chatRef, {
-          sender: currentUserId,
-        }).catch((error) => {
-          // The document probably doesn't exist.
-          console.error("Error updating document: ", error);
-        });
-      }
-    });
-  };
+
+
+  
 
 
 
