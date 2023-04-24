@@ -30,7 +30,7 @@ export default function Otp({}) {
 
   const handleOtpChange = (element, index) => {
     // If the entered value is not a number, don't update the state
-    if (isNaN(element.value)) return false;
+    if (isNaN(element.value) || element.value === '') return false;
     // always start from the first input
     if (index !== 0 && otp[index - 1] === "") {
       // blur the current input and focus to the first input

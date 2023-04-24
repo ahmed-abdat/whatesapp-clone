@@ -34,6 +34,7 @@ import ViewChatSound from "../../assets/sounds/viewMessage.mp3";
 import "../styles/chatPageUser.css";
 import { BsImageFill } from "react-icons/bs";
 import { lazy, Suspense } from "react";
+import useMessages from "../../store/useMessages";
 
 // lazy loade
 const ViewSelectedImage = lazy(() => import("../ViewSelectedImage"));
@@ -96,6 +97,9 @@ export default function ChatPageUser() {
 
   // message
   const [message, setMessage] = useState("");
+
+  // set all messages 
+  const setAllMessages = useMessages(state => state.setAllMessages)
 
   // handel message
   const handelMessage = (e) => {
@@ -231,13 +235,7 @@ export default function ChatPageUser() {
   };
 
   // add message to database
-  const addMessageTODataBase = async (message) => {
-    const selectedUserId = getSelectedUser().uid;
-    const currentUserId = getCurrentUser().uid;
-    const uniqueChatId =
-      currentUserId > selectedUserId
-        ? `${currentUserId + selectedUserId}`
-        : `${selectedUserId + currentUserId}`;
+  const addMessageTODataBase = async (message , uniqueChatId , selectedUserId , currentUserId) => {
 
     try {
       const docRef = doc(db, "messages", uniqueChatId);
@@ -245,10 +243,10 @@ export default function ChatPageUser() {
         .then((querySnapshot) => {
           let isReceived = false;
           if (querySnapshot.data().sender && querySnapshot.data().receiver) {
-            console.log(querySnapshot.data());
+            console.log('both connecte');
             isReceived = true;
-            const sound = new Audio(ViewChatSound);
-            sound.play();
+            // const sound = new Audio(ViewChatSound);
+            // sound.play();
           }
           const messageRef = collection(db, "messages", uniqueChatId, "chat");
           const messageData = {
@@ -315,21 +313,31 @@ export default function ChatPageUser() {
     );
     setDoc(currentUserFreindsListDoc, {
       uid: selectedUserId,
-    }).then(() => {
-      console.log("Document successfully written!");
-    });
+    })
     setDoc(selectedUserFreindsListDoc, {
       uid: currentUserId,
-    }).then(() => {
-      console.log("Document successfully written!");
-    });
+    })
   };
 
   // handel send message
   const handelSendMessage = (e) => {
     e && e.preventDefault();
     if (message.length > 0 && message.trim().length > 0) {
-      addMessageTODataBase(message);
+      const selectedUserId = getSelectedUser().uid;
+      const currentUserId = getCurrentUser().uid;
+      const uniqueChatId =
+        currentUserId > selectedUserId
+          ? `${currentUserId + selectedUserId}`
+          : `${selectedUserId + currentUserId}`;
+      addMessageTODataBase(message , uniqueChatId , selectedUserId , currentUserId);
+      const docRef = doc(db, "messages", uniqueChatId);
+      let isReceived = false
+      getDoc(docRef)
+      .then((querySnapshot) => {
+        if (querySnapshot.data().sender && querySnapshot.data().receiver) {
+          isReceived  = true
+        }
+      })
       const messageData = {
         id: getUniqueId(),
         content: message,
@@ -337,9 +345,11 @@ export default function ChatPageUser() {
         isRead: false,
         from: getCurrentUser().uid,
         to: getSelectedUser().uid,
+        isReceived
       };
       updateUserFreindsList(getSelectedUser().uid);
       setMessages((prev) => [...prev, messageData]);
+      setAllMessages(messageData)
       setMessage("");
       setIsArabic(true);
     }
@@ -362,6 +372,7 @@ export default function ChatPageUser() {
         messages.push({ ...doc.data(), id: doc.id });
       });
       setMessages(messages);
+      setAllMessages(messages)
       setIsMessagesLoaded(false);
     });
     return () => unsubscribe();
