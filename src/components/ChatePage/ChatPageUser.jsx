@@ -30,6 +30,7 @@ import {
 import { db } from "../../config/firebase";
 import SpinerLoader from "../SpinerLoader";
 import useUser from "../../store/useUser";
+import ViewChatSound from '../../assets/sounds/viewMessage.mp3'
 import "../styles/chatPageUser.css";
 
 export default function ChatPageUser() {
@@ -240,31 +241,43 @@ export default function ChatPageUser() {
         ? `${currentUserId + selectedUserId}`
         : `${selectedUserId + currentUserId}`;
     try {
-      const messageRef = collection(db, "messages", uniqueChatId, "chat");
-      const messageData = {
-        id: getUniqueId(),
-        content: message,
-        from: currentUserId,
-        to: selectedUserId,
-        createdAt: serverTimestamp(),
-        isRead: false,
-      };
-      await addDoc(messageRef, messageData);
-      // update last message in both user lastMessage collection
-      const currentUserLastMessageRef = collection(
-        db,
-        "users",
-        currentUserId,
-        "lastMessage"
-      );
-      const selectedUserLastMessageRef = collection(
-        db,
-        "users",
-        selectedUserId,
-        "lastMessage"
-      );
-      await setDoc(doc(currentUserLastMessageRef, selectedUserId), messageData);
-      await setDoc(doc(selectedUserLastMessageRef, currentUserId), messageData);
+      const docRef = doc(db , 'messages' , uniqueChatId)
+      getDoc(docRef).then((querySnapshot)=> {
+        let isReceived = false
+        if(querySnapshot.data().sender && querySnapshot.data().receiver) {
+         console.log(querySnapshot.data());
+         isReceived = true
+        const sound = new Audio(ViewChatSound);
+        sound.play()
+       }
+       const messageRef = collection(db, "messages", uniqueChatId, "chat");
+       console.log(`is Received value ${isReceived}`);
+       const messageData = {
+         id: getUniqueId(),
+         content: message,
+         from: currentUserId,
+         to: selectedUserId,
+         createdAt: serverTimestamp(),
+         isRead: false,
+         isReceived : isReceived
+       };
+        addDoc(messageRef, messageData).then((e) => console.log(e.message))
+       // update last message in both user lastMessage collection
+       const currentUserLastMessageRef = collection(
+         db,
+         "users",
+         currentUserId,
+         "lastMessage"
+       );
+       const selectedUserLastMessageRef = collection(
+         db,
+         "users",
+         selectedUserId,
+         "lastMessage"
+       );
+      setDoc(doc(currentUserLastMessageRef, selectedUserId), messageData).then((e) => console.log(e.message))
+      setDoc(doc(selectedUserLastMessageRef, currentUserId), messageData).then((e) => console.log(e.message))
+      }).catch((e) => console.log(e.message))
 
       updateChatView(uniqueChatId)
     } catch (error) {

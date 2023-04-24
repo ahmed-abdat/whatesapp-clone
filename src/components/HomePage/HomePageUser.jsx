@@ -241,7 +241,20 @@ export default function HomePageUser({
   const receiveMessageSoundPlay = () => {
     try {
       const sound = new Audio(receiveMessageSound);
-      sound.play();
+      console.log(lastMessage?.isReceived);
+      if(!lastMessage?.isReceived){
+        sound.play();
+        const q = query(collection(db, "users", getCurrentUser()?.uid, "lastMessage"));
+        getDocs(q).then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            // update the doc 
+            updateDoc(doc.ref , {
+              isReceived : true
+            })
+            .catch((e) => console.log(e.message))
+          });
+        });
+      }
     } catch (error) {
       console.log("Error playing sound:", error);
     }
@@ -264,6 +277,7 @@ export default function HomePageUser({
       receiveMessageSoundPlay();
     }
   }, [isMessageNotRead , UnreadMessages]);
+
 
   
 
