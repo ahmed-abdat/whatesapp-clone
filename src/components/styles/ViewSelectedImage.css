@@ -10,10 +10,12 @@
     background-color: #e9edef;
     display: flex;
     flex-direction: column;
+    padding-block: 1rem;
 }
 
 .viewImage--container header {
     background-color: #e9edef;
+    padding: 1rem;
 }
 
 .viewImage--container .icon {
@@ -37,8 +39,8 @@
     object-fit: contain;
     box-shadow: 0 3px 12px rgba(11,20,26,.16);
     background-color : #f9f9f9;
-    max-width: 100%;
-    max-height: 100%;
+    width: 100%;
+    max-height: 65vh;
 }
 
 
@@ -114,5 +116,8 @@
 @media screen and (min-width: 767px) {
     .viewImage--container footer .input  {
         width: calc(100% - 80px);
+    }
+    .viewImage--container {
+        padding: 0;
     }
 }
