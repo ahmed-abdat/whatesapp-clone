@@ -3,6 +3,7 @@
   flex-direction: column;
   height: 100%;
   background: #888;
+  position: relative;
 }
 
 /* ? header */
@@ -10,7 +11,7 @@
 .chat-page--container header {
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 100;
   display: flex;
   align-items: center;
   width: 100%;
@@ -265,7 +266,7 @@ textarea::-webkit-scrollbar{
 .chat-page--container footer svg {
   cursor: pointer;
   color: #54656f;
-  font-size: 1.5rem;
+  font-size: 1.45rem;
 }
 
 /* ? media query */

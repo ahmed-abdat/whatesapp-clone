@@ -4,6 +4,7 @@ const useUser = create((set , get) => ({
     allUsers: [],
     unreadMessages: null,
     isProfileShow: false,
+    isAllUsersShow : false,
     setAllUsers: (users) => {
         set(() => ({ allUsers: users }));
     },
@@ -19,6 +20,10 @@ const useUser = create((set , get) => ({
         const unreadMessages = get().unreadMessages ? get().unreadMessages : savedUnreadMessages
         return unreadMessages
     },
+    setIsAllUsersShow: (isAllUsersShow) => {
+        set(() => ({ isAllUsersShow }));
+    },
+    
 }));
 
 export default useUser;

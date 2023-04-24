@@ -25,7 +25,9 @@ export default function Message({ content, isSender, createdAt, isRead }) {
     },
   });
 
-  const lastSeenMoment = moment(createdAt?.seconds * 1000);
+  const createdAtTime = createdAt?.seconds ? createdAt?.seconds * 1000 : createdAt
+
+  const lastSeenMoment = moment(createdAtTime);
   const HourAndMinitFormat = lastSeenMoment.format("hh:mm");
   const AmPm = lastSeenMoment.format("a") === "am" ? "ص" : "م";
 

@@ -16,6 +16,7 @@ import {
   serverTimestamp,
   getDoc,
   setDoc,
+  orderBy,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { lazy } from "react";
@@ -34,7 +35,11 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [freindsList, setFreindsList] = useState([]);
 
-  const [isAllUsersShow, setIsAllUsersShow] = useState(false);
+  // isAllUsersShow  
+    const isAllUsersShowe = useUsers(state => state.isAllUsersShow)
+    // set isAllUsersShow
+    const setIsAllUsersShowe = useUsers(state => state.setIsAllUsersShow)
+
 
   // is profile show
   const isProfileShow = useUsers((state) => state.isProfileShow);
@@ -82,7 +87,7 @@ export default function HomePage() {
   useEffect(() => {
     // delete the current user from the all the chat view
     deleteTheCurrentUserFromAllChat();
-    const q = query(collection(db, "users", currentUser.uid, "lastMessage"));
+    const q = query(collection(db, "users", currentUser.uid, "lastMessage") , orderBy('createdAt' , 'desc'));
     const querySnapshot = onSnapshot(q, (querySnapshot) => {
       const lastMessages = [];
       querySnapshot.forEach((doce) => {
@@ -99,7 +104,7 @@ export default function HomePage() {
   useEffect(() => {
     setIsLoading(true);
 
-    const qe = query(collection(db, "users", currentUser.uid, "lastMessage"));
+    const qe = query(collection(db, "users", currentUser.uid, "lastMessage") , orderBy('createdAt' , 'desc'));
     let lastMessages = [];
     getDocs(qe).then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
@@ -127,7 +132,6 @@ export default function HomePage() {
       });
 
       setFreindsList(freindLists);
-
       // Then, get the user data for each friend UID
       const usersRef = collection(db, "users");
       const usersQuery = query(usersRef, where("uid", '!=' , currentUser.uid));
@@ -145,14 +149,13 @@ export default function HomePage() {
         } 
         );
 
-        const frendsUsers = filteredUsers.map((user) => {
-          const lastMessagese = lastMessages.find(message => message.from === user.uid || message.to === user.uid);
-          return { ...user, lastMessage: lastMessagese };
+        const sortedUsers = lastMessages.map((message) => {
+          const findUser = users.find( user => user.uid === message.from || user.uid === message.to);
+          return {...findUser , lastMessage : message}
         });
-
         setAllUsers(users)
 
-        setFreindsList(frendsUsers);
+        setFreindsList(sortedUsers);
         setIsLoading(false);
       
       });
@@ -164,14 +167,11 @@ export default function HomePage() {
   // merge the lastMessage with the his user
   useEffect(() => {
     // console.log(filteredUsers);
-    const users = freindsList.map((user) => {
-      const lastMessages = lastMessage.find(
-        (lastMessage) =>
-          lastMessage.from === user.uid || lastMessage.to === user.uid
-      );
-      return { ...user, lastMessage: lastMessages };
+    const usersFilter = lastMessage.map((message) => {
+      const findUser = allUsers.find( user => user.uid === message.from || user.uid === message.to);
+      return {...findUser , lastMessage : message}
     });
-    setFreindsList(users);
+    setFreindsList(usersFilter);
   }, [lastMessage]);
 
   // add event listener to know if the use view the page or not
@@ -258,10 +258,10 @@ export default function HomePage() {
           )}
           {/* home page header */}
           {
-            isAllUsersShow ?  (
-              <ViewAllUsersHeader setIsAllUsersShow={setIsAllUsersShow} usersLength={allUsers.length}/>
+            isAllUsersShowe ?  (
+              <ViewAllUsersHeader setIsAllUsersShow={setIsAllUsersShowe} usersLength={allUsers.length}/>
             ) : (
-              <HomePageHeader setIsAllUsersShow={setIsAllUsersShow} />
+              <HomePageHeader setIsAllUsersShow={setIsAllUsersShowe} />
             )
           }
           {/* home page search */}
@@ -269,7 +269,7 @@ export default function HomePage() {
           {/* home page user profile */}
           
           {
-            isAllUsersShow ? (
+            isAllUsersShowe ? (
               <div className="user-profile--container">
             {!isLoading ? (
               allUsers.map((user) => {
@@ -281,7 +281,7 @@ export default function HomePage() {
           </div>
             ): (
              <>
-              <div className="button" onClick={() => setIsAllUsersShow(true)}>
+              <div className="button" onClick={() => setIsAllUsersShowe(true)}>
                 <button >
                   <BsFillChatRightTextFill />
                 </button>

@@ -1,0 +1,118 @@
+
+
+.viewImage--container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 300;
+    width: 100%;
+    height: 100vh;
+    background-color: #e9edef;
+    display: flex;
+    flex-direction: column;
+}
+
+.viewImage--container header {
+    background-color: #e9edef;
+}
+
+.viewImage--container .icon {
+    font-size: 1.5rem;
+    color: #54656f;
+    cursor: pointer;
+}
+
+.viewImage--container main {
+    background: #e9edef;
+    flex-grow: 1;
+}
+
+.viewImage--container main .img {
+    margin-inline: 16px;
+    width: 347.8px;
+    height: 347.8px;
+}
+
+.viewImage--container main .img img {
+    object-fit: contain;
+    box-shadow: 0 3px 12px rgba(11,20,26,.16);
+    background-color : #f9f9f9;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+
+/* ? footer */
+
+.viewImage--container footer {
+    flex-direction: column;
+    min-height: 100px;
+    padding: 0.8rem;
+    background-color: #e9edef;
+    gap: 1rem;
+}
+
+.viewImage--container footer .input {
+    border-radius: 3rem;
+    background: #fff;
+    padding-inline: 0.7rem;
+    width: 100%;
+}
+
+.viewImage--container footer .input input {
+    color: #3b4a54;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.47em;
+    font-size: 1.0625rem;
+}
+
+.viewImage--container footer .input svg {
+    font-size: 1.55rem;
+}
+
+.viewImage--container footer form {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.viewImage--container footer form .btns {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%
+}
+
+.viewImage--container footer form .btns button {
+    all: unset;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #00a884;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(11,20,26,.4);
+}
+
+.viewImage--container footer form .btns button svg {
+    color: #fff;
+}
+
+.viewImage--container footer form .btns p {
+    font-size: 1.1rem;
+    font-weight: 400;
+    padding: 0.5rem 1rem;
+    background: var(--icon-color);
+    color: #fff;
+    border-radius: 2rem;
+}
+
+@media screen and (min-width: 767px) {
+    .viewImage--container footer .input  {
+        width: calc(100% - 80px);
+    }
+}
