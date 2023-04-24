@@ -33,6 +33,7 @@
     margin-inline: 16px;
     max-width: 90%;
     max-height: 75vh;
+    box-shadow: 0 3px 12px rgba(11,20,26,.16);
     border-radius: 0.5rem;
     -webkit-border-radius: 0.5rem;
     -moz-border-radius: 0.5rem;
@@ -43,7 +44,6 @@
 
 
 .viewImage--container main .img img {
-    box-shadow: 0 3px 12px rgba(11,20,26,.16);
     object-fit: cover;
     width: 100%;
     max-height: 100%;
@@ -142,6 +142,7 @@
     .viewImage--container main .img {
         max-width: 80%;
         max-height: 65vh;
+        overflow: hidden;
     }
     .viewImage--container footer .input  {
         width: calc(100% - 80px);
