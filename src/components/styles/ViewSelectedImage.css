@@ -32,15 +32,27 @@
 .viewImage--container main .img {
     margin-inline: 16px;
     max-width: 90%;
-    height: 347.8px;
+    max-height: 75vh;
+    border-radius: 0.5rem;
+    -webkit-border-radius: 0.5rem;
+    -moz-border-radius: 0.5rem;
+    -ms-border-radius: 0.5rem;
+    -o-border-radius: 0.5rem;
 }
+
+
 
 .viewImage--container main .img img {
     box-shadow: 0 3px 12px rgba(11,20,26,.16);
     object-fit: cover;
     width: 100%;
-    max-height: 75vh;
+    max-height: 100%;
     background-color: #fff;
+    border-radius: 0.5rem;
+    -webkit-border-radius: 0.5rem;
+    -moz-border-radius: 0.5rem;
+    -ms-border-radius: 0.5rem;
+    -o-border-radius: 0.5rem;
 }
 
 
@@ -59,6 +71,10 @@
     background: #fff;
     padding-inline: 0.7rem;
     width: 100%;
+    -webkit-border-radius: 3rem;
+    -moz-border-radius: 3rem;
+    -ms-border-radius: 3rem;
+    -o-border-radius: 3rem;
 }
 
 .viewImage--container footer .input input {
@@ -98,6 +114,10 @@
     justify-content: center;
     cursor: pointer;
     box-shadow: 0 1px 3px rgba(11,20,26,.4);
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
 }
 
 .viewImage--container footer form .btns button svg {
@@ -111,14 +131,16 @@
     background: var(--icon-color);
     color: #fff;
     border-radius: 2rem;
+    -webkit-border-radius: 2rem;
+    -moz-border-radius: 2rem;
+    -ms-border-radius: 2rem;
+    -o-border-radius: 2rem;
 }
 
 @media screen and (min-width: 767px) {
 
     .viewImage--container main .img {
         max-width: 80%;
-    }
-    .viewImage--container main .img img  {
         max-height: 65vh;
     }
     .viewImage--container footer .input  {
