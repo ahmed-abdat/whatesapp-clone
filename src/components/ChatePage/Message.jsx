@@ -3,8 +3,6 @@ import useUser from "../../store/useUser";
 import Check from "../svg/Check";
 import MessageReceiver from "../svg/MessageReceiver";
 import MessageSender from "../svg/MessageSender";
-import useMessages from "../../store/useMessages";
-import ViewChatSound from '../../assets/sounds/viewMessage.mp3'
 
 export default function Message({ content, isSender, createdAt, isRead  }) {
   moment.locale("ar_SA");
@@ -27,13 +25,9 @@ export default function Message({ content, isSender, createdAt, isRead  }) {
     },
   });
 
-  // allMessages
-  const lastMessage = useMessages(state => state.lastMessage)
+  
 
-  if(lastMessage.from !== getCurrentUser().uid && lastMessage.isReceived){
-    const sound = new Audio(ViewChatSound);
-    sound.play();
-  }
+ 
   
 
   const createdAtTime = createdAt?.seconds ? createdAt?.seconds * 1000 : createdAt

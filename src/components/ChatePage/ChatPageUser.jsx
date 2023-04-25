@@ -98,6 +98,9 @@ export default function ChatPageUser() {
   // message
   const [message, setMessage] = useState("");
 
+  // lastMessage played
+  const [lastPlayedMessage, setLastPlayedMessage] = useState(null);
+
   // set all messages 
   const setAllMessages = useMessages(state => state.setAllMessages)
 
@@ -127,6 +130,9 @@ export default function ChatPageUser() {
   const getCurrentUser = useUser((state) => state.getCurrentUser);
   // set isAllUsersShow
   const setIsAllUsersShowe = useUsers((state) => state.setIsAllUsersShow);
+
+  // allMessages
+  const lastMessage = useMessages(state => state.getLastMessage)
 
   // handel back
   const handelBack = () => {
@@ -383,7 +389,18 @@ export default function ChatPageUser() {
   // scroll to bottom when new message send
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    const lastMessages = lastMessage();
+    if (
+      lastMessages &&
+      lastMessages.from !== getCurrentUser().uid &&
+      lastMessages.isReceived === true &&
+      lastMessages !== lastPlayedMessage
+    ) {
+      const sound = new Audio(ViewChatSound);
+      sound.play();
+      setLastPlayedMessage(lastMessages);
+    }
+  }, [messages.length, lastPlayedMessage]);
 
   //listen to change in selected user
   useEffect(() => {
