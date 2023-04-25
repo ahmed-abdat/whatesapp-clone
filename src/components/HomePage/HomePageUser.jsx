@@ -241,8 +241,7 @@ export default function HomePageUser({
   const receiveMessageSoundPlay = () => {
     try {
       const sound = new Audio(receiveMessageSound);
-      console.log(lastMessage?.isReceived);
-      if(!lastMessage?.isReceived){
+      if(!lastMessage?.isReceived && lastMessage?.from !== getCurrentUser()?.uid){
         sound.play();
         const q = query(collection(db, "users", getCurrentUser()?.uid, "lastMessage"));
         getDocs(q).then((querySnapshot) => {

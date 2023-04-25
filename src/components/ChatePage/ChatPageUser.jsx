@@ -251,8 +251,6 @@ export default function ChatPageUser() {
           if (querySnapshot.data().sender && querySnapshot.data().receiver) {
             console.log('both connecte');
             isReceived = true;
-            // const sound = new Audio(ViewChatSound);
-            // sound.play();
           }
           const messageRef = collection(db, "messages", uniqueChatId, "chat");
           const messageData = {
