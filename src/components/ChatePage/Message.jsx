@@ -3,6 +3,7 @@ import useUser from "../../store/useUser";
 import Check from "../svg/Check";
 import MessageReceiver from "../svg/MessageReceiver";
 import MessageSender from "../svg/MessageSender";
+import LazyImage from './LazyImage'
 
 export default function Message({
   content,
@@ -55,9 +56,9 @@ export default function Message({
      {
       media ?
       media?.name ? <div className="img d-f">
-      <img src={URL.createObjectURL(media)} alt="image" onClick={onclike}/>
+      <img src={URL.createObjectURL(media)} alt="image" onClick={onclike} loading="lazy"/>
     </div> : <div className="img d-f" >
-      <img src={media} alt="image" onClick={onclike}/>
+      <img src={media} alt="image" onClick={onclike} loading="lazy"  />
     </div> : null
      }
       <div className={`after ${isCurrentUserSender ? "send" : "receive"}`}>

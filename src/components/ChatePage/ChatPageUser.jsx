@@ -463,9 +463,10 @@ export default function ChatPageUser() {
 
   const scrollRef = useRef(null);
 
+  
   // scroll to bottom when new message send
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+      scrollRef.current?.scrollIntoView();
     const lastMessages = lastMessage();
     if (
       lastMessages &&
@@ -479,15 +480,16 @@ export default function ChatPageUser() {
     }
   }, [messages.length, lastPlayedMessage]);
 
+  
   //listen to change in selected user
   useEffect(() => {
     const q = query(
       collection(db, "users"),
       where("uid", "==", getSelectedUser().uid)
-    );
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        const user = { ...doc.data(), id: doc.id };
+      );
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          const user = { ...doc.data(), id: doc.id };
         setSelectedUser(user);
       });
     });
@@ -517,6 +519,7 @@ export default function ChatPageUser() {
     setFile(file);
   };
 
+  
   return (
     <div className={`chat-page--container ${!isSelectedUser ? "hide" : ""}`}>
       {file && (

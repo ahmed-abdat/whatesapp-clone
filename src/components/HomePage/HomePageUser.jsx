@@ -285,7 +285,7 @@ export default function HomePageUser({
   return (
     <div className="user--profile" onClick={handelSelectedUser}>
       <div className="user--profile--img">
-        <img src={photoURL || defaultAvatar} alt="user profile" />
+        <img src={photoURL || defaultAvatar} alt="user profile" loading="lazy" width={'60'} height={'60'}/>
       </div>
       <div className="user--profile--info">
         <div className="info">
