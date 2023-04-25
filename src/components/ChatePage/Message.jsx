@@ -4,7 +4,14 @@ import Check from "../svg/Check";
 import MessageReceiver from "../svg/MessageReceiver";
 import MessageSender from "../svg/MessageSender";
 
-export default function Message({ content, isSender, createdAt, isRead  }) {
+export default function Message({
+  content,
+  isSender,
+  createdAt,
+  isRead,
+  media,
+  onclike
+}) {
   moment.locale("ar_SA");
   moment.updateLocale("ar_SA", {
     relativeTime: {
@@ -25,12 +32,9 @@ export default function Message({ content, isSender, createdAt, isRead  }) {
     },
   });
 
-  
-
- 
-  
-
-  const createdAtTime = createdAt?.seconds ? createdAt?.seconds * 1000 : createdAt
+  const createdAtTime = createdAt?.seconds
+    ? createdAt?.seconds * 1000
+    : createdAt;
 
   const lastSeenMoment = moment(createdAtTime);
   const HourAndMinitFormat = lastSeenMoment.format("hh:mm");
@@ -44,15 +48,25 @@ export default function Message({ content, isSender, createdAt, isRead  }) {
 
   const isCurrentUserSender = isSender === getCurrentUser().uid;
 
+
+
   return (
     <div className={`message ${isCurrentUserSender ? "sender" : "receiver"}`}>
+     {
+      media ?
+      media?.name ? <div className="img d-f">
+      <img src={URL.createObjectURL(media)} alt="image" onClick={onclike}/>
+    </div> : <div className="img d-f" >
+      <img src={media} alt="image" onClick={onclike}/>
+    </div> : null
+     }
       <div className={`after ${isCurrentUserSender ? "send" : "receive"}`}>
         {isCurrentUserSender ? <MessageSender /> : <MessageReceiver />}
       </div>
       <div className="content">
         <p className={`${isArabic ? "f-ar dr-ar" : "f-en dr-en"}`}>{content}</p>
       </div>
-      <div className="time">
+      <div className={`time ${media && !content ? "onlyImage" : ""}`}>
         <p>{`${HourAndMinitFormat} ${AmPm}`}</p>
         {isCurrentUserSender && (
           <div className={`${isRead ? "check" : "uncheck"} d-f`}>

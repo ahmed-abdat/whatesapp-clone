@@ -43,30 +43,30 @@
 
 .loader {
   -webkit-animation: spin89345 1s linear infinite;
-          animation: spin89345 1s linear infinite;
+  animation: spin89345 1s linear infinite;
 }
 
 @-webkit-keyframes spin89345 {
   0% {
     -webkit-transform: rotate(0deg);
-            transform: rotate(0deg);
+    transform: rotate(0deg);
   }
 
   100% {
     -webkit-transform: rotate(360deg);
-            transform: rotate(360deg);
+    transform: rotate(360deg);
   }
 }
 
 @keyframes spin89345 {
   0% {
     -webkit-transform: rotate(0deg);
-            transform: rotate(0deg);
+    transform: rotate(0deg);
   }
 
   100% {
     -webkit-transform: rotate(360deg);
-            transform: rotate(360deg);
+    transform: rotate(360deg);
   }
 }
 
@@ -116,7 +116,6 @@
   border-radius: 50%;
 }
 
-
 .main--container header .header--icons > svg {
   font-size: 1.7rem;
   padding: 0.3rem;
@@ -141,12 +140,12 @@
 
 .main--container .button button {
   all: unset;
-    width: 35px;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
 }
 
 /* ? home page search */
@@ -211,8 +210,6 @@
   overflow-y: auto;
 }
 
-
-
 /* .main--container .user-profile--container::-webkit-scrollbar-track, ::-webkit-scrollbar-track {
   background: rgba(255,255,255,0.1);
 }  */
@@ -242,7 +239,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  
 }
 .main--container .user-profile--container .user--profile--info .info h3 {
   font-size: 1rem;
@@ -275,16 +271,27 @@
   justify-content: space-between;
 }
 
+.main--container .user-profile--container .last-message > svg {
+  font-size: 1.5rem;
+}
+
+.main--container .user--profile--info .last-message .media,
+.main--container .user--profile--info .last-message .onlyMedia {
+  display: flex;
+  align-items: center;
+  gap: 0 0.5rem;
+}
+
 .main--container .user--profile .last-message .unread {
   background: #25d366;
-    color: #fff;
-    text-align: center;
-    border-radius: 1.1em;
-    font-weight: 600;
-    width: 20px;
-    height: 20px;
-    font-size: 12px;
-    line-height: 20px;
+  color: #fff;
+  text-align: center;
+  border-radius: 1.1em;
+  font-weight: 600;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  line-height: 20px;
 }
 
 .unread-color {
@@ -293,22 +300,20 @@
 }
 
 .unread-message-content {
-  font-weight: 600  !important;
-  color: #3B4A5A !important;
+  font-weight: 600 !important;
+  color: #3b4a5a !important;
 }
 
 .unread-name {
   font-weight: 600 !important;
-  color: #111b21  !important;
+  color: #111b21 !important;
 }
 
-
-
-.main--container .user--profile--info .last-message  .uncheck {
-  color : #8696a0;
+.main--container .user--profile--info .last-message .uncheck {
+  color: #8696a0;
 }
 
-.main--container .user--profile--info .last-message  .check {
+.main--container .user--profile--info .last-message .check {
   color: #53bdeb;
 }
 

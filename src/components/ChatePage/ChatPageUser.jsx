@@ -26,15 +26,18 @@ import {
   deleteField,
   serverTimestamp,
 } from "firebase/firestore";
-import { db } from "../../config/firebase";
+import { db, storage } from "../../config/firebase";
 import SpinerLoader from "../SpinerLoader";
 import useUser from "../../store/useUser";
 import useUsers from "../../store/useUsers";
 import ViewChatSound from "../../assets/sounds/viewMessage.mp3";
+import ViewFullImage from "./ViewFullImage";
 import "../styles/chatPageUser.css";
 import { BsImageFill } from "react-icons/bs";
 import { lazy, Suspense } from "react";
 import useMessages from "../../store/useMessages";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+
 
 // lazy loade
 const ViewSelectedImage = lazy(() => import("../ViewSelectedImage"));
@@ -91,9 +94,11 @@ export default function ChatPageUser() {
 
   const [timeAgo, setTimeAgo] = useState(currentDate());
   const [file, setFile] = useState(null);
-
+  const [isImageSelected , setIsImageSelected] = useState(false)
+  const [imageAndContent , setImageAndContent] = useState(null)
   // is message arabic
   const [isArabic, setIsArabic] = useState(true);
+
 
   // message
   const [message, setMessage] = useState("");
@@ -241,7 +246,7 @@ export default function ChatPageUser() {
   };
 
   // add message to database
-  const addMessageTODataBase = async (message , uniqueChatId , selectedUserId , currentUserId) => {
+  const addMessageTODataBase = async (message , uniqueChatId , selectedUserId , currentUserId , path) => {
 
     try {
       const docRef = doc(db, "messages", uniqueChatId);
@@ -261,6 +266,7 @@ export default function ChatPageUser() {
             createdAt: serverTimestamp(),
             isRead: false,
             isReceived: isReceived,
+            media : path ? path : null
           };
           addDoc(messageRef, messageData).catch((e) => console.log(e.message));
           // update last message in both user lastMessage collection
@@ -323,18 +329,9 @@ export default function ChatPageUser() {
     })
   };
 
-  // handel send message
-  const handelSendMessage = (e) => {
-    e && e.preventDefault();
-    if (message.length > 0 && message.trim().length > 0) {
-      const selectedUserId = getSelectedUser().uid;
-      const currentUserId = getCurrentUser().uid;
-      const uniqueChatId =
-        currentUserId > selectedUserId
-          ? `${currentUserId + selectedUserId}`
-          : `${selectedUserId + currentUserId}`;
-      addMessageTODataBase(message , uniqueChatId , selectedUserId , currentUserId);
-      const docRef = doc(db, "messages", uniqueChatId);
+  // update the message in the local state
+  const updateMessageLocaly = (message ,  uniqueChatId , file) => {
+    const docRef = doc(db, "messages", uniqueChatId);
       let isReceived = false
       getDoc(docRef)
       .then((querySnapshot) => {
@@ -349,13 +346,77 @@ export default function ChatPageUser() {
         isRead: false,
         from: getCurrentUser().uid,
         to: getSelectedUser().uid,
-        isReceived
+        isReceived,
+        media : file ? file : null
       };
       updateUserFreindsList(getSelectedUser().uid);
       setMessages((prev) => [...prev, messageData]);
       setAllMessages(messageData)
       setMessage("");
       setIsArabic(true);
+      scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    // get unique chat id
+    const getUniqueChatId = (currentUserId, selectedUserId) => {
+      if (currentUserId > selectedUserId) {
+        return `${currentUserId + selectedUserId}`;
+      } else {
+        return `${selectedUserId + currentUserId}`;
+      }
+    };
+
+    // help upload image to database
+    const helpUploadImage = (path) => {
+      const currentUserId = getCurrentUser().uid;
+      const selectedUserId = getSelectedUser().uid;
+      const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
+      addMessageTODataBase(message , uniqueChatId , selectedUserId , currentUserId , path);
+ 
+    }
+
+    // update the photo img in firebase
+    const uploadTheImageFile = (file) => {
+      // unique image name
+      const imageName = new Date().getTime() + file.name;
+      const storageRef = ref(storage, `photo/${getCurrentUser().uid}/${imageName}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+        },
+        (error) => {
+          console.log(error.message);
+          // Handle unsuccessful uploads
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            const fullPath = uploadTask.snapshot.ref.fullPath;
+            console.log("File available at", downloadURL);
+            helpUploadImage(downloadURL)
+          });
+        }
+      );
+    };
+
+  // handel send message
+  const handelSendMessage = (e) => {
+    e && e.preventDefault();
+    const selectedUserId = getSelectedUser().uid;
+      const currentUserId = getCurrentUser().uid;
+      const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
+    if(file || file !== null && message.length > 0 && message.trim().length > 0){
+      uploadTheImageFile(file)
+      updateMessageLocaly(message , uniqueChatId , file);
+      setFile(null)
+      return
+    }
+    if (message.length > 0 && message.trim().length > 0) {  
+      addMessageTODataBase(message , uniqueChatId , selectedUserId , currentUserId);
+      updateMessageLocaly(message , uniqueChatId )
     }
   };
 
@@ -398,7 +459,7 @@ export default function ChatPageUser() {
       sound.play();
       setLastPlayedMessage(lastMessages);
     }
-  }, [messages.length, lastPlayedMessage]);
+  }, [messages.length, lastPlayedMessage , isImageSelected]);
 
   //listen to change in selected user
   useEffect(() => {
@@ -414,6 +475,19 @@ export default function ChatPageUser() {
     });
     return () => unsubscribe();
   }, []);
+
+  // handel selected image 
+  const selectedImage = (img, content)=> {
+    if(img && content){
+      setImageAndContent({img , content})
+      setIsImageSelected(true)
+    }else if(img){
+      setImageAndContent({img})
+      setIsImageSelected(true)
+    }else {
+      console.log('no image selected');
+    }
+  }
 
   // handel file upload
   const handelFile = (e) => {
@@ -433,8 +507,15 @@ export default function ChatPageUser() {
             file={file}
             setFile={setFile}
             displayName={getSelectedUser()?.displayName}
+            handelMessage={handelMessage}
+            isArabic={isArabic}
+            handelSendMessage={handelSendMessage}
           />
         </Suspense>
+      ) : isImageSelected ? (
+
+        <ViewFullImage file={imageAndContent} setIsImageSelected={setIsImageSelected} />
+  
       ) : (
         <>
           <header>
@@ -480,6 +561,9 @@ export default function ChatPageUser() {
                       isSender={message.from}
                       createdAt={message.createdAt}
                       isRead={message.isRead}
+                      media={message.media}
+                      id={message.id}
+                      onclike={()=> selectedImage(message.media , message.content)}
                     />
                   ))}
                 {isMessagesLoaded && <SpinerLoader />}

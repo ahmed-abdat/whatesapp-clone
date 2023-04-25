@@ -2,25 +2,12 @@ import { MdClose } from "react-icons/md";
 import { BiImageAdd } from "react-icons/bi";
 import Send from "./svg/Send";
 import "./styles/ViewSelectedImage.css";
-import { useState } from "react";
 
-export default function ViewSelectedImage({ file, setFile, displayName }) {
-  // state
-  const [message, setMessage] = useState("");
-  const [isArabic, setIsArabic] = useState(true);
 
-  // handel message
-  const handelMessage = (e) => {
-    const { value } = e.target;
-    const isArabic = /[\u0600-\u06FF]/.test(value);
-    isArabic ? setIsArabic(true) : setIsArabic(false);
+export default function ViewSelectedImage({ file, setFile, displayName , handelMessage , isArabic , handelSendMessage}) {
 
-    if (value.length === 0) {
-      setIsArabic(true);
-    }
 
-    setMessage(value);
-  };
+ 
 
   return (
     <div className="viewImage--container">
@@ -35,7 +22,7 @@ export default function ViewSelectedImage({ file, setFile, displayName }) {
         </div>
       </main>
       <footer>
-        <form>
+        <form onSubmit={handelSendMessage}>
           <div className="input">
             <BiImageAdd />
             <input
@@ -45,7 +32,6 @@ export default function ViewSelectedImage({ file, setFile, displayName }) {
               onKeyDown={(e) => {
                 e.key === "Enter" && console.log("send message");
               }}
-              value={message}
               className={isArabic ? "f-ar" : "f-en dr-en"}
             />
           </div>

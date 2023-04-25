@@ -17,6 +17,7 @@ import { db } from "../../config/firebase";
 import useUser from "../../store/useUser";
 import Check from "../svg/Check";
 import receiveMessageSound from '../../assets/sounds/receiveMessage.mp3'
+import { BsImageFill } from "react-icons/bs";
 
 export default function HomePageUser({
   displayName,
@@ -278,7 +279,7 @@ export default function HomePageUser({
   }, [isMessageNotRead , UnreadMessages]);
 
 
-  
+ 
 
 
   return (
@@ -304,17 +305,33 @@ export default function HomePageUser({
           )}
         </div>
         <div className="last-message">
-          {lastMessage?.content ? (
-            <p
-              className={`${contentClass()} ${
-                isMessageNotRead ? "unread-message-content" : ""
-              }`}
-            >
-              {lastMessage.content}
-            </p>
-          ) : (
-            <p className={`${useStatusClass()}`}> {getCurrentUser()?.userStatus} </p>
-          )}
+          {
+            lastMessage?.content && lastMessage?.media ? (
+              <>
+                <span><BsImageFill /></span> 
+                 <p
+                    className={`${contentClass()} ${
+                      isMessageNotRead ? "unread-message-content" : ""
+                    }`}
+                  >
+                    {lastMessage.content}
+                  </p>
+              </>
+              ) : lastMessage?.media ? (
+                <span className="d-f onlyMedia f-ar dr-ar"> <BsImageFill /> صورة</span>
+                ) : lastMessage?.content ? (
+                  <p
+                    className={`${contentClass()} ${
+                      isMessageNotRead ? "unread-message-content" : ""
+                    }`}
+                  >
+                    {lastMessage.content}
+                  </p>
+                ) : (
+                  <p className={`${useStatusClass()}`}> {getCurrentUser()?.userStatus} </p>
+                )
+
+          }
           {(isMessageNotRead && UnreadMessages > 0) && <div className="unread">{UnreadMessages}</div>}
           {getCurrentUser()?.uid
             ? lastMessage?.from === getCurrentUser()?.uid && (

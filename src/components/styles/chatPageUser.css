@@ -30,8 +30,6 @@
   cursor: pointer;
 }
 
-
-
 .chat-page--container header .img img {
   max-width: 100%;
   width: 40px;
@@ -76,17 +74,17 @@
   position: relative;
   flex-grow: 1;
   z-index: 1;
-  overflow : hidden;
+  overflow: hidden;
   height: 100%;
   background-color: #efeae2;
 }
 
 .chat-page--container .message--container {
   max-height: calc(100vh - 126px);
-    overflow: auto;
-    position: absolute;
-    width: 100%;
-    height: 100%;
+  overflow: auto;
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
 
 .chat-page--container .chat-content .bgi {
@@ -99,8 +97,6 @@
   background-repeat: no-repeat;
   background-size: cover;
 }
-
-
 
 .chat-page--container .chat-content .message--container .container {
   padding-left: 19px;
@@ -128,6 +124,27 @@
   -o-border-radius: 7.5px;
 }
 
+.chat-page--container .chat-content .message--container .message .img {
+  background: #fff;
+  border-top-right-radius: 7.5px;
+  border-top-left-radius: 7.5px;
+  margin-bottom: 0.2rem;
+    height: 322.667px;
+}
+
+.chat-page--container .chat-content .message--container .message .img img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+  cursor: pointer;
+}
+
+.onlyImage {
+  position: absolute;
+  bottom: 6px;
+  right: 16px;
+}
 
 .chat-page--container .chat-content .message--container .message.receiver {
   background-color: #fff;
@@ -136,8 +153,6 @@
   border-top-left-radius: 7.5px;
 }
 
-
-
 .chat-page--container .chat-content .message--container .message.sender {
   align-self: flex-end;
   background-color: #d9fdd3;
@@ -145,8 +160,7 @@
   border-top-right-radius: 7.5px;
 }
 
-.chat-page--container .chat-content .message--container .after 
-{
+.chat-page--container .chat-content .message--container .after {
   content: "";
   position: absolute;
   top: -6px;
@@ -160,7 +174,6 @@
   right: -8px;
   color: #fff;
 }
-
 
 .chat-page--container .chat-content .message--container .send {
   left: -8px;
@@ -188,12 +201,12 @@
   gap: 0 0.5rem;
 }
 
-.chat-page--container .chat-content .time p{
+.chat-page--container .chat-content .time p {
   color: #667781;
 }
 
 .chat-page--container .chat-content .uncheck {
-  color : #8696a0;
+  color: #8696a0;
 }
 
 .chat-page--container .chat-content .check {
@@ -231,7 +244,8 @@
   width: 100%;
 }
 
-.chat-page--container footer .input textarea , .chat-page--container footer .input input {
+.chat-page--container footer .input textarea,
+.chat-page--container footer .input input {
   resize: none;
   max-height: 7.35em;
   min-height: 1.47em;
@@ -248,7 +262,7 @@
   outline: none;
   border: none;
 }
-textarea::-webkit-scrollbar{
+textarea::-webkit-scrollbar {
   width: 0;
 }
 
@@ -280,7 +294,7 @@ textarea::-webkit-scrollbar{
     height: 100%;
   }
 
-  .chat-page--container .chat-content .message--container .message{
+  .chat-page--container .chat-content .message--container .message {
     max-width: 100%;
   }
 
