@@ -2,11 +2,15 @@ import { create } from "zustand";
 
 const useMessages = create((set , get) => ({
     allMessages: [],
-    setAllMessages : (messages) => {
+    setAllMessages : (messages , isUpdated) => {
         const prevMessages = get().allMessages
         let newMessages = []
         if(Array.isArray(messages)) {
-            newMessages = messages
+            if(isUpdated) {
+                newMessages = [...messages , ...prevMessages]
+            }else {
+                newMessages = messages
+            }
         }else {
              newMessages = [...prevMessages , messages]
         }

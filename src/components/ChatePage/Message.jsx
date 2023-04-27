@@ -3,7 +3,7 @@ import useUser from "../../store/useUser";
 import Check from "../svg/Check";
 import MessageReceiver from "../svg/MessageReceiver";
 import MessageSender from "../svg/MessageSender";
-import LazyImage from './LazyImage'
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 export default function Message({
   content,
@@ -11,7 +11,7 @@ export default function Message({
   createdAt,
   isRead,
   media,
-  onclike
+  onclike,
 }) {
   moment.locale("ar_SA");
   moment.updateLocale("ar_SA", {
@@ -49,18 +49,33 @@ export default function Message({
 
   const isCurrentUserSender = isSender === getCurrentUser().uid;
 
-
-
   return (
     <div className={`message ${isCurrentUserSender ? "sender" : "receiver"}`}>
-     {
-      media ?
-      media?.name ? <div className="img d-f">
-      <img src={URL.createObjectURL(media)} alt="image" onClick={onclike} loading="lazy"/>
-    </div> : <div className="img d-f" >
-      <img src={media} alt="image" onClick={onclike} loading="lazy"  />
-    </div> : null
-     }
+      {media ? (
+        media?.name ? (
+          <div className="img d-f">
+            <LazyLoadImage
+              alt="image"
+              height={"322.667px"}
+              src={URL.createObjectURL(media)}
+              onClick={onclike}
+              width={"320px"}
+              effect="blur"
+            />
+          </div>
+        ) : (
+          <div className="img d-f">
+            <LazyLoadImage
+              onClick={onclike}
+              alt="image"
+              height={"322.667px"}
+              src={media}
+              width={"320px"}
+              effect="blur"
+            />
+          </div>
+        )
+      ) : null}
       <div className={`after ${isCurrentUserSender ? "send" : "receive"}`}>
         {isCurrentUserSender ? <MessageSender /> : <MessageReceiver />}
       </div>

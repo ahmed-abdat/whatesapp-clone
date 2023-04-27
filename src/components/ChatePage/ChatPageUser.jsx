@@ -25,6 +25,8 @@ import {
   updateDoc,
   deleteField,
   serverTimestamp,
+  limit,
+  startAfter,
 } from "firebase/firestore";
 import { db, storage } from "../../config/firebase";
 import SpinerLoader from "../SpinerLoader";
@@ -64,7 +66,7 @@ export default function ChatPageUser() {
     },
   });
   const now = moment();
-  const lastSeen = getSelectedUser()?.lastSeen.seconds * 1000;
+  const lastSeen = getSelectedUser()?.lastSeen;
   const lastSeenMoment = moment(lastSeen);
   const HourAndMinitFormat = lastSeenMoment.format("hh:mm");
   const dateFormat = lastSeenMoment.format("DD/MM/YYYY");
@@ -100,6 +102,11 @@ export default function ChatPageUser() {
 
   // message
   const [message, setMessage] = useState("");
+
+  // last doc
+  const [lastDoc, setLastDoc] = useState(null);
+  const [isLastDocUpdated, setIsLastDocUpdated] = useState(false);
+  const [isLastDocExist, setIsLastDocExist] = useState(false);
 
   // lastMessage played
   const [lastPlayedMessage, setLastPlayedMessage] = useState(null);
@@ -183,10 +190,7 @@ export default function ChatPageUser() {
   const getUnreadMessage = async () => {
     const curretnUserId = getCurrentUser().uid;
     const selectedUserId = getSelectedUser().uid;
-    const uniqueChatId =
-      curretnUserId > selectedUserId
-        ? `${curretnUserId + selectedUserId}`
-        : `${selectedUserId + curretnUserId}`;
+    const uniqueChatId = getUniqueChatId(curretnUserId, selectedUserId);
 
     const collectionRef = collection(db, "messages", uniqueChatId, "chat");
     const q = query(
@@ -301,36 +305,6 @@ export default function ChatPageUser() {
     }
   };
 
-  // update user freinds list
-  const updateUserFreindsList = (selectedUserId) => {
-    const currentUserId = getCurrentUser().uid;
-    const currentUserFreindsListRef = collection(
-      db,
-      "users",
-      currentUserId,
-      "freindsList"
-    );
-    const selectedUserFreindsListRef = collection(
-      db,
-      "users",
-      selectedUserId,
-      "freindsList"
-    );
-    const currentUserFreindsListDoc = doc(
-      currentUserFreindsListRef,
-      selectedUserId
-    );
-    const selectedUserFreindsListDoc = doc(
-      selectedUserFreindsListRef,
-      currentUserId
-    );
-    setDoc(currentUserFreindsListDoc, {
-      uid: selectedUserId,
-    });
-    setDoc(selectedUserFreindsListDoc, {
-      uid: currentUserId,
-    });
-  };
 
   // update the message in the local state
   const updateMessageLocaly = (message, uniqueChatId, file) => {
@@ -351,12 +325,14 @@ export default function ChatPageUser() {
       isReceived,
       media: file ? file : null,
     };
-    updateUserFreindsList(getSelectedUser().uid);
     setMessages((prev) => [...prev, messageData]);
     setAllMessages(messageData);
     setMessage("");
     setIsArabic(true);
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+    // scroll to the last message
+    setTimeout(() => {
+      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    }, 100);
   };
 
   // get unique chat id
@@ -438,35 +414,42 @@ export default function ChatPageUser() {
     }
   };
 
-  // get messages
+  // get last 10 messages
   useEffect(() => {
     const selectedUserId = getSelectedUser().uid;
     const currentUserId = getCurrentUser().uid;
-    const uniqueChatId =
-      currentUserId > selectedUserId
-        ? `${currentUserId + selectedUserId}`
-        : `${selectedUserId + currentUserId}`;
+    const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
+    setIsLastDocUpdated(false);
+    // get the last 10 messages
     const messageRef = collection(db, "messages", uniqueChatId, "chat");
-    const q = query(messageRef, orderBy("createdAt", "asc"));
+    const q = query(messageRef, orderBy("createdAt", "desc"), limit(20));
     setIsMessagesLoaded(true);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const messages = [];
+      // get the last doc
+      const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+      setIsLastDocExist(true);
+      setLastDoc(lastDoc);
       querySnapshot.forEach((doc) => {
         messages.push({ ...doc.data(), id: doc.id });
       });
-      setMessages(messages);
-      setAllMessages(messages);
+      const reversedMessages = messages.reverse();
+      setMessages(reversedMessages);
+      setAllMessages(reversedMessages , false);
       setIsMessagesLoaded(false);
+
     });
     return () => unsubscribe();
-  }, [getSelectedUser()]);
+  }, []);
 
   const scrollRef = useRef(null);
 
-  
   // scroll to bottom when new message send
   useEffect(() => {
-      scrollRef.current?.scrollIntoView();
+    if (!isLastDocUpdated) {
+      scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+
     const lastMessages = lastMessage();
     if (
       lastMessages &&
@@ -480,16 +463,15 @@ export default function ChatPageUser() {
     }
   }, [messages.length, lastPlayedMessage]);
 
-  
   //listen to change in selected user
   useEffect(() => {
     const q = query(
       collection(db, "users"),
       where("uid", "==", getSelectedUser().uid)
-      );
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          const user = { ...doc.data(), id: doc.id };
+    );
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const user = { ...doc.data(), id: doc.id };
         setSelectedUser(user);
       });
     });
@@ -513,13 +495,55 @@ export default function ChatPageUser() {
   const handelFile = (e) => {
     const file = e.target.files[0];
     // Check if the file type is an image
-    if (!file && !file.type.startsWith("image/")) {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
       return;
     }
+
     setFile(file);
   };
 
-  
+  // handel fetch more messages
+  const handelFetchMoreMessages = () => {
+    const selectedUserId = getSelectedUser().uid;
+    const currentUserId = getCurrentUser().uid;
+    const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
+    // check if the last doc is null
+    if (!lastDoc) return;
+    const messageRef = collection(db, "messages", uniqueChatId, "chat");
+    const q = query(
+      messageRef,
+      orderBy("createdAt", "desc"),
+      startAfter(lastDoc),
+      limit(10)
+    );
+    setIsMessagesLoaded(true);
+    getDocs(q).then((querySnapshot) => {
+      const messages = [];
+      // get the last doc
+      const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+      if (!lastDoc) {
+        setIsLastDocExist(false);
+        setIsMessagesLoaded(false);
+        return;
+      }
+
+      setLastDoc(lastDoc);
+      querySnapshot.forEach((doc) => {
+        messages.push({ ...doc.data(), id: doc.id });
+      });
+      const reversedMessages = messages.reverse();
+      if (reversedMessages.length === 0) {
+        setIsMessagesLoaded(false);
+        setIsLastDocExist(false);
+        return;
+      }
+      setIsLastDocUpdated(true);
+      setMessages((prevMessages) => [...reversedMessages, ...prevMessages]);
+      setIsMessagesLoaded(false);
+    });
+  };
+
   return (
     <div className={`chat-page--container ${!isSelectedUser ? "hide" : ""}`}>
       {file && (
@@ -542,101 +566,113 @@ export default function ChatPageUser() {
         />
       )}
       <header>
-            <div className="back" onClick={handelBack}>
-              <div className="icon">
-                <BiArrowBack className="r-180" />
-              </div>
-              <div className="img">
-                <img
-                  src={getSelectedUser()?.photoURL || defaultAvatar}
-                  alt="avatar"
-                />
-              </div>
-            </div>
-            <div className="info">
-              <h3>{getSelectedUser()?.displayName || "ahmed"}</h3>
-              <p className="f-ar dr">
-                {getSelectedUser()?.isOnline ? "متصل الآن" : timeAgo}
-              </p>
-            </div>
-            <div className="icons">
-              <div className="icon">
-                <HiSearch />
-              </div>
-              <div className="icon">
-                <HiDotsVertical />
-              </div>
-            </div>
-          </header>
-          {/* chat container */}
-          <div className="chat-content">
-            <div
-              className="bgi"
-              style={{ backgroundImage: `url(${ChatImg})` }}
-            ></div>
-            <div className="message--container">
-              <div className="container">
-                {messages.length > 0 &&
-                  messages.map((message) => (
-                    <Message
-                      key={message.id}
-                      content={message.content}
-                      isSender={message.from}
-                      createdAt={message.createdAt}
-                      isRead={message.isRead}
-                      media={message.media}
-                      id={message.id}
-                      onclike={()=> selectedImage(message.media , message.content)}
-                    />
-                  ))}
-                {isMessagesLoaded && <SpinerLoader />}
-                <div ref={scrollRef}></div>
-              </div>
-            </div>
+        <div className="back" onClick={handelBack}>
+          <div className="icon">
+            <BiArrowBack className="r-180" />
           </div>
-          {/* footer */}
-          <footer>
-            <div className="icons">
-              <div className="icon">
-                <SmileFace />
+          <div className="img">
+            <img
+              src={getSelectedUser()?.photoURL || defaultAvatar}
+              alt="avatar"
+            />
+          </div>
+        </div>
+        <div className="info">
+          <h3>{getSelectedUser()?.displayName || "ahmed"}</h3>
+          <p className="f-ar dr">
+            {getSelectedUser()?.isOnline ? "متصل الآن" : timeAgo}
+          </p>
+        </div>
+        <div className="icons">
+          <div className="icon">
+            <HiSearch />
+          </div>
+          <div className="icon">
+            <HiDotsVertical />
+          </div>
+        </div>
+      </header>
+      {/* chat container */}
+      <div className="chat-content">
+        <div
+          className="bgi"
+          style={{ backgroundImage: `url(${ChatImg})` }}
+        ></div>
+        <div className="message--container">
+          <div className="container">
+            {/* see more button */}
+            {isLastDocExist && (
+              <div className="d-f">
+                <button
+                  className="seeMore f-ar dr-ar"
+                  onClick={handelFetchMoreMessages}
+                >
+                  الرسائل الأقدم
+                </button>
               </div>
-              <label htmlFor="file-input" className={`icon d-f`}>
-                <BsImageFill />
-              </label>
-              <input
-                onChange={handelFile}
-                id="file-input"
-                type="file"
-                name="file"
-                style={{ display: "none" }}
-              />
-            </div>
-            <form onSubmit={handelSendMessage}>
-              <div className="input">
-                <input
-                  type="text"
-                  placeholder="اكتب رسالة"
-                  onChange={handelMessage}
-                  onKeyDown={(e) => {
-                    e.key === "Enter" && handelSendMessage();
-                  }}
-                  value={message}
-                  className={isArabic ? "f-ar" : "f-en dr-en"}
+            )}
+            {/* display all the messages */}
+            {messages.length > 0 &&
+              messages.map((message) => (
+                <Message
+                  key={message.id}
+                  content={message.content}
+                  isSender={message.from}
+                  createdAt={message.createdAt}
+                  isRead={message.isRead}
+                  media={message.media}
+                  id={message.id}
+                  onclike={() => selectedImage(message.media, message.content)}
                 />
-              </div>
-              {message.length > 0 ? (
-                <div className="icon">
-                  <button style={{ all: "unset" }}>
-                    <Send />
-                  </button>
-                </div>
-              ) : (
-                <div className="icon">
-                  <Voice />
-                </div>
-              )}
-            </form>
-          </footer>
+              ))}
+            {isMessagesLoaded && <SpinerLoader />}
+            <div ref={scrollRef}></div>
+          </div>
+        </div>
+      </div>
+      {/* footer */}
+      <footer>
+        <div className="icons">
+          <div className="icon">
+            <SmileFace />
+          </div>
+          <label htmlFor="file-input" className={`icon d-f`}>
+            <BsImageFill />
+          </label>
+          <input
+            onChange={handelFile}
+            id="file-input"
+            type="file"
+            name="file"
+            style={{ display: "none" }}
+          />
+        </div>
+        <form onSubmit={handelSendMessage}>
+          <div className="input">
+            <input
+              type="text"
+              placeholder="اكتب رسالة"
+              onChange={handelMessage}
+              onKeyDown={(e) => {
+                e.key === "Enter" && handelSendMessage();
+              }}
+              value={message}
+              className={isArabic ? "f-ar" : "f-en dr-en"}
+            />
+          </div>
+          {message.length > 0 ? (
+            <div className="icon">
+              <button style={{ all: "unset" }}>
+                <Send />
+              </button>
+            </div>
+          ) : (
+            <div className="icon">
+              <Voice />
+            </div>
+          )}
+        </form>
+      </footer>
     </div>
   );
 }

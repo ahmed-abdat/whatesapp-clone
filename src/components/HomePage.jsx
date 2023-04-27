@@ -133,7 +133,6 @@ export default function HomePage() {
   // get all user in firebase except the current user
   useEffect(() => {
     setIsLoading(true);
-
     const qe = query(collection(db, "users", currentUser.uid, "lastMessage") , orderBy('createdAt' , 'desc'));
     let lastMessages = [];
     getDocs(qe).then((querySnapshot) => {
@@ -145,23 +144,6 @@ export default function HomePage() {
       setLastMessage(lastMessages);
     });
 
-    // First, get the list of friend UIDs for the current user
-    const friendListRef = collection(
-      db,
-      "users",
-      currentUser.uid,
-      "freindsList"
-    );
-    const friendListQuery = query(friendListRef);
-    const friendListSnapshot = onSnapshot(friendListQuery, (querySnapshot) => {
-      const freindLists = [];
-      querySnapshot.forEach((doc) => {
-        if(doc.exists()) {
-          freindLists.push(doc.data().uid);
-        }
-      });
-
-      setFreindsList(freindLists);
       // Then, get the user data for each friend UID
       const usersRef = collection(db, "users");
       const usersQuery = query(usersRef, where("uid", '!=' , currentUser.uid));
@@ -173,11 +155,6 @@ export default function HomePage() {
           }
         });
 
-        // filter the users that are in the friend list
-        const filteredUsers = users.filter((user) => {
-          return freindLists.includes(user.uid);
-        } 
-        );
 
         const sortedUsers = lastMessages.map((message) => {
           const findUser = users.find( user => user.uid === message.from || user.uid === message.to);
@@ -190,8 +167,6 @@ export default function HomePage() {
       
       });
       return () => usersSnapshot();
-    });
-    return () => friendListSnapshot();
   }, []);
 
   // merge the lastMessage with the his user
@@ -233,11 +208,6 @@ export default function HomePage() {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
-
-
-
-  
-
 
 
   // listen if the selcted user is changed
