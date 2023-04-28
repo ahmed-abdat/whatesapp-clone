@@ -259,6 +259,17 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0 0.3rem;
+}
+.main--container .user-profile--container .user--profile--info .last-message p img {
+  width: 25px;
+    height: 25px;
+    image-rendering: -webkit-optimize-contrast;
+    display: inline-block;
+    vertical-align: top;
+    zoom: 1;
 }
 
 .main--container .user--profile--info .last-message {
@@ -270,6 +281,8 @@
   gap: 0 0.5rem;
   justify-content: space-between;
 }
+
+
 
 .main--container .user-profile--container .last-message > svg {
   font-size: 1.5rem;

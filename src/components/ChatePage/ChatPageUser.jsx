@@ -1,4 +1,5 @@
 import moment from "moment";
+import React from "react";
 import useSelectedUser from "../../store/useSelectedUser";
 import { HiDotsVertical, HiSearch } from "react-icons/hi";
 import SmileFace from "../svg/SmileFace";
@@ -38,6 +39,7 @@ import "../styles/chatPageUser.css";
 import { BsImageFill } from "react-icons/bs";
 import { lazy, Suspense } from "react";
 import useMessages from "../../store/useMessages";
+import EmojiPicker from "emoji-picker-react";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 // lazy loade
@@ -66,7 +68,7 @@ export default function ChatPageUser() {
     },
   });
   const now = moment();
-  const lastSeen = getSelectedUser()?.lastSeen;
+  const lastSeen = getSelectedUser()?.lastSeen?.seconds * 1000;
   const lastSeenMoment = moment(lastSeen);
   const HourAndMinitFormat = lastSeenMoment.format("hh:mm");
   const dateFormat = lastSeenMoment.format("DD/MM/YYYY");
@@ -97,8 +99,11 @@ export default function ChatPageUser() {
   const [file, setFile] = useState(null);
   const [isImageSelected, setIsImageSelected] = useState(false);
   const [imageAndContent, setImageAndContent] = useState(null);
+
   // is message arabic
   const [isArabic, setIsArabic] = useState(true);
+
+  const scrollRef = useRef(null);
 
   // message
   const [message, setMessage] = useState("");
@@ -107,10 +112,13 @@ export default function ChatPageUser() {
   const [lastDoc, setLastDoc] = useState(null);
   const [isLastDocUpdated, setIsLastDocUpdated] = useState(false);
   const [isLastDocExist, setIsLastDocExist] = useState(false);
-  const [images , setImages] = useState([])
+  const [images, setImages] = useState([]);
 
   // lastMessage played
   const [lastPlayedMessage, setLastPlayedMessage] = useState(null);
+
+  // is Emoji Picker Show
+  const [isEmojiPickerShow, setIsEmojiPickerShow] = useState(false);
 
   // set all messages
   const setAllMessages = useMessages((state) => state.setAllMessages);
@@ -439,9 +447,7 @@ export default function ChatPageUser() {
       setIsMessagesLoaded(false);
     });
     return () => unsubscribe();
-  }, []);
-
-  const scrollRef = useRef(null);
+  }, [getSelectedUser()]);
 
   // scroll to bottom when new message send
   useEffect(() => {
@@ -461,21 +467,6 @@ export default function ChatPageUser() {
       setLastPlayedMessage(lastMessages);
     }
   }, [messages.length, lastPlayedMessage]);
-
-  //listen to change in selected user
-  useEffect(() => {
-    const q = query(
-      collection(db, "users"),
-      where("uid", "==", getSelectedUser().uid)
-    );
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        const user = { ...doc.data(), id: doc.id };
-        setSelectedUser(user);
-      });
-    });
-    return () => unsubscribe();
-  }, []);
 
   // handel selected image
   const selectedImage = (img, content) => {
@@ -550,14 +541,18 @@ export default function ChatPageUser() {
     const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
     const messageRef = collection(db, "messages", uniqueChatId, "chat");
     // get all the messages that have media
-    const q = query(messageRef, where('media', '!=', null));
+    const q = query(messageRef, where("media", "!=", null));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const images = [];
       querySnapshot.forEach((doc) => {
         images.push({ ...doc.data(), id: doc.id });
       });
       const srcImages = images.map((image) => {
-        return { src: image.media, alt: image.content , time : image.createdAt.seconds };
+        return {
+          src: image.media,
+          alt: image.content,
+          time: image.createdAt.seconds,
+        };
       });
       // sort the images by time
       srcImages.sort((a, b) => a.time - b.time);
@@ -565,6 +560,22 @@ export default function ChatPageUser() {
     });
     return () => unsubscribe();
   }, []);
+
+ // handel input and Emoji picker
+const handelInput = (emojiData, event) => {
+  const emojiUnified = emojiData.unified;
+  const emoji = emojiData.emoji
+  // const emojiURL = `https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/${emojiUnified}.png`;
+// Split the message into words or characters
+
+setMessage((prevMessage) => (
+  `${prevMessage} ${emoji}`
+)
+);
+};
+
+
+
 
   return (
     <div className={`chat-page--container ${!isSelectedUser ? "hide" : ""}`}>
@@ -623,8 +634,8 @@ export default function ChatPageUser() {
         ></div>
         <div className="message--container">
           <div className="container">
-            {/* see more button */}
-            {isLastDocExist && (
+            {/* see more messages */}
+            {isLastDocExist && messages.length > 20 && (
               <div className="d-f">
                 <button
                   className="seeMore f-ar dr-ar"
@@ -655,46 +666,57 @@ export default function ChatPageUser() {
       </div>
       {/* footer */}
       <footer>
-        <div className="icons">
-          <div className="icon">
-            <SmileFace />
+        {isEmojiPickerShow && (
+          <div className="emoji-picker">
+            <EmojiPicker onEmojiClick={handelInput} autoFocusSearch={false} />
           </div>
-          <label htmlFor="file-input" className={`icon d-f`}>
-            <BsImageFill />
-          </label>
-          <input
-            onChange={handelFile}
-            id="file-input"
-            type="file"
-            name="file"
-            style={{ display: "none" }}
-          />
-        </div>
-        <form onSubmit={handelSendMessage}>
-          <div className="input">
+        )}
+        <div className="forme d-f">
+          <div className="icons">
+            <div
+              className="icon d-f"
+              onClick={() => setIsEmojiPickerShow((prev) => !prev)}
+            >
+              <SmileFace />
+            </div>
+            <label htmlFor="file-input" className={`icon d-f`}>
+              <BsImageFill />
+            </label>
             <input
-              type="text"
-              placeholder="اكتب رسالة"
-              onChange={handelMessage}
-              onKeyDown={(e) => {
-                e.key === "Enter" && handelSendMessage();
-              }}
-              value={message}
-              className={isArabic ? "f-ar" : "f-en dr-en"}
+              onChange={handelFile}
+              id="file-input"
+              type="file"
+              name="file"
+              style={{ display: "none" }}
             />
           </div>
-          {message.length > 0 ? (
-            <div className="icon">
-              <button style={{ all: "unset" }}>
-                <Send />
-              </button>
+          <form onSubmit={handelSendMessage}>
+            <div className="input">
+              <input
+                type="text"
+                placeholder="اكتب رسالة"
+                onChange={handelMessage}
+                onKeyDown={(e) => {
+                  e.key === "Enter" && handelSendMessage();
+                }}
+                value={message}
+                className={isArabic ? "f-ar" : "f-en dr-en"}
+              />
+            
             </div>
-          ) : (
-            <div className="icon">
-              <Voice />
-            </div>
-          )}
-        </form>
+            {message.length > 0 ? (
+              <div className="icon">
+                <button style={{ all: "unset" }}>
+                  <Send />
+                </button>
+              </div>
+            ) : (
+              <div className="icon">
+                <Voice />
+              </div>
+            )}
+          </form>
+        </div>
       </footer>
     </div>
   );
