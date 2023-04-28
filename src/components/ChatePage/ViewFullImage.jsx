@@ -1,17 +1,18 @@
 import { MdClose } from "react-icons/md";
+import Swiper from "../Swiper";
 import "./styles/ViewFullImage.css";
 
-export default function ViewFullImage({ file, setIsImageSelected }) {
+
+export default function ViewFullImage({ file, setIsImageSelected , images}) {
   // handel Back
   const handelBack = () => {
     setIsImageSelected(false);
   };
 
-//   is content Arabic
-    const isArabic = /[\u0600-\u06FF]/.test(file.content);
+  // sort the images by the 
 
-
-
+  //   is content Arabic
+  const isArabic = /[\u0600-\u06FF]/.test(file.content);
 
   return (
     <div className="viewFullPage">
@@ -21,9 +22,8 @@ export default function ViewFullImage({ file, setIsImageSelected }) {
         </div>
       </div>
       <div className="image d-f">
-        <img src={file.img} alt="" />
+      <Swiper images={images} selectedImage={file.img}/>
       </div>
-      {file.content && <p className={`content ${isArabic ? 'f-ar dr-ar' : 'f-en dr-en'}`}>{file.content}</p>}
     </div>
   );
 }

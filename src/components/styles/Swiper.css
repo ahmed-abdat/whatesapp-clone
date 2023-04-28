@@ -1,0 +1,65 @@
+.swiper--container{
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    direction: initial;
+}
+
+.swiper--container .swiper--wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: all .3s cubic-bezier(.4,0,.2,1);
+    -webkit-transition: all .3s cubic-bezier(.4,0,.2,1);
+    -moz-transition: all .3s cubic-bezier(.4,0,.2,1);
+    -ms-transition: all .3s cubic-bezier(.4,0,.2,1);
+    -o-transition: all .3s cubic-bezier(.4,0,.2,1);
+}
+
+.swiper--container .swiper--next , .swiper--container .swiper--prev{
+    box-shadow: 0 1px 3px rgba(11,20,26,.4);
+    background-color: #111b2159;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: #fff;
+    position: absolute;
+}
+
+.swiper--container .arrow--container {
+    font-size: 1.8rem;
+    cursor: pointer;
+    position: absolute;
+    width: 15%;
+    height: 100%;
+    background: transparent;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+
+.swiper--container .arrow--container.next {
+    left: 0;
+}
+
+.swiper--container .arrow--container.prev {
+    right: 0;
+}
+
+
+
+.swiper--container .swiper--image {
+    min-width: 100%;
+    position: relative;
+}
+
+.swiper--container .swiper--content {
+    position: absolute;
+    bottom: -8rem;
+    left: 50%;
+    transform: translateX(-50%);
+}

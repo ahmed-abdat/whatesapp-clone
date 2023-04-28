@@ -107,6 +107,7 @@ export default function ChatPageUser() {
   const [lastDoc, setLastDoc] = useState(null);
   const [isLastDocUpdated, setIsLastDocUpdated] = useState(false);
   const [isLastDocExist, setIsLastDocExist] = useState(false);
+  const [images , setImages] = useState([])
 
   // lastMessage played
   const [lastPlayedMessage, setLastPlayedMessage] = useState(null);
@@ -305,7 +306,6 @@ export default function ChatPageUser() {
     }
   };
 
-
   // update the message in the local state
   const updateMessageLocaly = (message, uniqueChatId, file) => {
     const docRef = doc(db, "messages", uniqueChatId);
@@ -435,9 +435,8 @@ export default function ChatPageUser() {
       });
       const reversedMessages = messages.reverse();
       setMessages(reversedMessages);
-      setAllMessages(reversedMessages , false);
+      setAllMessages(reversedMessages, false);
       setIsMessagesLoaded(false);
-
     });
     return () => unsubscribe();
   }, []);
@@ -544,6 +543,29 @@ export default function ChatPageUser() {
     });
   };
 
+  // fetch all the images in the chat
+  useEffect(() => {
+    const selectedUserId = getSelectedUser().uid;
+    const currentUserId = getCurrentUser().uid;
+    const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
+    const messageRef = collection(db, "messages", uniqueChatId, "chat");
+    // get all the messages that have media
+    const q = query(messageRef, where('media', '!=', null));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const images = [];
+      querySnapshot.forEach((doc) => {
+        images.push({ ...doc.data(), id: doc.id });
+      });
+      const srcImages = images.map((image) => {
+        return { src: image.media, alt: image.content , time : image.createdAt.seconds };
+      });
+      // sort the images by time
+      srcImages.sort((a, b) => a.time - b.time);
+      setImages(srcImages);
+    });
+    return () => unsubscribe();
+  }, []);
+
   return (
     <div className={`chat-page--container ${!isSelectedUser ? "hide" : ""}`}>
       {file && (
@@ -563,6 +585,7 @@ export default function ChatPageUser() {
         <ViewFullImage
           file={imageAndContent}
           setIsImageSelected={setIsImageSelected}
+          images={images}
         />
       )}
       <header>
