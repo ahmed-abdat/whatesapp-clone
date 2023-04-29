@@ -258,6 +258,12 @@
   max-width: 100%;
   padding: 5px 16px;
   gap: 0.5rem 0;
+  height: 60px;
+  transition: all 0.5s ease;
+}
+
+.show-emoji {
+  height: 520px !important;
 }
 
 .chat-page--container .emoji-picker {
@@ -357,7 +363,6 @@ textarea::-webkit-scrollbar {
   }
 
   .chat-page--container footer {
-    gap: 0;
     padding: 5px;
   }
 

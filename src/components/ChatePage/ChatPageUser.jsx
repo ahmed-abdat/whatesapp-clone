@@ -454,7 +454,12 @@ export default function ChatPageUser() {
 
   // scroll to bottom when new message send
   useEffect(() => {
+    
     if (!isLastDocUpdated) {
+      scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+
+    if(isEmojiPickerShow) {
       scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }
 
@@ -469,7 +474,7 @@ export default function ChatPageUser() {
       sound.play();
       setLastPlayedMessage(lastMessages);
     }
-  }, [messages.length, lastPlayedMessage]);
+  }, [messages.length, lastPlayedMessage , isEmojiPickerShow ]);
 
   // handel selected image
   const selectedImage = (img, content) => {
@@ -565,7 +570,7 @@ export default function ChatPageUser() {
   }, []);
 
  // handel input and Emoji picker
-const handelInput = (emojiData, event) => {
+const handelEmojiPicker = (emojiData, event) => {
   const emoji = emojiData.emoji
 setMessage((prevMessage) => (
   `${prevMessage} ${emoji}`
@@ -578,7 +583,7 @@ const handelInputFocus = () => {
   setIsEmojiPickerShow(false);
 };
 
-// handel show Emoji picker
+// handel show Emoji picker component
 const handelShowEmojiPicker = () => {
   setIsEmojiPickerShow((prev) => !prev);
   if(isEmojiPickerShow) {
@@ -682,10 +687,10 @@ const handelShowEmojiPicker = () => {
         </div>
       </div>
       {/* footer */}
-      <footer>
+      <footer className={`${isEmojiPickerShow ? 'show-emoji' : ''}`}>
         {isEmojiPickerShow && (
           <div className="emoji-picker">
-            <EmojiPicker onEmojiClick={handelInput} autoFocusSearch={false} />
+            <EmojiPicker onEmojiClick={handelEmojiPicker} autoFocusSearch={false} />
           </div>
         )}
         <div className="forme d-f">
