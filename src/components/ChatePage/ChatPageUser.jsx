@@ -201,7 +201,6 @@ export default function ChatPageUser() {
 
   const findEmoji = (emojis, message) => {
     emojis.forEach((emoji) => {
-      console.log(emoji.emoji);
       // check if the message include emoji
       if (message.includes(emoji.emoji)) {
         // replace the emoji with image
@@ -410,7 +409,6 @@ export default function ChatPageUser() {
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           const fullPath = uploadTask.snapshot.ref.fullPath;
-          console.log("File available at", downloadURL);
           helpUploadImage(downloadURL);
         });
       }
@@ -424,10 +422,6 @@ export default function ChatPageUser() {
     const currentUserId = getCurrentUser().uid;
     const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
     const newMessage =  findEmoji(emojys , message);
-
-
-  
-    
     if (
       file ||
       (file !== null && message.length > 0 && message.trim().length > 0)
@@ -506,9 +500,7 @@ export default function ChatPageUser() {
     } else if (img) {
       setImageAndContent({ img });
       setIsImageSelected(true);
-    } else {
-      console.log("no image selected");
-    }
+    } 
   };
 
   // handel file upload
