@@ -2,6 +2,7 @@ import moment from "moment";
 import React from "react";
 import useSelectedUser from "../../store/useSelectedUser";
 import { HiDotsVertical, HiSearch } from "react-icons/hi";
+import {FaKeyboard} from "react-icons/fa"
 import SmileFace from "../svg/SmileFace";
 import Send from "../svg/Send";
 import Voice from "../svg/Voice";
@@ -72,6 +73,7 @@ export default function ChatPageUser() {
   const lastSeenMoment = moment(lastSeen);
   const HourAndMinitFormat = lastSeenMoment.format("hh:mm");
   const dateFormat = lastSeenMoment.format("DD/MM/YYYY");
+  
 
   // function to check if the last seen is today or yesterday
   const currentDate = () => {
@@ -107,6 +109,7 @@ export default function ChatPageUser() {
 
   // message
   const [message, setMessage] = useState("");
+  const messageInputRef = useRef(null);
 
   // last doc
   const [lastDoc, setLastDoc] = useState(null);
@@ -563,16 +566,30 @@ export default function ChatPageUser() {
 
  // handel input and Emoji picker
 const handelInput = (emojiData, event) => {
-  const emojiUnified = emojiData.unified;
   const emoji = emojiData.emoji
-  // const emojiURL = `https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/${emojiUnified}.png`;
-// Split the message into words or characters
-
 setMessage((prevMessage) => (
   `${prevMessage} ${emoji}`
 )
 );
 };
+
+// handel input Message focus
+const handelInputFocus = () => {
+  setIsEmojiPickerShow(false);
+};
+
+// handel show Emoji picker
+const handelShowEmojiPicker = () => {
+  setIsEmojiPickerShow((prev) => !prev);
+  if(isEmojiPickerShow) {
+    messageInputRef.current.focus();
+  } else {
+    messageInputRef.current.blur();
+  }
+};
+
+
+ 
 
 
 
@@ -675,9 +692,11 @@ setMessage((prevMessage) => (
           <div className="icons">
             <div
               className="icon d-f"
-              onClick={() => setIsEmojiPickerShow((prev) => !prev)}
+              onClick={handelShowEmojiPicker}
             >
-              <SmileFace />
+              {
+                isEmojiPickerShow ? <FaKeyboard /> : <SmileFace />
+              }
             </div>
             <label htmlFor="file-input" className={`icon d-f`}>
               <BsImageFill />
@@ -695,6 +714,8 @@ setMessage((prevMessage) => (
               <input
                 type="text"
                 placeholder="اكتب رسالة"
+                ref={messageInputRef}
+                onFocus={handelInputFocus}
                 onChange={handelMessage}
                 onKeyDown={(e) => {
                   e.key === "Enter" && handelSendMessage();

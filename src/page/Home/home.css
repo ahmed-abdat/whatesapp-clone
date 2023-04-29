@@ -261,7 +261,6 @@
   white-space: nowrap;
   display: flex;
   align-items: center;
-  gap: 0 0.3rem;
 }
 .main--container .user-profile--container .user--profile--info .last-message p img {
   width: 25px;
