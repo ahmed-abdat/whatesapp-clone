@@ -17,7 +17,7 @@ import {
 import { db } from "../../config/firebase";
 import useUser from "../../store/useUser";
 import Check from "../svg/Check";
-import receiveMessageSound from '../../assets/sounds/receiveMessage.mp3'
+import receiveMessageSound from "../../assets/sounds/receiveMessage.mp3";
 import { BsImageFill } from "react-icons/bs";
 
 export default function HomePageUser({
@@ -208,8 +208,6 @@ export default function HomePageUser({
     }
   };
 
-    
-
   // get the  number of unread message from the selected user
   const getUnreadMessageNumber = async (uid) => {
     const curretnUserId = getCurrentUser().uid;
@@ -227,7 +225,7 @@ export default function HomePageUser({
     const querySnapshot = await getDocs(q);
     let unreadMessages = 0;
     querySnapshot.forEach((doc) => {
-      if(doc.exists()){
+      if (doc.exists()) {
         unreadMessages++;
       }
     });
@@ -235,7 +233,8 @@ export default function HomePageUser({
   };
 
   const isMessageNotRead =
-    lastMessage?.isRead === false && lastMessage?.from !== getCurrentUser()?.uid;
+    lastMessage?.isRead === false &&
+    lastMessage?.from !== getCurrentUser()?.uid;
   if (isMessageNotRead) {
     getUnreadMessageNumber(uid);
   }
@@ -243,16 +242,20 @@ export default function HomePageUser({
   const receiveMessageSoundPlay = () => {
     try {
       const sound = new Audio(receiveMessageSound);
-      if(!lastMessage?.isReceived && lastMessage?.from !== getCurrentUser()?.uid){
+      if (
+        !lastMessage?.isReceived &&
+        lastMessage?.from !== getCurrentUser()?.uid
+      ) {
         sound.play();
-        const q = query(collection(db, "users", getCurrentUser()?.uid, "lastMessage"));
+        const q = query(
+          collection(db, "users", getCurrentUser()?.uid, "lastMessage")
+        );
         getDocs(q).then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
-            // update the doc 
-            updateDoc(doc.ref , {
-              isReceived : true
-            })
-            .catch((e) => console.log(e.message))
+            // update the doc
+            updateDoc(doc.ref, {
+              isReceived: true,
+            }).catch((e) => console.log(e.message));
           });
         });
       }
@@ -272,48 +275,44 @@ export default function HomePageUser({
       document.removeEventListener("click", handleClick);
     };
   }, []);
-  
+
   useEffect(() => {
     if (isMessageNotRead && playSound && UnreadMessages > 0) {
       receiveMessageSoundPlay();
     }
-  }, [isMessageNotRead , UnreadMessages]);
+  }, [isMessageNotRead, UnreadMessages]);
 
   const findEmoji = (message) => {
     const words = message.split(/\s+/);
-
-    // Loop through words and find emoji and replace it with the emoji image component
+    // Loop through words and find URLs and replace them with the emoji image component
     const newWords = words.map((word) => {
-      const emojiReg =
-        /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|[\u200d\u2600-\u26ff]\ufe0f?|[\u270a-\u27bf]\ufe0f?)/gim;
-      const match = word.match(emojiReg);
-      if (match) {
-        const emojiURL = `https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/${match[0]
-          .codePointAt(0)
-          .toString(16)}.png`;
-        return <img src={emojiURL} alt={match[0]} className="emoji" />;
+      const urlReg =
+        /https:\/\/cdn\.jsdelivr\.net\/npm\/emoji-datasource-apple\/img\/apple\/64\/[^/]+\.png/;
+
+      const urlMatch = word.match(urlReg);
+
+      if (urlMatch) {
+        return <img src={urlMatch[0]} alt={urlMatch[0]} className="emoji" />;
       }
+
       return word;
     });
 
     return newWords;
   };
 
-  const emojiReg = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|[\u200d\u2600-\u26ff]\ufe0f?|[\u270a-\u27bf]\ufe0f?)/gim;
-  const hasEmoji = emojiReg.test(lastMessage.content);
-  let newContent = lastMessage.content;
-  if (hasEmoji) {
-    newContent = findEmoji(lastMessage.content);
-  }
-
-
- 
-
+  const newContent = findEmoji(lastMessage.content);
 
   return (
     <div className="user--profile" onClick={handelSelectedUser}>
       <div className="user--profile--img">
-        <img src={photoURL || defaultAvatar} alt="user profile" loading="lazy" width={'60'} height={'60'}/>
+        <img
+          src={photoURL || defaultAvatar}
+          alt="user profile"
+          loading="lazy"
+          width={"60"}
+          height={"60"}
+        />
       </div>
       <div className="user--profile--info">
         <div className="info">
@@ -333,38 +332,43 @@ export default function HomePageUser({
           )}
         </div>
         <div className="last-message">
-          {
-            lastMessage?.content && lastMessage?.media ? (
-              <>
-                <span><BsImageFill /></span> 
-                 <p
-                    className={`${contentClass()} ${
-                      isMessageNotRead ? "unread-message-content" : ""
-                    }`}
-                  >
-                    {lastMessage.content}
-                  </p>
-              </>
-              ) : lastMessage?.media ? (
-                <span className="d-f onlyMedia f-ar dr-ar"> <BsImageFill /> صورة</span>
-                ) : lastMessage?.content ? (
-                  <p
-                    className={`${contentClass()} ${
-                      isMessageNotRead ? "unread-message-content" : ""
-                    }`}
-                  >
-                   {
-                      hasEmoji ? newContent.map((content, index) => (
-                        <React.Fragment key={index}>{content} </React.Fragment>
-                      )) : lastMessage.content
-                   }
-                  </p>
-                ) : (
-                  <p className={`${useStatusClass()}`}> {getCurrentUser()?.userStatus} </p>
-                )
-
-          }
-          {(isMessageNotRead && UnreadMessages > 0) && <div className="unread">{UnreadMessages}</div>}
+          {lastMessage?.content && lastMessage?.media ? (
+            <>
+              <span>
+                <BsImageFill />
+              </span>
+              <p
+                className={`${contentClass()} ${
+                  isMessageNotRead ? "unread-message-content" : ""
+                }`}
+              >
+                {lastMessage.content}
+              </p>
+            </>
+          ) : lastMessage?.media ? (
+            <span className="d-f onlyMedia f-ar dr-ar">
+              {" "}
+              <BsImageFill /> صورة
+            </span>
+          ) : lastMessage?.content ? (
+            <p
+              className={`${contentClass()} ${
+                isMessageNotRead ? "unread-message-content" : ""
+              }`}
+            >
+              {newContent.map((content, index) => (
+                <React.Fragment key={index}>{content} </React.Fragment>
+              ))}
+            </p>
+          ) : (
+            <p className={`${useStatusClass()}`}>
+              {" "}
+              {getCurrentUser()?.userStatus}{" "}
+            </p>
+          )}
+          {isMessageNotRead && UnreadMessages > 0 && (
+            <div className="unread">{UnreadMessages}</div>
+          )}
           {getCurrentUser()?.uid
             ? lastMessage?.from === getCurrentUser()?.uid && (
                 <div

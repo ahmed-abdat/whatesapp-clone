@@ -2,7 +2,7 @@ import moment from "moment";
 import React from "react";
 import useSelectedUser from "../../store/useSelectedUser";
 import { HiDotsVertical, HiSearch } from "react-icons/hi";
-import {FaKeyboard} from "react-icons/fa"
+import { FaKeyboard } from "react-icons/fa";
 import SmileFace from "../svg/SmileFace";
 import Send from "../svg/Send";
 import Voice from "../svg/Voice";
@@ -40,7 +40,7 @@ import "../styles/chatPageUser.css";
 import { BsImageFill } from "react-icons/bs";
 import { lazy, Suspense } from "react";
 import useMessages from "../../store/useMessages";
-import EmojiPicker from "emoji-picker-react";
+import EmojiPicker, { Emoji } from "emoji-picker-react";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 // lazy loade
@@ -73,7 +73,6 @@ export default function ChatPageUser() {
   const lastSeenMoment = moment(lastSeen);
   const HourAndMinitFormat = lastSeenMoment.format("hh:mm");
   const dateFormat = lastSeenMoment.format("DD/MM/YYYY");
-  
 
   // function to check if the last seen is today or yesterday
   const currentDate = () => {
@@ -109,6 +108,8 @@ export default function ChatPageUser() {
 
   // message
   const [message, setMessage] = useState("");
+  const [emojys, setEmojys] = useState([]);
+  // const [messageWithEmoji, setMessageWithEmoji] = useState("");
   const messageInputRef = useRef(null);
 
   // last doc
@@ -196,6 +197,22 @@ export default function ChatPageUser() {
     let timestamp = new Date().getTime().toString(16); // Convert the current time to a hexadecimal string
     let random = Math.random().toString(16).slice(2); // Generate a random number and convert it to a hexadecimal string
     return timestamp + random;
+  };
+
+  const findEmoji = (emojis, message) => {
+    emojis.forEach((emoji) => {
+      console.log(emoji.emoji);
+      // check if the message include emoji
+      if (message.includes(emoji.emoji)) {
+        // replace the emoji with image
+        const emojiUrl = `https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/${emoji.emojiUnified}.png `
+        message = message.replace(
+          emoji.emoji,
+          emojiUrl
+        );
+      }
+    });
+    return message;
   };
 
   // make a query to get all unread message from the selected user
@@ -339,6 +356,7 @@ export default function ChatPageUser() {
     setMessages((prev) => [...prev, messageData]);
     setAllMessages(messageData);
     setMessage("");
+    setEmojys([]);
     setIsArabic(true);
     // scroll to the last message
     setTimeout(() => {
@@ -405,28 +423,37 @@ export default function ChatPageUser() {
     const selectedUserId = getSelectedUser().uid;
     const currentUserId = getCurrentUser().uid;
     const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
+    const newMessage =  findEmoji(emojys , message);
+
+
+  
+    
     if (
       file ||
       (file !== null && message.length > 0 && message.trim().length > 0)
     ) {
       uploadTheImageFile(file);
-      updateMessageLocaly(message, uniqueChatId, file);
+      updateMessageLocaly(newMessage, uniqueChatId, file);
       setFile(null);
       return;
     }
     if (message.length > 0 && message.trim().length > 0) {
       addMessageTODataBase(
-        message,
+        newMessage,
         uniqueChatId,
         selectedUserId,
         currentUserId
       );
-      updateMessageLocaly(message, uniqueChatId);
+      updateMessageLocaly(newMessage, uniqueChatId);
     }
   };
 
   // get last 10 messages
   useEffect(() => {
+    setMessage("");
+    setEmojys([]);
+    setIsEmojiPickerShow(false);
+    setIsArabic(true);
     const selectedUserId = getSelectedUser().uid;
     const currentUserId = getCurrentUser().uid;
     const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
@@ -454,12 +481,7 @@ export default function ChatPageUser() {
 
   // scroll to bottom when new message send
   useEffect(() => {
-    
     if (!isLastDocUpdated) {
-      scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-
-    if(isEmojiPickerShow) {
       scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }
 
@@ -474,7 +496,7 @@ export default function ChatPageUser() {
       sound.play();
       setLastPlayedMessage(lastMessages);
     }
-  }, [messages.length, lastPlayedMessage , isEmojiPickerShow ]);
+  }, [messages.length, lastPlayedMessage]);
 
   // handel selected image
   const selectedImage = (img, content) => {
@@ -569,35 +591,33 @@ export default function ChatPageUser() {
     return () => unsubscribe();
   }, []);
 
- // handel input and Emoji picker
-const handelEmojiPicker = (emojiData, event) => {
-  const emoji = emojiData.emoji
-setMessage((prevMessage) => (
-  `${prevMessage} ${emoji}`
-)
-);
-};
+  // handel input and Emoji picker
+  const handelEmojiPicker = (emojiData, event) => {
+    const emoji = emojiData.emoji;
+    const emojiUnified = emojiData.unified ;
 
-// handel input Message focus
-const handelInputFocus = () => {
-  setIsEmojiPickerShow(false);
-};
-
-// handel show Emoji picker component
-const handelShowEmojiPicker = () => {
-  setIsEmojiPickerShow((prev) => !prev);
-  if(isEmojiPickerShow) {
-    messageInputRef.current.focus();
-  } else {
-    messageInputRef.current.blur();
-  }
-};
-
-
- 
+    setEmojys((prevEmojys) => [...prevEmojys, { emoji, emojiUnified }]);
+    setMessage((prevMessage) => {
+      return `${prevMessage} ${emoji}`
+    });
+  };
 
 
 
+  // handel input Message focus
+  const handelInputFocus = () => {
+    setIsEmojiPickerShow(false);
+  };
+
+  // handel show Emoji picker component
+  const handelShowEmojiPicker = () => {
+    setIsEmojiPickerShow((prev) => !prev);
+    if (isEmojiPickerShow) {
+      messageInputRef.current.focus();
+    } else {
+      messageInputRef.current.blur();
+    }
+  };
 
   return (
     <div className={`chat-page--container ${!isSelectedUser ? "hide" : ""}`}>
@@ -687,21 +707,61 @@ const handelShowEmojiPicker = () => {
         </div>
       </div>
       {/* footer */}
-      <footer className={`${isEmojiPickerShow ? 'show-emoji' : ''}`}>
+      <footer className={`${isEmojiPickerShow ? "show-emoji" : ""}`}>
         {isEmojiPickerShow && (
           <div className="emoji-picker">
-            <EmojiPicker onEmojiClick={handelEmojiPicker} autoFocusSearch={false} />
+            <EmojiPicker
+              onEmojiClick={handelEmojiPicker}
+              autoFocusSearch={false}
+              lazyLoadEmojis={true}
+              theme="auto"
+              categories={[
+                {
+                  category: 'suggested',
+                  name: 'المستخدمة مؤخراً'
+                },
+                {
+                  category: 'smileys_people',
+                  name: 'الوجوه والناس'
+                },
+               {
+                category : 'animals_nature',
+                name : 'الحيوانات والطبيعة'
+                },
+                {
+                  category : 'food_drink',
+                  name : 'الطعام والشراب'
+                },
+                {
+                  category : 'travel_places',
+                  name : 'السفر والأماكن'
+                },
+                {
+                  category : 'activities',
+                  name : 'الأنشطة'
+                },
+                {
+                  category : 'objects',
+                  name : 'الأشياء'
+                },
+                {
+                  category : 'symbols',
+                  name : 'الرموز'
+                },
+                {
+                  category : 'flags',
+                  name : 'الأعلام'
+                },
+
+              ]}
+              searchDisabled={true}
+            />
           </div>
         )}
         <div className="forme d-f">
           <div className="icons">
-            <div
-              className="icon d-f"
-              onClick={handelShowEmojiPicker}
-            >
-              {
-                isEmojiPickerShow ? <FaKeyboard /> : <SmileFace />
-              }
+            <div className="icon d-f" onClick={handelShowEmojiPicker}>
+              {isEmojiPickerShow ? <FaKeyboard /> : <SmileFace />}
             </div>
             <label htmlFor="file-input" className={`icon d-f`}>
               <BsImageFill />
@@ -728,7 +788,6 @@ const handelShowEmojiPicker = () => {
                 value={message}
                 className={isArabic ? "f-ar" : "f-en dr-en"}
               />
-            
             </div>
             {message.length > 0 ? (
               <div className="icon">

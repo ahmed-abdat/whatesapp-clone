@@ -94,7 +94,8 @@
   padding: 0.5rem 0.8rem;
   font-size: 0.8rem;
   margin-bottom: 0.5rem;
-  font-family: "Tajawal" , "Vazirmatn" , 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Tajawal", "Vazirmatn", "Segoe UI", Tahoma, Geneva, Verdana,
+    sans-serif;
   font-weight: 500;
   border-radius: 1rem;
   -webkit-border-radius: 1rem;
@@ -147,15 +148,15 @@
   border-top-right-radius: 7.5px;
   border-top-left-radius: 7.5px;
   margin-bottom: 0.2rem;
-    height: 322.667px;
-  }
-  
-  .chat-page--container .chat-content .message--container .message .img img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    display: block;
-    cursor: pointer;
+  height: 322.667px;
+}
+
+.chat-page--container .chat-content .message--container .message .img img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+  cursor: pointer;
 }
 
 .onlyImage {
@@ -217,13 +218,12 @@
 
 .chat-page--container .chat-content .content p img {
   width: 20px;
-    height: 20px;
-    image-rendering: -webkit-optimize-contrast;
-    display: inline-block;
-    vertical-align: top;
-    zoom: 1;
+  height: 20px;
+  image-rendering: -webkit-optimize-contrast;
+  display: inline-block;
+  vertical-align: top;
+  zoom: 1;
 }
-
 
 .chat-page--container .chat-content .time {
   display: flex;
@@ -271,6 +271,22 @@
   order: 1;
 }
 
+.chat-page--container
+  footer
+  .EmojiPickerReact
+  li.epr-emoji-category
+  > .epr-emoji-category-label,
+.chat-page--container
+  footer
+  .EmojiPickerReact
+  .epr-search-container
+  input.epr-search {
+  direction: rtl;
+  font-family: "Vazirmatn" , 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 0.9rem;
+}
+
+
 .chat-page--container .emoji-picker aside.EmojiPickerReact.epr-main {
   width: 100% !important;
   direction: initial;
@@ -294,7 +310,6 @@
   align-items: center;
   width: 100%;
 }
-
 
 .chat-page--container footer .input input {
   max-height: 10.35em;

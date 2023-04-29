@@ -35,21 +35,19 @@ export default function Message({
   });
 
   // find the emoji in the message and replace it with the emoji image
-
   const findEmoji = (message) => {
     const words = message.split(/\s+/);
-
-    // Loop through words and find emoji and replace it with the emoji image component
+    // Loop through words and find URLs and replace them with the emoji image component
     const newWords = words.map((word) => {
-      const emojiReg =
-        /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|[\u200d\u2600-\u26ff]\ufe0f?|[\u270a-\u27bf]\ufe0f?)/gim;
-      const match = word.match(emojiReg);
-      if (match) {
-        const emojiURL = `https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/${match[0]
-          .codePointAt(0)
-          .toString(16)}.png`;
-        return <img src={emojiURL} alt={match[0]} className="emoji" />;
+      const urlReg =
+        /https:\/\/cdn\.jsdelivr\.net\/npm\/emoji-datasource-apple\/img\/apple\/64\/[^/]+\.png/;
+
+      const urlMatch = word.match(urlReg);
+
+      if (urlMatch) {
+        return <img src={urlMatch[0]} alt={urlMatch[0]} className="emoji" />;
       }
+
       return word;
     });
 
@@ -57,14 +55,7 @@ export default function Message({
   };
 
   // log the findEmoji function only if the content has emoji
-  const emojiReg = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|[\u200d\u2600-\u26ff]\ufe0f?|[\u270a-\u27bf]\ufe0f?)/gim;
-  const hasEmoji = emojiReg.test(content);
-  let newContent = content;
-  if (hasEmoji) {
-    newContent = findEmoji(content);
-  }
-
-
+  const newContent = findEmoji(content);
 
   const createdAtTime = createdAt?.seconds
     ? createdAt?.seconds * 1000
@@ -81,7 +72,6 @@ export default function Message({
   const getCurrentUser = useUser((state) => state.getCurrentUser);
 
   const isCurrentUserSender = isSender === getCurrentUser().uid;
-
 
   return (
     <div className={`message ${isCurrentUserSender ? "sender" : "receiver"}`}>
@@ -114,11 +104,11 @@ export default function Message({
         {isCurrentUserSender ? <MessageSender /> : <MessageReceiver />}
       </div>
       <div className="content">
-        <p className={`${isArabic ? "f-ar dr-ar" : "f-en dr-en"}`}>{
-          hasEmoji ? newContent.map((content, index) => (
+        <p className={`${isArabic ? "f-ar dr-ar" : "f-en dr-en"}`}>
+          {newContent.map((content, index) => (
             <React.Fragment key={index}>{content} </React.Fragment>
-          )) : content
-        }</p>
+          ))}
+        </p>
       </div>
       <div className={`time ${media && !content ? "onlyImage" : ""}`}>
         <p>{`${HourAndMinitFormat} ${AmPm}`}</p>
