@@ -677,7 +677,7 @@ export default function ChatPageUser() {
         <div className="message--container">
           <div className="container">
             {/* see more messages */}
-            {isLastDocExist && messages.length > 20 && (
+            {isLastDocExist && messages.length > 10 && (
               <div className="d-f">
                 <button
                   className="seeMore f-ar dr-ar"
