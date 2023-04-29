@@ -283,6 +283,7 @@ export default function HomePageUser({
   }, [isMessageNotRead, UnreadMessages]);
 
   const findEmoji = (message) => {
+    if(!message) return;
     const words = message.split(/\s+/);
     // Loop through words and find URLs and replace them with the emoji image component
     const newWords = words.map((word) => {
