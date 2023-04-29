@@ -262,6 +262,12 @@
   display: flex;
   align-items: center;
 }
+
+.main--container .user-profile--container .user--profile--info .last-message span {
+  display: flex;
+    align-items: center;
+    gap: 0 0.5rem;
+}
 .main--container .user-profile--container .user--profile--info .last-message p img {
   width: 25px;
     height: 25px;

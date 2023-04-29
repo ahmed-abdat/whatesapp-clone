@@ -336,18 +336,19 @@ export default function HomePageUser({
             <>
               <span>
                 <BsImageFill />
-              </span>
               <p
                 className={`${contentClass()} ${
                   isMessageNotRead ? "unread-message-content" : ""
                 }`}
-              >
-                {lastMessage.content}
+                >
+              {newContent.map((content, index) => (
+                <React.Fragment key={index}>{content} </React.Fragment>
+              ))}
               </p>
+                </span>
             </>
           ) : lastMessage?.media ? (
             <span className="d-f onlyMedia f-ar dr-ar">
-              {" "}
               <BsImageFill /> صورة
             </span>
           ) : lastMessage?.content ? (
@@ -362,7 +363,6 @@ export default function HomePageUser({
             </p>
           ) : (
             <p className={`${useStatusClass()}`}>
-              {" "}
               {getCurrentUser()?.userStatus}{" "}
             </p>
           )}

@@ -373,12 +373,12 @@ export default function ChatPageUser() {
   };
 
   // help upload image to database
-  const helpUploadImage = (path) => {
+  const helpUploadImage = (path , newMessage) => {
     const currentUserId = getCurrentUser().uid;
     const selectedUserId = getSelectedUser().uid;
     const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
     addMessageTODataBase(
-      message,
+      newMessage,
       uniqueChatId,
       selectedUserId,
       currentUserId,
@@ -387,7 +387,7 @@ export default function ChatPageUser() {
   };
 
   // update the photo img in firebase
-  const uploadTheImageFile = (file) => {
+  const uploadTheImageFile = (file , newMessage) => {
     // unique image name
     const imageName = new Date().getTime() + file.name;
     const storageRef = ref(
@@ -409,7 +409,7 @@ export default function ChatPageUser() {
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           const fullPath = uploadTask.snapshot.ref.fullPath;
-          helpUploadImage(downloadURL);
+          helpUploadImage(downloadURL , newMessage);
         });
       }
     );
@@ -426,7 +426,7 @@ export default function ChatPageUser() {
       file ||
       (file !== null && message.length > 0 && message.trim().length > 0)
     ) {
-      uploadTheImageFile(file);
+      uploadTheImageFile(file , newMessage);
       updateMessageLocaly(newMessage, uniqueChatId, file);
       setFile(null);
       return;
@@ -513,6 +513,7 @@ export default function ChatPageUser() {
     }
 
     setFile(file);
+    setIsEmojiPickerShow(false);
   };
 
   // handel fetch more messages
@@ -573,7 +574,7 @@ export default function ChatPageUser() {
         return {
           src: image.media,
           alt: image.content,
-          time: image.createdAt.seconds,
+          time: image.createdAt?.seconds ? image.createdAt.seconds  : image.createdAt,
         };
       });
       // sort the images by time
@@ -622,6 +623,53 @@ export default function ChatPageUser() {
             handelMessage={handelMessage}
             isArabic={isArabic}
             handelSendMessage={handelSendMessage}
+            message={message}
+            EmojyPiker={ <EmojiPicker
+              onEmojiClick={handelEmojiPicker}
+              autoFocusSearch={false}
+              lazyLoadEmojis={true}
+              theme="auto"
+              categories={[
+                {
+                  category: 'suggested',
+                  name: 'المستخدمة مؤخراً'
+                },
+                {
+                  category: 'smileys_people',
+                  name: 'الوجوه والناس'
+                },
+               {
+                category : 'animals_nature',
+                name : 'الحيوانات والطبيعة'
+                },
+                {
+                  category : 'food_drink',
+                  name : 'الطعام والشراب'
+                },
+                {
+                  category : 'travel_places',
+                  name : 'السفر والأماكن'
+                },
+                {
+                  category : 'activities',
+                  name : 'الأنشطة'
+                },
+                {
+                  category : 'objects',
+                  name : 'الأشياء'
+                },
+                {
+                  category : 'symbols',
+                  name : 'الرموز'
+                },
+                {
+                  category : 'flags',
+                  name : 'الأعلام'
+                },
+
+              ]}
+              searchDisabled={true}
+            />}
           />
         </Suspense>
       )}

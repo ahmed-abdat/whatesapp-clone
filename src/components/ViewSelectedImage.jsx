@@ -1,14 +1,33 @@
 import { MdClose } from "react-icons/md";
-import { BiImageAdd } from "react-icons/bi";
 import Send from "./svg/Send";
 import "./styles/ViewSelectedImage.css";
+import { useRef, useState } from "react";
+import { FaKeyboard } from "react-icons/fa";
+import SmileFace from "./svg/SmileFace";
 
+export default function ViewSelectedImage({
+  file,
+  setFile,
+  displayName,
+  handelMessage,
+  isArabic,
+  handelSendMessage,
+  message,
+  EmojyPiker,
+}) {
 
-export default function ViewSelectedImage({ file, setFile, displayName , handelMessage , isArabic , handelSendMessage}) {
-
-
- 
-
+  const [isEmojiPikerShow, setIsEmojiPickerShow] = useState(false);
+  const messageInputRef = useRef(null);
+  
+  // handel show Emoji picker component
+  const handelShowEmojiPicker = () => {
+    setIsEmojiPickerShow((prev) => !prev);
+    if (isEmojiPikerShow) {
+      messageInputRef.current.focus();
+    } else {
+      messageInputRef.current.blur();
+    }
+  };
   return (
     <div className="viewImage--container">
       <header>
@@ -16,22 +35,28 @@ export default function ViewSelectedImage({ file, setFile, displayName , handelM
           <MdClose />
         </div>
       </header>
-      <main className="d-f">
+      <main >
         <div className="img d-f">
           <img src={URL.createObjectURL(file)} alt="image" />
         </div>
       </main>
-      <footer>
+      
+      <footer className={`footer ${isEmojiPikerShow ? "show-emoji" : ""}`}>
         <form onSubmit={handelSendMessage}>
           <div className="input">
-            <BiImageAdd />
+          <div className="icon d-f" onClick={handelShowEmojiPicker}>
+          {isEmojiPikerShow ? <FaKeyboard /> : <SmileFace />}
+          </div>
             <input
               type="text"
               placeholder="إضافة شرح..."
+              onFocus={() => setIsEmojiPickerShow(false)}
+              ref={messageInputRef}
               onChange={handelMessage}
               onKeyDown={(e) => {
                 e.key === "Enter" && console.log("send message");
               }}
+              value={message}
               className={isArabic ? "f-ar" : "f-en dr-en"}
             />
           </div>
@@ -42,6 +67,11 @@ export default function ViewSelectedImage({ file, setFile, displayName , handelM
             </button>
           </div>
         </form>
+        {
+        isEmojiPikerShow && (
+          EmojyPiker
+        )
+      }
       </footer>
     </div>
   );
