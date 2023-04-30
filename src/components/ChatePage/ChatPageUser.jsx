@@ -199,7 +199,7 @@ export default function ChatPageUser() {
     return timestamp + random;
   };
 
-  const findEmoji = (emojis, message) => {
+  const updateEmojiURL = (emojis, message) => {
     emojis.forEach((emoji) => {
       // check if the message include emoji
       if (message.includes(emoji.emoji)) {
@@ -421,7 +421,7 @@ export default function ChatPageUser() {
     const selectedUserId = getSelectedUser().uid;
     const currentUserId = getCurrentUser().uid;
     const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
-    const newMessage =  findEmoji(emojys , message);
+    const newMessage =  updateEmojiURL(emojys , message);
     if (
       file ||
       (file !== null && message.length > 0 && message.trim().length > 0)
@@ -559,6 +559,7 @@ export default function ChatPageUser() {
 
   // fetch all the images in the chat
   useEffect(() => {
+    setIsImageSelected(false)
     const selectedUserId = getSelectedUser().uid;
     const currentUserId = getCurrentUser().uid;
     const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);

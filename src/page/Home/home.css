@@ -267,14 +267,19 @@
   display: flex;
     align-items: center;
     gap: 0 0.5rem;
+    overflow: hidden;
+}
+.main--container .user-profile--container .user--profile--info .last-message span svg {
+  font-size: 1rem;
 }
 .main--container .user-profile--container .user--profile--info .last-message p img {
-  width: 25px;
-    height: 25px;
-    image-rendering: -webkit-optimize-contrast;
-    display: inline-block;
-    vertical-align: top;
-    zoom: 1;
+  width: 20px;
+  height: 20px;
+  image-rendering: -webkit-optimize-contrast;
+  display: inline-block;
+  vertical-align: top;
+  zoom: 1;
+  padding: 0.1rem;
 }
 
 .main--container .user--profile--info .last-message {
@@ -286,6 +291,7 @@
   gap: 0 0.5rem;
   justify-content: space-between;
 }
+
 
 
 

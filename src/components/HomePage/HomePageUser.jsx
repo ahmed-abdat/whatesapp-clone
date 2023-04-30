@@ -48,16 +48,19 @@ export default function HomePageUser({
     },
   });
 
-  const lastSeanMessage = moment(lastMessage?.createdAt?.seconds * 1000);
+  const lastSean = lastMessage.createdAt?.seconds ? lastMessage.createdAt.seconds * 1000 : lastMessage.createdAt
+  
+  const lastSeanMessage = moment(lastSean);
   const HourAndMinitFormat = lastSeanMessage.format("hh:mm");
-
+  
   const [timeAgo, setTimeAgo] = useState(HourAndMinitFormat);
   const [UnreadMessages, setUnreadMessages] = useState(0);
   const [playSound, setPlaySound] = useState(false);
-
+  
   // track the time ago
   useEffect(() => {
-    const lastSeanMessage = moment(lastMessage?.createdAt?.seconds * 1000);
+    const lastSean = lastMessage.createdAt?.seconds ? lastMessage.createdAt.seconds * 1000 : lastMessage.createdAt
+    const lastSeanMessage = moment(lastSean);
     const HourAndMinitFormate = lastSeanMessage.format("hh:mm");
     const interval = setInterval(() => {
       if (HourAndMinitFormate !== timeAgo) {
@@ -283,23 +286,23 @@ export default function HomePageUser({
   }, [isMessageNotRead, UnreadMessages]);
 
   const findEmoji = (message) => {
-    if(!message) return;
     const words = message.split(/\s+/);
-    // Loop through words and find URLs and replace them with the emoji image component
-    const newWords = words.map((word) => {
-      const urlReg =
-        /https:\/\/cdn\.jsdelivr\.net\/npm\/emoji-datasource-apple\/img\/apple\/64\/[^/]+\.png/;
-
+    const urlReg = /https:\/\/cdn\.jsdelivr\.net\/npm\/emoji-datasource-apple\/img\/apple\/64\/[^/]+\.png/gim;
+    const newArray = [];
+    
+    for (const word of words) {
       const urlMatch = word.match(urlReg);
-
+  
       if (urlMatch) {
-        return <img src={urlMatch[0]} alt={urlMatch[0]} className="emoji" />;
+        newArray.push(<img src={urlMatch[0]} alt={urlMatch[0]} className="emoji" />);
+      } else if (newArray.length > 0 && typeof newArray[newArray.length - 1] === 'string') {
+        newArray[newArray.length - 1] += ' ' + word;
+      } else {
+        newArray.push(word);
       }
-
-      return word;
-    });
-
-    return newWords;
+    }
+    
+    return newArray
   };
 
   const newContent = findEmoji(lastMessage.content);

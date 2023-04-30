@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
-import "./styles/Swiper.css";
+import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import "./styles/Swiper.css";
 
 export default function Swiper({ images, selectedImage }) {
   const selectedImageIndex = images.findIndex(
@@ -44,6 +45,29 @@ export default function Swiper({ images, selectedImage }) {
     return /[\u0600-\u06FF]/.test(content);
   }, []);
 
+    // find the emoji in the message and replace it with the emoji image
+    const findEmoji = (message) => {
+      const words = message.split(/\s+/);
+      const urlReg = /https:\/\/cdn\.jsdelivr\.net\/npm\/emoji-datasource-apple\/img\/apple\/64\/[^/]+\.png/gim;
+      const newArray = [];
+      
+      for (const word of words) {
+        const urlMatch = word.match(urlReg);
+    
+        if (urlMatch) {
+          newArray.push(<img src={urlMatch[0]} alt={urlMatch[0]} className="emoji" />);
+        } else if (newArray.length > 0 && typeof newArray[newArray.length - 1] === 'string') {
+          newArray[newArray.length - 1] += ' ' + word;
+        } else {
+          newArray.push(word);
+        }
+      }
+      
+      return newArray
+    };
+
+
+
 
 
 
@@ -82,9 +106,13 @@ export default function Swiper({ images, selectedImage }) {
             )}
             <div className="swipper--content">
               <p
-                className={`content ${isArabic ? "f-ar dr-ar" : "f-en dr-en"}`}
+                className={`content ${isArabic(image.alt) ? "f-ar dr-ar" : "f-en dr-en"}`}
               >
-                {image.alt}
+                {
+                  findEmoji(image.alt).map((content, index) => (
+                    <React.Fragment key={index}>{content} </React.Fragment>
+                  ))
+                }
               </p>
             </div>
           </div>

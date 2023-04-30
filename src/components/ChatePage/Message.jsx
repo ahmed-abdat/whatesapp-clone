@@ -37,22 +37,24 @@ export default function Message({
   // find the emoji in the message and replace it with the emoji image
   const findEmoji = (message) => {
     const words = message.split(/\s+/);
-    // Loop through words and find URLs and replace them with the emoji image component
-    const newWords = words.map((word) => {
-      const urlReg =
-        /https:\/\/cdn\.jsdelivr\.net\/npm\/emoji-datasource-apple\/img\/apple\/64\/[^/]+\.png/;
-
+    const urlReg = /https:\/\/cdn\.jsdelivr\.net\/npm\/emoji-datasource-apple\/img\/apple\/64\/[^/]+\.png/gim;
+    const newArray = [];
+    
+    for (const word of words) {
       const urlMatch = word.match(urlReg);
-
+  
       if (urlMatch) {
-        return <img src={urlMatch[0]} alt={urlMatch[0]} className="emoji" />;
+        newArray.push(<img src={urlMatch[0]} alt={urlMatch[0]} className="emoji" />);
+      } else if (newArray.length > 0 && typeof newArray[newArray.length - 1] === 'string') {
+        newArray[newArray.length - 1] += ' ' + word;
+      } else {
+        newArray.push(word);
       }
-
-      return word;
-    });
-
-    return newWords;
+    }
+    
+    return newArray
   };
+  
 
   // log the findEmoji function only if the content has emoji
   const newContent = findEmoji(content);
@@ -83,7 +85,7 @@ export default function Message({
               height={"322.667px"}
               src={URL.createObjectURL(media)}
               onClick={onclike}
-              width={"320px"}
+              width={"100%"}
               effect="blur"
             />
           </div>
@@ -94,7 +96,7 @@ export default function Message({
               alt="image"
               height={"322.667px"}
               src={media}
-              width={"320px"}
+              width={"100%"}
               effect="blur"
             />
           </div>
