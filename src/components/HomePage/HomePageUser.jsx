@@ -286,7 +286,7 @@ export default function HomePageUser({
   }, [isMessageNotRead, UnreadMessages]);
 
   const findEmoji = (message) => {
-    if(!message) return
+    if(!message || message.length === 0) return
     const words = message.split(/\s+/);
     const urlReg = /https:\/\/cdn\.jsdelivr\.net\/npm\/emoji-datasource-apple\/img\/apple\/64\/[^/]+\.png/gim;
     const newArray = [];

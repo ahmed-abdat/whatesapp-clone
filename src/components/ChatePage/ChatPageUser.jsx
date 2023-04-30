@@ -203,11 +203,9 @@ export default function ChatPageUser() {
     emojis.forEach((emoji) => {
       // check if the message include emoji
       if (message.includes(emoji.emoji)) {
-        // replace the emoji with image
-        const emojiUrl = `https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/${emoji.emojiUnified}.png `
         message = message.replace(
           emoji.emoji,
-          emojiUrl
+          emoji.emojiURL
         );
       }
     });
@@ -442,7 +440,7 @@ export default function ChatPageUser() {
     }
   };
 
-  // get last 10 messages
+  // get last 20 messages
   useEffect(() => {
     setMessage("");
     setEmojys([]);
@@ -454,6 +452,7 @@ export default function ChatPageUser() {
     setIsLastDocUpdated(false);
     // get the last 10 messages
     const messageRef = collection(db, "messages", uniqueChatId, "chat");
+    fetchImagesInChat(messageRef)
     const q = query(messageRef, orderBy("createdAt", "desc"), limit(20));
     setIsMessagesLoaded(true);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -471,7 +470,7 @@ export default function ChatPageUser() {
       setIsMessagesLoaded(false);
     });
     return () => unsubscribe();
-  }, [getSelectedUser()]);
+  }, [getSelectedUser().uid]);
 
   // scroll to bottom when new message send
   useEffect(() => {
@@ -558,39 +557,47 @@ export default function ChatPageUser() {
   };
 
   // fetch all the images in the chat
-  useEffect(() => {
-    setIsImageSelected(false)
-    const selectedUserId = getSelectedUser().uid;
-    const currentUserId = getCurrentUser().uid;
-    const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
-    const messageRef = collection(db, "messages", uniqueChatId, "chat");
-    // get all the messages that have media
+  const fetchImagesInChat = (messageRef) => {
     const q = query(messageRef, where("media", "!=", null));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const images = [];
-      querySnapshot.forEach((doc) => {
-        images.push({ ...doc.data(), id: doc.id });
-      });
-      const srcImages = images.map((image) => {
-        return {
-          src: image.media,
-          alt: image.content,
-          time: image.createdAt?.seconds ? image.createdAt.seconds  : image.createdAt,
-        };
-      });
-      // sort the images by time
-      srcImages.sort((a, b) => a.time - b.time);
-      setImages(srcImages);
-    });
-    return () => unsubscribe();
-  }, []);
+    getDocs(q).then(querySnapshot => {
+        const images = [];
+        querySnapshot.forEach((doc) => {
+          images.push({ ...doc.data(), id: doc.id });
+        });
+        const srcImages = images.map((image) => {
+          return {
+            src: image.media,
+            alt: image.content,
+            time: image.createdAt?.seconds ? image.createdAt.seconds  : image.createdAt,
+          };
+        });
+        // sort the images by time
+        srcImages.sort((a, b) => a.time - b.time);
+        setImages(srcImages);
+    })
+  }
+
+
+
+  // useEffect(() => {
+  //   setIsImageSelected(false)
+  //   const selectedUserId = getSelectedUser().uid;
+  //   const currentUserId = getCurrentUser().uid;
+  //   const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
+  //   const messageRef = collection(db, "messages", uniqueChatId, "chat");
+  //   // get all the messages that have media
+   
+  // }, [getSelectedUser().uid]);
+
+  
 
   // handel input and Emoji picker
-  const handelEmojiPicker = (emojiData, event) => {
+  const handelEmojiPicker = (emojiData) => {
     const emoji = emojiData.emoji;
     const emojiUnified = emojiData.unified ;
+    const emojiURL = emojiData.getImageUrl()
 
-    setEmojys((prevEmojys) => [...prevEmojys, { emoji, emojiUnified }]);
+    setEmojys((prevEmojys) => [...prevEmojys, { emoji, emojiUnified , emojiURL}]);
     setMessage((prevMessage) => {
       return `${prevMessage} ${emoji}`
     });

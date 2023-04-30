@@ -119,8 +119,15 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    background: #272a2e52;
     padding: 0.5rem 1.5rem;
+    transition: all 0.3s ease-in-out;
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+}
+.btns-bg {
+    background: #272a2e52;
 }
 
 .viewImage--container .footer form .btns button {
@@ -161,7 +168,7 @@
 
     .viewImage--container main .img {
         max-width: 100%;
-        max-height: 80%;
+        max-height: 62%;
         overflow: hidden;
     }
     .viewImage--container .footer .input  {
