@@ -5,7 +5,6 @@ import useUser from "../store/useUser";
 import { useEffect, useState } from "react";
 import {
   collection,
-  limit,
   query,
   where,
   onSnapshot,
@@ -23,9 +22,10 @@ import { lazy } from "react";
 import { Suspense } from "react";
 import SpinerLoader from "./SpinerLoader";
 import useUsers from "../store/useUsers";
-import { BsFillChatRightTextFill } from "react-icons/bs";
+import { HiChatBubbleBottomCenterText } from "react-icons/hi2";
 import ViewAllUsersHeader from "./HomePage/ViewAllUsersHeader";
 import useSelectedUser from "../store/useSelectedUser";
+import { useRef } from "react";
 
 // lazy loade
 const UserProfile = lazy(() => import("./UserProfile"));
@@ -35,12 +35,14 @@ export default function HomePage() {
   const [allUsers, setAllUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [freindsList, setFreindsList] = useState([]);
+  const [isBtnTextShow, setIsBtnTextShow] = useState(false);
 
-  // isAllUsersShow  
-    const isAllUsersShowe = useUsers(state => state.isAllUsersShow)
-    // set isAllUsersShow
-    const setIsAllUsersShowe = useUsers(state => state.setIsAllUsersShow)
+  const btnMessageRef = useRef(null);
 
+  // isAllUsersShow
+  const isAllUsersShowe = useUsers((state) => state.isAllUsersShow);
+  // set isAllUsersShow
+  const setIsAllUsersShowe = useUsers((state) => state.setIsAllUsersShow);
 
   // is profile show
   const isProfileShow = useUsers((state) => state.isProfileShow);
@@ -84,42 +86,45 @@ export default function HomePage() {
     });
   };
 
- // update how view the chat content
- const howIsView = (uid) => {
-  const currentUserId = getCurrentUser().uid;
-  const selectedUserId = uid;
-  const uniqueChatId =
-    currentUserId > selectedUserId
-      ? `${currentUserId + selectedUserId}`
-      : `${selectedUserId + currentUserId}`;
-  const chatRef = doc(db, "messages", uniqueChatId);
-  getDoc(chatRef).then((doc) => {
-    if (doc.exists() && doc.data().hasOwnProperty("sender")) {
-      const document = doc.data();
-      const isCurrentUserViewThisChat = document.sender === currentUserId;
-      if (isCurrentUserViewThisChat) return;
-      updateDoc(chatRef, {
-        receiver: currentUserId,
-      }).catch((error) => {
-        // The document probably doesn't exist.
-        console.error("Error updating document: ", error);
-      });
-    } else {
-      setDoc(chatRef, {
-        sender: currentUserId,
-      }).catch((error) => {
-        // The document probably doesn't exist.
-        console.error("Error updating document: ", error);
-      });
-    }
-  });
-};
+  // update how view the chat content
+  const howIsView = (uid) => {
+    const currentUserId = getCurrentUser().uid;
+    const selectedUserId = uid;
+    const uniqueChatId =
+      currentUserId > selectedUserId
+        ? `${currentUserId + selectedUserId}`
+        : `${selectedUserId + currentUserId}`;
+    const chatRef = doc(db, "messages", uniqueChatId);
+    getDoc(chatRef).then((doc) => {
+      if (doc.exists() && doc.data().hasOwnProperty("sender")) {
+        const document = doc.data();
+        const isCurrentUserViewThisChat = document.sender === currentUserId;
+        if (isCurrentUserViewThisChat) return;
+        updateDoc(chatRef, {
+          receiver: currentUserId,
+        }).catch((error) => {
+          // The document probably doesn't exist.
+          console.error("Error updating document: ", error);
+        });
+      } else {
+        setDoc(chatRef, {
+          sender: currentUserId,
+        }).catch((error) => {
+          // The document probably doesn't exist.
+          console.error("Error updating document: ", error);
+        });
+      }
+    });
+  };
 
   // function that handel update all the users with the last Message
   useEffect(() => {
     // delete the current user from the all the chat view
     deleteTheCurrentUserFromAllChat();
-    const q = query(collection(db, "users", currentUser.uid, "lastMessage") , orderBy('createdAt' , 'desc'));
+    const q = query(
+      collection(db, "users", currentUser.uid, "lastMessage"),
+      orderBy("createdAt", "desc")
+    );
     const querySnapshot = onSnapshot(q, (querySnapshot) => {
       const lastMessages = [];
       querySnapshot.forEach((doce) => {
@@ -134,7 +139,10 @@ export default function HomePage() {
   // get all user in firebase except the current user
   useEffect(() => {
     setIsLoading(true);
-    const qe = query(collection(db, "users", currentUser.uid, "lastMessage") , orderBy('createdAt' , 'desc'));
+    const qe = query(
+      collection(db, "users", currentUser.uid, "lastMessage"),
+      orderBy("createdAt", "desc")
+    );
     let lastMessages = [];
     getDocs(qe).then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
@@ -145,62 +153,64 @@ export default function HomePage() {
       setLastMessage(lastMessages);
     });
 
-      // Then, get the user data for each friend UID
-      const usersRef = collection(db, "users");
-      const usersQuery = query(usersRef, where("uid", '!=' , currentUser.uid));
-      const usersSnapshot = onSnapshot(usersQuery, (querySnapshot) => {
-        const users = [];
-        querySnapshot.forEach((doc) => {
-          if (doc.exists()) {
-            users.push({ ...doc.data(), id: doc.id });
-          }
-        });
-
-
-        const sortedUsers = lastMessages.map((message) => {
-          const findUser = users.find( user => user.uid === message.from || user.uid === message.to);
-          return {...findUser , lastMessage : message}
-        });
-        setAllUsers(users)
-
-        setFreindsList(sortedUsers);
-        setIsLoading(false);
-      
+    // Then, get the user data for each friend UID
+    const usersRef = collection(db, "users");
+    const usersQuery = query(usersRef, where("uid", "!=", currentUser.uid));
+    const usersSnapshot = onSnapshot(usersQuery, (querySnapshot) => {
+      const users = [];
+      querySnapshot.forEach((doc) => {
+        if (doc.exists()) {
+          users.push({ ...doc.data(), id: doc.id });
+        }
       });
-      return () => usersSnapshot();
+
+      const sortedUsers = lastMessages.map((message) => {
+        const findUser = users.find(
+          (user) => user.uid === message.from || user.uid === message.to
+        );
+        return { ...findUser, lastMessage: message };
+      });
+      setAllUsers(users);
+
+      setFreindsList(sortedUsers);
+      setIsLoading(false);
+    });
+    return () => usersSnapshot();
   }, []);
 
   // merge the lastMessage with the his user
   useEffect(() => {
     // console.log(filteredUsers);
     const usersFilter = lastMessage.map((message) => {
-      const findUser = allUsers.find( user => user.uid === message.from || user.uid === message.to);
-      return {...findUser , lastMessage : message}
+      const findUser = allUsers.find(
+        (user) => user.uid === message.from || user.uid === message.to
+      );
+      return { ...findUser, lastMessage: message };
     });
     setFreindsList(usersFilter);
   }, [lastMessage]);
 
-  const selectedUser = getSelectedUser()
+  const selectedUser = getSelectedUser();
 
   // add event listener to know if the use view the page or not
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
-        deleteTheCurrentUserFromAllChat()
-          // update isOnline to false
-          updateDoc(doc(db, "users", currentUser.uid), {
-            isOnline: false,
-            lastSeen : serverTimestamp()
-          }).catch((err) => console.log(err));
-      }else {
+        deleteTheCurrentUserFromAllChat();
+        // update isOnline to false
+        updateDoc(doc(db, "users", currentUser.uid), {
+          isOnline: false,
+          lastSeen: serverTimestamp(),
+        }).catch((err) => console.log(err));
+      } else {
         // update how is view the chat
-        if(selectedUser) {
-          howIsView(selectedUser.uid)
+        if (selectedUser) {
+          howIsView(selectedUser.uid);
         }
         // update isOnline to true
         updateDoc(doc(db, "users", currentUser.uid), {
           isOnline: true,
-          lastSeen : serverTimestamp()
+          lastSeen: serverTimestamp(),
         }).catch((err) => console.log(err));
       }
     };
@@ -210,23 +220,27 @@ export default function HomePage() {
     };
   }, []);
 
-
   // listen if the selcted user is changed
   useEffect(() => {
-    if(selectedUser) {
-      howIsView(selectedUser.uid)
+    if (selectedUser) {
+      howIsView(selectedUser.uid);
     }
-  }, [selectedUser])
+  }, [selectedUser]);
 
-
-
+  // after 3 second set the btn text show to true
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsBtnTextShow(true);
+      // scroll to the btn Message Ref
+      btnMessageRef.current.scrollIntoView({ behavior: "smooth" });
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="home-page">
       {isLogoutLoading ? (
-        <div className="loader--conatainer d-f">
-          <div className="loader"></div>
-        </div>
+        <SpinerLoader />
       ) : (
         <>
           {/* profile */}
@@ -236,52 +250,63 @@ export default function HomePage() {
             </Suspense>
           )}
           {/* home page header */}
-          {
-            isAllUsersShowe ?  (
-              <ViewAllUsersHeader setIsAllUsersShow={setIsAllUsersShowe} usersLength={allUsers.length}/>
-            ) : (
-              <HomePageHeader setIsAllUsersShow={setIsAllUsersShowe} />
-            )
-          }
+          {isAllUsersShowe ? (
+            <ViewAllUsersHeader
+              setIsAllUsersShow={setIsAllUsersShowe}
+              usersLength={allUsers.length}
+            />
+          ) : (
+            <HomePageHeader setIsAllUsersShow={setIsAllUsersShowe} />
+          )}
           {/* home page search */}
           <HomepageSearch />
           {/* home page user profile */}
-          
-          {
-            isAllUsersShowe ? (
-              <div className="user-profile--container">
-            {!isLoading ? (
-              allUsers.map((user) => {
-                return <HomePageUser key={user.id} {...user} />;
-              })
-            ) : (
-              <SpinerLoader />
-            )}
-          </div>
-            ): (
-             <>
-              <div className="button" onClick={() => setIsAllUsersShowe(true)}>
-                <button >
-                  <BsFillChatRightTextFill />
+
+          {isAllUsersShowe ? (
+            <div className="user-profile--container">
+              {!isLoading ? (
+                allUsers.map((user) => {
+                  return <HomePageUser key={user.id} {...user} />;
+                })
+              ) : (
+                <SpinerLoader />
+              )}
+            </div>
+          ) : (
+            <>
+              <div
+                className={`button ${
+                  isBtnTextShow && freindsList.length < 1 ? "with-text" : ""
+                }`}
+                ref={btnMessageRef}
+                onClick={() => setIsAllUsersShowe(true)}
+              >
+                <button
+                  className={`${
+                    isBtnTextShow && freindsList.length < 1 ? "with-text" : ""
+                  }`}
+                >
+                  <HiChatBubbleBottomCenterText />
+                  {isBtnTextShow && freindsList.length < 1 && "إرسال رسالة"}
                 </button>
               </div>
-              <div className="user-profile--container"> 
-              
-            {!isLoading ? (
-             freindsList.length > 0 ? (
-              freindsList.map((user) => {
-                return <HomePageUser key={user.id} {...user} />;
-              })
-             ) : <Suspense fallback={<SpinerLoader />}>
-              <NoFreinds allUser={allUsers}/>
-            </Suspense>
-            ) : (
-              <SpinerLoader />
-            )}
-          </div>
-             </>
-            )
-          }
+              <div className="user-profile--container">
+                {!isLoading ? (
+                  freindsList.length > 0 ? (
+                    freindsList.map((user) => {
+                      return <HomePageUser key={user.id} {...user} />;
+                    })
+                  ) : (
+                    <Suspense fallback={<SpinerLoader />}>
+                      <NoFreinds allUser={allUsers} />
+                    </Suspense>
+                  )
+                ) : (
+                  <SpinerLoader />
+                )}
+              </div>
+            </>
+          )}
         </>
       )}
     </div>

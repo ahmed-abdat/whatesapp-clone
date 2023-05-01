@@ -1,0 +1,86 @@
+.no-frends {
+    height: calc(100vh - 128px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: rgb(84, 101, 111);
+    padding-inline: 2rem;
+}
+
+/* ? images */
+
+.no-frends .images {
+    width: 100%;
+    margin-bottom: 0.7rem;
+}
+
+.no-frends .images .img {
+    border: 2.5px solid rgba(255, 255, 255, 0.8);
+    width: 55px;
+    height: 55px;
+    position: relative;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+}
+
+.no-frends .images .img img {
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+}
+
+.no-frends .images .img:nth-child(1){
+    z-index: 0;
+}
+
+.no-frends .images .img:nth-child(2){
+    z-index: 1;
+    right: 0.7rem;
+}
+
+.no-frends .images .img:nth-child(3){
+    z-index: 2;
+    right: 1.2rem;
+}
+
+.no-frends .images .img:nth-child(4){
+    z-index: 3;
+    right: 1.7rem;
+}
+
+.no-frends .images .img:nth-child(5){
+    z-index: 4;
+    right: 2.2rem;
+}
+
+/* ? text */
+
+.no-frends .text {
+    font-size: 0.92rem;
+    direction: initial;
+    text-align: center;
+    line-height: 1.35rem;
+}
+
+.no-frends .text span {
+    font-weight: 500;
+    text-align: center;
+}
+
+.no-frends .text span > span {
+    font-weight: initial;
+}
+
+.no-frends .text span:not(:first-child) {
+    padding-inline: 0.15rem;
+}

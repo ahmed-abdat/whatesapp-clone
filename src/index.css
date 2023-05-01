@@ -88,12 +88,20 @@ body {
   font-family: "Vazirmatn" , 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.f-ar-dflt {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 .f-en {
   font-family: "Roboto" , 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .dr-en {
   direction : ltr;
+}
+
+.d-init{
+  direction: initial;
 }
 
 
