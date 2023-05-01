@@ -576,10 +576,6 @@ export default function ChatPageUser() {
   }
 
 
-
-
-  
-
   // handel input and Emoji picker
   const handelEmojiPicker = (emojiData) => {
     const emoji = emojiData.emoji;

@@ -12,13 +12,13 @@
 
 .no-frends .images {
     width: 100%;
-    margin-bottom: 0.7rem;
+    margin-bottom: 0.9rem;
 }
 
 .no-frends .images .img {
-    border: 2.5px solid rgba(255, 255, 255, 0.8);
-    width: 55px;
-    height: 55px;
+    border: 3px solid rgba(255, 255, 255, 0.95);
+    width: 50px;
+    height: 50px;
     position: relative;
     border-radius: 50%;
     -webkit-border-radius: 50%;
@@ -28,7 +28,8 @@
 }
 
 .no-frends .images .img img {
-    max-width: 100%;
+    display: block;
+    padding: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -50,17 +51,17 @@
 
 .no-frends .images .img:nth-child(3){
     z-index: 2;
-    right: 1.2rem;
+    right: 1.4rem;
 }
 
 .no-frends .images .img:nth-child(4){
     z-index: 3;
-    right: 1.7rem;
+    right: 2.1rem;
 }
 
 .no-frends .images .img:nth-child(5){
     z-index: 4;
-    right: 2.2rem;
+    right: 2.8rem;
 }
 
 /* ? text */

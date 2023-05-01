@@ -85,7 +85,7 @@ export default function Message({
               height={"322.667px"}
               src={URL.createObjectURL(media)}
               onClick={onclike}
-              width={"100%"}
+              width={"322px"}
               effect="blur"
             />
           </div>

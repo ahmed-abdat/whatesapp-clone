@@ -230,10 +230,12 @@ export default function HomePage() {
   // after 3 second set the btn text show to true
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsBtnTextShow(true);
       // scroll to the btn Message Ref
-      btnMessageRef.current.scrollIntoView({ behavior: "smooth" });
-    }, 4000);
+      if(freindsList.length < 1){
+        setIsBtnTextShow(true);
+        btnMessageRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 6000);
     return () => clearTimeout(timer);
   }, []);
 

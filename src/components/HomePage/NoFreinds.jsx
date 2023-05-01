@@ -32,6 +32,8 @@ export default function NoFreinds({ allUser }) {
     </span>
   ));
 
+  const leftUsers = allUser.length - 3
+
 
 
   return (
@@ -39,9 +41,9 @@ export default function NoFreinds({ allUser }) {
       <div className="images d-f d-init">
         {userImages}
       </div>
-      <p className='text f-ar-dflt'>
+      <p className='text f-ar'>
         {userNames}
-        {` ${filteredUsers.length} جهة إتصال أخرى`}
+        {` ${leftUsers} جهة إتصال أخرى `}
         يستخدمون واتساب
       </p>
     </section>
