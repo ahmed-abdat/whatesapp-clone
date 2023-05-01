@@ -14,7 +14,8 @@ import {
   doc,
   getDoc,
   updateDoc,
-  getFirestore
+  getFirestore,
+  serverTimestamp,
 } from "firebase/firestore/lite";
 import { useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
@@ -23,7 +24,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import './SignUp.css'
-import { serverTimestamp } from "firebase/firestore";
+
 
 export default function SignUp() {
   const [phone, setPhone] = useState("");
@@ -116,7 +117,7 @@ export default function SignUp() {
       const docRef = doc(firestore, "users", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        updateIsOnline(id)
+        updateIsOnline(docSnap.id)
         setCurrentUser(docSnap.data());
          setTimeout(() => {
           navigate("/");
@@ -140,7 +141,7 @@ export default function SignUp() {
        lastSeen :  serverTimestamp()
      })
     } catch (error) {
-     console.log(error.message);
+     console.error(error.message);
     }
    }
 

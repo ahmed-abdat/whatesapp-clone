@@ -29,6 +29,7 @@ import useSelectedUser from "../store/useSelectedUser";
 
 // lazy loade
 const UserProfile = lazy(() => import("./UserProfile"));
+const NoFreinds = lazy(() => import("./HomePage/NoFreinds"));
 
 export default function HomePage() {
   const [allUsers, setAllUsers] = useState([]);
@@ -267,9 +268,13 @@ export default function HomePage() {
               <div className="user-profile--container"> 
               
             {!isLoading ? (
+             freindsList.length > 0 ? (
               freindsList.map((user) => {
                 return <HomePageUser key={user.id} {...user} />;
               })
+             ) : <Suspense fallback={<SpinerLoader />}>
+              <NoFreinds allUser={allUsers}/>
+            </Suspense>
             ) : (
               <SpinerLoader />
             )}

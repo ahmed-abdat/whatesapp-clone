@@ -15,6 +15,9 @@ import { storage } from "../../config/firebase";
 import DefaultAvatar from '../../assets/img/default-avatar.svg'
 
 import "react-toastify/dist/ReactToastify.css";
+import { useDeferredValue } from "react";
+import Camera from "../../components/svg/Camera";
+import { MdDelete } from "react-icons/md";
 
 export default function UserInfo() {
   // get current user
@@ -29,6 +32,7 @@ export default function UserInfo() {
 
   // displayName user
   const [displayName, setDisplayName] = useState(user?.displayName || "");
+  const [avatarName , setAvatarName] = useState(user?.displayName || "user")
   // is name Arabic
   const [isArabic, setIsArabic] = useState(false);
 
@@ -111,7 +115,7 @@ export default function UserInfo() {
       ...formData,
       displayName,
       phoneNumber,
-      photoURL: downloadURL ? downloadURL : user.photoURL,
+      photoURL: downloadURL ? downloadURL : user.photoURL ? user.photoURL : getAvatarURL(avatarName),
       imageFullPath: fullPath,
     };
     const required = getIsEmailUser()
@@ -254,16 +258,28 @@ export default function UserInfo() {
     setDisplayName(value);
   };
 
-
-
-
-
   useEffect(() => {
     if (!getIsEmailUser() && !getIsPhoneUserVerified()) {
       toast.warning("الرجاء ضغض على التالي للمتابعة");
-      navigate("/signUp");
     } 
   }, []);
+
+  // handel blure input
+  const handelBlur = (e) => {
+    const { value } = e.target;
+    if(value.length === 0){
+      setAvatarName('user')
+      return
+    }
+    setAvatarName(value);
+  };
+
+  // handel set avatar name 
+  const getAvatarURL = (name) => {
+    return `https://avatars.dicebear.com/api/avataaars/${name}.svg`
+  }
+  
+
 
   return (
     <div className="userInfo dr-ar">
@@ -274,7 +290,7 @@ export default function UserInfo() {
         </div>
         {/* upload image file */}
         <div className="d-f">
-          <label htmlFor="file-input" style={{ borderRadius: "50%" }}>
+          <label htmlFor="file-input">
             <div className="img d-f">
               <img
                 src={
@@ -282,19 +298,25 @@ export default function UserInfo() {
                     ? URL.createObjectURL(file)
                     : user?.photoURL
                     ? user.photoURL
-                    : DefaultAvatar
+                    : `https://avatars.dicebear.com/api/avataaars/${avatarName}.svg`
                 }
                 alt="a user image"
               />
             </div>
-          </label>
-          <input
-            onChange={handleFile}
-            id="file-input"
-            type="file"
-            name="file"
-            style={{ display: "none" }}
-          />
+            <label
+                htmlFor="file-input"
+                className={`camera d-f ${isLoading || (precentage !== null && precentage <= 99) ? 'disabel' : ''}`}
+              >
+                <Camera />
+              </label>
+              <input
+                onChange={handleFile}
+                id="file-input"
+                type="file"
+                name="file"
+                style={{ display: "none" }}
+              />
+            </label>
         </div>
 
         <div className="input name">
@@ -302,6 +324,7 @@ export default function UserInfo() {
           <input
             type="text"
             placeholder="أدخل إسمك هنا"
+            onBlur={handelBlur}
             id="name"
             name="displayName"
             onChange={handelDisplayName}
@@ -335,20 +358,7 @@ export default function UserInfo() {
             disabled={getIsEmailUser() ? false : true}
           />
         </div>
-        {/* password for user phone */}
-        {/* {!getIsEmailUser() && (
-          <div className="input phone">
-            <label htmlFor="password"> كلمة السر</label>
-            <input
-              type="text"
-              placeholder="أدخل كلمة السر هنا"
-              id="password"
-              name="password"
-              onChange={(e) => setPassword(e.target.value)}
-              value={password}
-            />
-          </div>
-        )} */}
+       
         <ToastContainer
           position="top-center"
           autoClose={2000}

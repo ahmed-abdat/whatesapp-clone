@@ -161,11 +161,7 @@ export default function ChatPageUser() {
   const handelBack = () => {
     setIsAllUsersShowe(false);
     const curretnUserId = getCurrentUser().uid;
-    const selectedUserId = getSelectedUser().uid;
-    const uniqueChatId =
-      curretnUserId > selectedUserId
-        ? `${curretnUserId + selectedUserId}`
-        : `${selectedUserId + curretnUserId}`;
+    const uniqueChatId = getUniqueChatId();
     const chatRef = doc(db, "messages", uniqueChatId);
     getDoc(chatRef).then((doc) => {
       const document = doc.data();
@@ -216,7 +212,7 @@ export default function ChatPageUser() {
   const getUnreadMessage = async () => {
     const curretnUserId = getCurrentUser().uid;
     const selectedUserId = getSelectedUser().uid;
-    const uniqueChatId = getUniqueChatId(curretnUserId, selectedUserId);
+    const uniqueChatId = getUniqueChatId();
 
     const collectionRef = collection(db, "messages", uniqueChatId, "chat");
     const q = query(
@@ -301,7 +297,7 @@ export default function ChatPageUser() {
             isReceived: isReceived,
             media: path ? path : null,
           };
-          addDoc(messageRef, messageData).catch((e) => console.log(e.message));
+          addDoc(messageRef, messageData).then(() => fetchImagesInChat(uniqueChatId)).catch((e) => console.log(e.message));
           // update last message in both user lastMessage collection
           const currentUserLastMessageRef = collection(
             db,
@@ -326,6 +322,7 @@ export default function ChatPageUser() {
         })
         .catch((e) => console.log(e.message));
       updateChatView(uniqueChatId);
+      
     } catch (error) {
       console.log(error.message);
     }
@@ -352,6 +349,7 @@ export default function ChatPageUser() {
     };
     setMessages((prev) => [...prev, messageData]);
     setAllMessages(messageData);
+
     setMessage("");
     setEmojys([]);
     setIsArabic(true);
@@ -362,7 +360,9 @@ export default function ChatPageUser() {
   };
 
   // get unique chat id
-  const getUniqueChatId = (currentUserId, selectedUserId) => {
+  const getUniqueChatId = () => {
+    const selectedUserId = getSelectedUser().uid;
+    const currentUserId = getCurrentUser().uid;
     if (currentUserId > selectedUserId) {
       return `${currentUserId + selectedUserId}`;
     } else {
@@ -374,7 +374,7 @@ export default function ChatPageUser() {
   const helpUploadImage = (path , newMessage) => {
     const currentUserId = getCurrentUser().uid;
     const selectedUserId = getSelectedUser().uid;
-    const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
+    const uniqueChatId = getUniqueChatId();
     addMessageTODataBase(
       newMessage,
       uniqueChatId,
@@ -416,15 +416,16 @@ export default function ChatPageUser() {
   // handel send message
   const handelSendMessage = (e) => {
     e && e.preventDefault();
-    const selectedUserId = getSelectedUser().uid;
     const currentUserId = getCurrentUser().uid;
-    const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
+    const selectedUserId = getSelectedUser().uid;
+    const uniqueChatId = getUniqueChatId();
     const newMessage =  updateEmojiURL(emojys , message);
     if (
       file ||
       (file !== null && message.length > 0 && message.trim().length > 0)
     ) {
       uploadTheImageFile(file , newMessage);
+      
       updateMessageLocaly(newMessage, uniqueChatId, file);
       setFile(null);
       return;
@@ -446,13 +447,11 @@ export default function ChatPageUser() {
     setEmojys([]);
     setIsEmojiPickerShow(false);
     setIsArabic(true);
-    const selectedUserId = getSelectedUser().uid;
-    const currentUserId = getCurrentUser().uid;
-    const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
+    const uniqueChatId = getUniqueChatId();
+    fetchImagesInChat(uniqueChatId)
     setIsLastDocUpdated(false);
     // get the last 10 messages
     const messageRef = collection(db, "messages", uniqueChatId, "chat");
-    fetchImagesInChat(messageRef)
     const q = query(messageRef, orderBy("createdAt", "desc"), limit(20));
     setIsMessagesLoaded(true);
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -517,9 +516,7 @@ export default function ChatPageUser() {
 
   // handel fetch more messages
   const handelFetchMoreMessages = () => {
-    const selectedUserId = getSelectedUser().uid;
-    const currentUserId = getCurrentUser().uid;
-    const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
+    const uniqueChatId = getUniqueChatId();
     // check if the last doc is null
     if (!lastDoc) return;
     const messageRef = collection(db, "messages", uniqueChatId, "chat");
@@ -557,7 +554,8 @@ export default function ChatPageUser() {
   };
 
   // fetch all the images in the chat
-  const fetchImagesInChat = (messageRef) => {
+  const fetchImagesInChat = (uniqueChatId) => {
+    const messageRef = collection(db, "messages", uniqueChatId, "chat");
     const q = query(messageRef, where("media", "!=", null));
     getDocs(q).then(querySnapshot => {
         const images = [];
@@ -579,15 +577,6 @@ export default function ChatPageUser() {
 
 
 
-  // useEffect(() => {
-  //   setIsImageSelected(false)
-  //   const selectedUserId = getSelectedUser().uid;
-  //   const currentUserId = getCurrentUser().uid;
-  //   const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
-  //   const messageRef = collection(db, "messages", uniqueChatId, "chat");
-  //   // get all the messages that have media
-   
-  // }, [getSelectedUser().uid]);
 
   
 
