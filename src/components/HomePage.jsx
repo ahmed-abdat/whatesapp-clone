@@ -288,8 +288,8 @@ export default function HomePage() {
                     isBtnTextShow && freindsList.length < 1 ? "with-text" : ""
                   }`}
                 >
-                  <HiChatBubbleBottomCenterText />
-                  {isBtnTextShow && freindsList.length < 1 && "إرسال رسالة"}
+                  <p className="d-f f-ar"><HiChatBubbleBottomCenterText />
+                  {isBtnTextShow && freindsList.length < 1 && "إرسال رسالة"}</p>
                 </button>
               </div>
               <div className="user-profile--container">

@@ -56,7 +56,7 @@ export default function UserProfile() {
   const userStatusRef = useRef(null);
 
   // max displayName length
-  const maxDisplayNameLength = 30;
+  const maxDisplayNameLength = 25;
   // max userStatus length
   const maxUserStatusLength = 50;
 
@@ -265,6 +265,8 @@ export default function UserProfile() {
     }
   };
 
+
+
   return (
     <div className={`user-profile`}>
       {!isImageView ? (
@@ -336,7 +338,7 @@ export default function UserProfile() {
               </div>
               <div className="display">
                 <h3>الإسم</h3>
-                <div className="input">
+                <div className="input m-b-sm">
                   <input
                     type="text"
                     value={profile.displayName}
@@ -350,7 +352,7 @@ export default function UserProfile() {
                     }
                   />
                   {isDisplayNameEdit && (
-                    <span className="length">
+                    <span className={`length ${displayNameRef.current?.value?.length > 0 ? 'visible' : 'invisible'}`}>
                       {maxDisplayNameLength - profile.displayName.length}
                     </span>
                   )}
@@ -390,7 +392,7 @@ export default function UserProfile() {
                     }
                   />
                   {isUserStatusEdit && (
-                    <span className="length">
+                    <span className={`length ${displayNameRef.current?.value?.length > 0 ? 'visible' : 'invisible'}`}>
                       {maxUserStatusLength - profile.userStatus.length}
                     </span>
                   )}

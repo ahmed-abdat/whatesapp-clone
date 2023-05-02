@@ -78,6 +78,18 @@ body {
   display: none;
 }
 
+.invisible {
+  opacity: 0;
+}
+
+.visible {
+  opacity: 1;
+}
+
+.m-b-sm {
+  margin-bottom: 0.5rem;
+}
+
 .disabel {
   opacity: 0.5;
   pointer-events: none;
@@ -87,8 +99,6 @@ body {
 .f-ar {
   font-family: "Vazirmatn" , 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
-
 
 .f-en {
   font-family: "Roboto" , 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
