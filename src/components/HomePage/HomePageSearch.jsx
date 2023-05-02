@@ -8,6 +8,7 @@ export default function HomepageSearch() {
   const [search, setSearch] = useState("");
   const [isSearch , setIsSearch] = useState(false);
   const [isArabic , setIsArabic] = useState(true);
+  const [isUnreadMessage , setIsUnreadMessage] = useState(false);
 
   // handel change
   const handelChnage = (e) => {
@@ -36,7 +37,7 @@ export default function HomepageSearch() {
         <input type="text" placeholder="البحث عن دردشة أو بدء دردشة جديدة" onChange={handelChnage} value={search} className={isArabic ? 'dr-ar' : 'dr-en'}/>
         {isSearch && <BsX onClick={handelClear}/>}
       </div>
-     <MdFilterList />
+     <div className={`icon ${isUnreadMessage && 'unred-bg'}`} onClick={()=> setIsUnreadMessage(prev => !prev)}><MdFilterList /></div>
     </div>
   );
 }

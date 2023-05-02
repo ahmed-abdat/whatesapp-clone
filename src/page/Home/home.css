@@ -206,7 +206,26 @@
   cursor: pointer;
 }
 
-.search--container > svg {
+.search--container .icon {
+  border-radius: 50%;
+  display: flex;
+  padding: 0.2rem;
+  align-items: center;
+  justify-content: center;
+  color: #8696a0;
+  transition: all 0.2s ease;
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+}
+
+.unred-bg {
+  background: #00a884;
+  color: #fff !important;
+}
+
+.search--container .icon svg {
   font-size: 1.3rem;
 }
 

@@ -35,7 +35,7 @@ export default function NoFreinds({ allUser }) {
     () =>
       filteredUsers.map(user => (
         <div className="img" key={user.uid}>
-          <img src={user.photoURL} alt={`img-${user.uid}`} loading="lazy" />
+          <img referrerPolicy="no-referrer" src={user.photoURL} alt={`img-${user.uid}`} loading="lazy" />
         </div>
       )),
     [filteredUsers]

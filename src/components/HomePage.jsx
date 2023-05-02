@@ -166,7 +166,6 @@ export default function HomePage() {
 
       // filter the users by lastSean 
       users.sort((a , b ) => (b.lastSeen.seconds * 1000) - (a.lastSeen.seconds * 1000))
-
       const sortedUsers = lastMessages.map((message) => {
         const findUser = users.find(
           (user) => user.uid === message.from || user.uid === message.to
