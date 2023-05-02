@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { app, auth } from "../../config/firebase";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { doc, getFirestore, updateDoc } from "firebase/firestore/lite";
+import { doc, getFirestore, updateDoc , serverTimestamp } from "firebase/firestore/lite";
 import useSelectedUser from "../../store/useSelectedUser";
 import defaultAvatar from "../../assets/img/default-avatar.svg";
 import "../styles/HeaderPopup.css";
@@ -82,7 +82,7 @@ export default function HomePageHeader({setIsAllUsersShow}) {
       const docRef = doc(firestore, "users", getCurrentUser().uid);
       await updateDoc(docRef, {
         isOnline: false,
-        lastSeen: new Date().getTime(),
+        lastSeen: serverTimestamp(),
       });
     } catch (error) {
       console.log(error.message);
