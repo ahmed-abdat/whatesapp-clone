@@ -94,6 +94,11 @@ export default function HomePageHeader({setIsAllUsersShow}) {
     setIsAllUsersShow(prev => !prev);
   };
 
+  // handel go to profile 
+  const handelGoToProfile = ()=> {
+    setIsPopupShow(false)
+    setIsProfileShow(true)
+  }
   return (
     <header>
       <div className="header--container">
@@ -114,7 +119,7 @@ export default function HomePageHeader({setIsAllUsersShow}) {
         <div className="popup--container" ref={popupContainerRef}>
           <ul className="popup--item f-ar">
             <li> مجموعة جديدة </li>
-            <li>الإعدادات</li>
+            <li onClick={handelGoToProfile}> الملف الشخصي </li>
             <li onClick={handelSignout}>تسجيل الخروج</li>
           </ul>
         </div>

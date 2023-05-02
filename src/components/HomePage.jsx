@@ -263,7 +263,9 @@ export default function HomePage() {
             <HomePageHeader setIsAllUsersShow={setIsAllUsersShowe} />
           )}
           {/* home page search */}
-          <HomepageSearch />
+          {
+            isAllUsersShowe ? <HomepageSearch isUnreadMessageShow={false}/> : <HomepageSearch isUnreadMessageShow={true}/>
+          }
           {/* home page user profile */}
 
           {isAllUsersShowe ? (
