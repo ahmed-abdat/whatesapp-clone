@@ -11,9 +11,6 @@ export default function ViewAllUsersHeader({setIsAllUsersShow , usersLength}) {
         <p> <span>{usersLength}</span> جهة إتصال </p>
         </div>
       </div>
-      <div className="header--icon d-f">
-       <HiDotsVertical />
-      </div>
     </header>
   );
 }

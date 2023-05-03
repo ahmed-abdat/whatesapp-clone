@@ -4,6 +4,7 @@ import "./styles/ViewSelectedImage.css";
 import { useRef, useState } from "react";
 import { FaKeyboard } from "react-icons/fa";
 import SmileFace from "./svg/SmileFace";
+import { useEffect } from "react";
 
 export default function ViewSelectedImage({
   file,
@@ -18,6 +19,8 @@ export default function ViewSelectedImage({
 
   const [isEmojiPikerShow, setIsEmojiPickerShow] = useState(false);
   const messageInputRef = useRef(null);
+  // is Mobile
+  const [isMobile, setIsMobile] = useState(false);
 
   const [isInputFocus , setIsInputFocus] = useState(false)
   
@@ -25,7 +28,8 @@ export default function ViewSelectedImage({
   const handelShowEmojiPicker = () => {
     setIsEmojiPickerShow((prev) => !prev);
     if (isEmojiPikerShow) {
-      console.log("focus" , isInputFocus);
+      messageInputRef.current.focus();
+      setIsInputFocus(true)
     } else {
       messageInputRef.current.blur();
       setIsInputFocus(true)
@@ -45,6 +49,16 @@ export default function ViewSelectedImage({
   }
 
 
+    useEffect(() => {
+      if (window.innerWidth < 768) {
+        setIsMobile(true);
+      }else {
+        setIsMobile(false);
+      }
+    }, []);
+
+
+
   return (
     <div className="viewImage--container">
       <header>
@@ -58,7 +72,7 @@ export default function ViewSelectedImage({
         </div>
       </main>
       
-      <footer className={`footer ${isEmojiPikerShow ? "show-emoji" : ""}`}>
+      <footer className={`footer ${isEmojiPikerShow || (isMobile && isInputFocus) ? "show-emoji" : ""}`}>
         <form onSubmit={handelSendMessage}>
           <div className="input">
           <div className="icon d-f" onClick={handelShowEmojiPicker}>

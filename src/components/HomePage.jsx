@@ -16,6 +16,7 @@ import {
   getDoc,
   setDoc,
   orderBy,
+  limit,
 } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { lazy } from "react";
@@ -35,7 +36,9 @@ export default function HomePage() {
   const [allUsers, setAllUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [freindsList, setFreindsList] = useState([]);
+  const [isUnreadMessage, setIsUnreadMessage] = useState(false);
   const [isBtnTextShow, setIsBtnTextShow] = useState(false);
+  const [search, setSearch] = useState("");
 
   const btnMessageRef = useRef(null);
 
@@ -155,7 +158,7 @@ export default function HomePage() {
 
     // Then, get the user data for each friend UID
     const usersRef = collection(db, "users");
-    const usersQuery = query(usersRef, where("uid", "!=", currentUser.uid));
+    const usersQuery = query(usersRef, where("uid", "!=", currentUser.uid) , limit(20));
     const usersSnapshot = onSnapshot(usersQuery, (querySnapshot) => {
       const users = [];
       querySnapshot.forEach((doc) => {
@@ -164,8 +167,10 @@ export default function HomePage() {
         }
       });
 
-      // filter the users by lastSean 
-      users.sort((a , b ) => (b.lastSeen.seconds * 1000) - (a.lastSeen.seconds * 1000))
+      // filter the users by lastSean
+      users.sort(
+        (a, b) => b.lastSeen.seconds * 1000 - a.lastSeen.seconds * 1000
+      );
       const sortedUsers = lastMessages.map((message) => {
         const findUser = users.find(
           (user) => user.uid === message.from || user.uid === message.to
@@ -233,13 +238,28 @@ export default function HomePage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       // scroll to the btn Message Ref
-      if(freindsList.length < 1){
+      if (freindsList.length < 1) {
         setIsBtnTextShow(true);
         btnMessageRef?.current?.scrollIntoView({ behavior: "smooth" });
       }
     }, 6000);
     return () => clearTimeout(timer);
   }, []);
+
+  // filter the freind list so show only the unread message from the other useres
+  const filterFreinds = freindsList.filter(
+    (user) =>
+      user.lastMessage.from !== getCurrentUser().uid &&
+      user.lastMessage.isRead === false
+  );
+
+  // filter search function 
+  const filetrSearch = (users) => {
+    return users.filter((user) => {
+      return user.displayName.toLowerCase().includes(search.toLowerCase()) || user?.phoneNumber?.includes(search);
+    });
+  }
+
 
   return (
     <div className="home-page">
@@ -263,17 +283,28 @@ export default function HomePage() {
             <HomePageHeader setIsAllUsersShow={setIsAllUsersShowe} />
           )}
           {/* home page search */}
-          {
-            isAllUsersShowe ? <HomepageSearch isUnreadMessageShow={false}/> : <HomepageSearch isUnreadMessageShow={true}/>
-          }
+          <HomepageSearch
+            isUnreadMessageShow={!isAllUsersShowe}
+            isUnreadMessage={isUnreadMessage}
+            setIsUnreadMessage={setIsUnreadMessage}
+            search={search}
+            setSearch={setSearch}
+          />
+
           {/* home page user profile */}
 
           {isAllUsersShowe ? (
             <div className="user-profile--container">
               {!isLoading ? (
-                allUsers.map((user) => {
-                  return <HomePageUser key={user.id} {...user} />;
-                })
+                search.length > 0 ? (
+                  filetrSearch(allUsers).map((user) => {
+                    return <HomePageUser key={user.uid} {...user} />;
+                  })
+                ) : (
+                  allUsers.map((user) => {
+                    return <HomePageUser key={user.uid} {...user} />;
+                  })
+                )
               ) : (
                 <SpinerLoader />
               )}
@@ -292,16 +323,28 @@ export default function HomePage() {
                     isBtnTextShow && freindsList.length < 1 ? "with-text" : ""
                   }`}
                 >
-                  <p className="d-f f-ar"><HiChatBubbleBottomCenterText />
-                  {isBtnTextShow && freindsList.length < 1 && "إرسال رسالة"}</p>
+                  <p className="d-f f-ar">
+                    <HiChatBubbleBottomCenterText />
+                    {isBtnTextShow && freindsList.length < 1 && "إرسال رسالة"}
+                  </p>
                 </button>
               </div>
               <div className="user-profile--container">
                 {!isLoading ? (
                   freindsList.length > 0 ? (
-                    freindsList.map((user) => {
-                      return <HomePageUser key={user.id} {...user} />;
-                    })
+                    isUnreadMessage ? (
+                      filterFreinds.map((user) => {
+                        return <HomePageUser key={user.id} {...user} />;
+                      })
+                    ) : search.length > 0 ? (
+                      filetrSearch(freindsList).map((user) => {
+                        return <HomePageUser key={user.id} {...user} />;
+                      })
+                    ) : (
+                      freindsList.map((user) => {
+                        return <HomePageUser key={user.id} {...user} />;
+                      })
+                    )
                   ) : (
                     <Suspense fallback={<SpinerLoader />}>
                       <NoFreinds allUser={allUsers} />

@@ -3,12 +3,11 @@ import { BsX } from "react-icons/bs";
 import { HiSearch } from "react-icons/hi";
 import { MdFilterList } from "react-icons/md";
 
-export default function HomepageSearch({ isUnreadMessageShow }) {
+export default function HomepageSearch({ isUnreadMessageShow , isUnreadMessage , setIsUnreadMessage , search ,setSearch}) {
   // search
-  const [search, setSearch] = useState("");
+
   const [isSearch, setIsSearch] = useState(false);
   const [isArabic, setIsArabic] = useState(true);
-  const [isUnreadMessage, setIsUnreadMessage] = useState(false);
 
   // handel change
   const handelChnage = (e) => {
@@ -23,6 +22,7 @@ export default function HomepageSearch({ isUnreadMessageShow }) {
       setIsSearch(false);
     }
   };
+
 
   // handel clear
   const handelClear = () => {

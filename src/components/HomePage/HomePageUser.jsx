@@ -27,6 +27,7 @@ export default function HomePageUser({
   lastSeen,
   uid,
   lastMessage,
+  userStatus
 }) {
   moment.locale("ar_SA");
   moment.updateLocale("ar_SA", {
@@ -197,8 +198,8 @@ export default function HomePageUser({
 
   // useStatus class
   const useStatusClass = () => {
-    const isArabic = /[\u0600-\u06FF]/.test(getCurrentUser().userStatus);
-    const content = getCurrentUser().userStatus;
+    const isArabic = /[\u0600-\u06FF]/.test(userStatus);
+    const content = userStatus;
     const maxLength = 50;
     if (isArabic && content?.length > maxLength) {
       return "f-ar dr-ar";
@@ -368,7 +369,7 @@ export default function HomePageUser({
             </p>
           ) : (
             <p className={`${useStatusClass()}`}>
-              {getCurrentUser()?.userStatus}{" "}
+             {userStatus}
             </p>
           )}
           {isMessageNotRead && UnreadMessages > 0 && (

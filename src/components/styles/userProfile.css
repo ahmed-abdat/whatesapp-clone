@@ -143,6 +143,7 @@
 }
 
 .user-profile .display .input input {
+  text-overflow: ellipsis;
   border: none;
   outline: none;
   width: 100%;
