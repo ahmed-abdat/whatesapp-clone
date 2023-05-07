@@ -32,12 +32,13 @@
 .viewImage--container main .img {
     margin-inline: 5px;
     max-width: 100%;
-    height: 90%;
+    height: 86%;
+    overflow: hidden;
     border-radius: 0.5rem;
     -webkit-border-radius: 0.5rem;
-    -moz-border-radius: 0.5rem;
-    -ms-border-radius: 0.5rem;
-    -o-border-radius: 0.5rem;
+    -moz-border-radius: .5rem;
+    -ms-border-radius: .5rem;
+    -o-border-radius: .5rem;
 }
 
 
