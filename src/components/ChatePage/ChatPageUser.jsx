@@ -477,6 +477,7 @@ export default function ChatPageUser() {
     if (!isLastDocUpdated) {
       scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }
+    scrollRef.current?.scrollIntoView();
 
     const lastMessages = lastMessage();
     if (
@@ -489,7 +490,7 @@ export default function ChatPageUser() {
       sound.play();
       setLastPlayedMessage(lastMessages);
     }
-  }, [messages, lastPlayedMessage]);
+  }, [lastMessage().content , lastPlayedMessage]);
 
   // handel selected image
   const selectedImage = (img, content) => {
