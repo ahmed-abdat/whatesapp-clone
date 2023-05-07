@@ -108,7 +108,6 @@ export default function ChatPageUser() {
 
   // message
   const [message, setMessage] = useState("");
-  const [messageWithEmoji, setMessageWithEmoji] = useState("");
   const [emojys, setEmojys] = useState([]);
   const messageInputRef = useRef(null);
 
@@ -477,20 +476,24 @@ export default function ChatPageUser() {
     if (!isLastDocUpdated) {
       scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-    scrollRef.current?.scrollIntoView();
+
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
 
     const lastMessages = lastMessage();
+    console.log('is received' , lastMessages.isReceived);
     if (
       lastMessages &&
       lastMessages.from !== getCurrentUser().uid &&
-      lastMessages.isReceived === true &&
+      lastMessages.isReceived === false &&
       lastMessages !== lastPlayedMessage
     ) {
+      console.log('is received' , lastMessages.isReceived);
+      setLastPlayedMessage(lastMessages);
+      console.log('play sound');
       const sound = new Audio(ViewChatSound);
       sound.play();
-      setLastPlayedMessage(lastMessages);
     }
-  }, [lastMessage().content , lastPlayedMessage]);
+  }, [lastMessage()?.content , lastPlayedMessage , isLastDocUpdated]);
 
   // handel selected image
   const selectedImage = (img, content) => {
@@ -604,18 +607,10 @@ export default function ChatPageUser() {
     const emoji = emojiData.emoji;
     const emojiUnified = emojiData.unified ;
     const emojiURL = emojiData.getImageUrl()
-    
-    
-    
     setEmojys((prevEmojys) => [...prevEmojys, { emoji, emojiUnified , emojiURL}]);
     setMessage((prevMessage) => {
       return `${prevMessage} ${emoji}`
     });
-    // const currentEmojys = [...emojys , { emoji, emojiUnified , emojiURL}]
-    // const currentMessage = `${message} ${emoji}`
-    // const newMessage =  updateEmojiURL(currentEmojys , currentMessage);
-    // const updatedMessage = replaceEmojiWithImage(newMessage);
-    // setMessageWithEmoji(updatedMessage);
   };
 
 
@@ -643,6 +638,7 @@ export default function ChatPageUser() {
     })
     return () => unsubscribe()
   }, [getSelectedUser()?.uid])
+
 
   return (
     <div className={`chat-page--container ${!isSelectedUser ? "hide" : ""}`}>
@@ -848,11 +844,6 @@ export default function ChatPageUser() {
           </div>
           <form onSubmit={handelSendMessage}>
             <div className="input">
-            {/* <div className={`overite-input ${isArabic ? "f-ar" : "f-en dr-en"}`}>
-              {messageWithEmoji.map((content, index) => (
-            <React.Fragment key={index}>{content} </React.Fragment>
-          ))}
-            </div> */}
               <input
                 type="text"
                 placeholder="اكتب رسالة"

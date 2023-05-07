@@ -68,7 +68,7 @@ export default function HomePage() {
   // delete the current user from the all the chat view
   const deleteTheCurrentUserFromAllChat = async () => {
     const q = query(collection(db, "messages"));
-    console.log('delete the current user from all chat');
+    console.log("delete the current user from all chat");
     //  get all the chat
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
@@ -162,7 +162,11 @@ export default function HomePage() {
 
     // Then, get the user data for each friend UID
     const usersRef = collection(db, "users");
-    const usersQuery = query(usersRef, where("uid", "!=", currentUser.uid) , limit(20));
+    const usersQuery = query(
+      usersRef,
+      where("uid", "!=", currentUser.uid),
+      limit(20)
+    );
     const usersSnapshot = onSnapshot(usersQuery, (querySnapshot) => {
       const users = [];
       querySnapshot.forEach((doc) => {
@@ -259,13 +263,16 @@ export default function HomePage() {
       user.lastMessage.isRead === false
   );
 
-  // filter search function 
+  // filter search function
   const filetrSearch = (users) => {
     return users.filter((user) => {
-      return user.displayName.toLowerCase().includes(search.toLowerCase()) || user?.phoneNumber?.includes(search);
+      return (
+        user.displayName.toLowerCase().includes(search.toLowerCase()) ||
+        user?.email?.toLowerCase().includes(search.toLowerCase()) ||
+        user?.phoneNumber?.includes(search)
+      );
     });
-  }
-
+  };
 
   // update the isOnline property in the user doc
   useEffect(() => {
@@ -273,10 +280,10 @@ export default function HomePage() {
       updateDoc(doc(db, "users", currentUser.uid), {
         isOnline: true,
         lastSeen: serverTimestamp(),
-      }).then(() => console.log('connect ')) .catch((err) => console.log(err));
+      })
+        .catch((err) => console.log(err));
     }
   }, []);
-
 
   return (
     <div className="home-page">
@@ -349,11 +356,15 @@ export default function HomePage() {
               <div className="user-profile--container">
                 {!isLoading ? (
                   freindsList.length > 0 ? (
-                    isUnreadMessage ? (
+                    search.length < 1 && isUnreadMessage ? (
                       filterFreinds.map((user) => {
                         return <HomePageUser key={user.id} {...user} />;
                       })
-                    ) : search.length > 0 ? (
+                    ) : search.length > 0 && isUnreadMessage ? (
+                      filetrSearch(filterFreinds).map((user) => {
+                        return <HomePageUser key={user.id} {...user} />;
+                      })
+                    ) : search.length > 0 && !isUnreadMessage ? (
                       filetrSearch(freindsList).map((user) => {
                         return <HomePageUser key={user.id} {...user} />;
                       })

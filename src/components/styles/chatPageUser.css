@@ -322,7 +322,7 @@
   position: relative;
 }
 
-.chat-page--container footer .input .overite-input {
+/* .chat-page--container footer .input .overite-input {
   position: absolute;
   left: 0;
   max-height: 10.35em;
@@ -338,7 +338,7 @@
   outline: none;
   border: none;
   width: fit-content;
-}
+} */
 
 
 .chat-page--container footer .input input {
