@@ -284,10 +284,9 @@ export default function ChatPageUser() {
         .then((querySnapshot) => {
           let isReceived = false;
           if (querySnapshot.data().sender && querySnapshot.data().receiver) {
-            console.log("both connecte" , querySnapshot.data().sender , querySnapshot.data().receiver);
+            console.log("both connecte");
             isReceived = true;
           }
-          console.log("isReceived" , isReceived);
           const messageRef = collection(db, "messages", uniqueChatId, "chat");
           const messageData = {
             id: getUniqueId(),
@@ -296,7 +295,7 @@ export default function ChatPageUser() {
             to: selectedUserId,
             createdAt: serverTimestamp(),
             isRead: false,
-            isReceived,
+            isReceived: isReceived,
             media: path ? path : null,
           };
           addDoc(messageRef, messageData).then(() => fetchImagesInChat(uniqueChatId)).catch((e) => console.log(e.message));
@@ -475,8 +474,10 @@ export default function ChatPageUser() {
 
   // scroll to bottom when new message send
   useEffect(() => {
+    if (!isLastDocUpdated) {
       scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  
+    }
+
     const lastMessages = lastMessage();
     if (
       lastMessages &&
@@ -488,7 +489,7 @@ export default function ChatPageUser() {
       sound.play();
       setLastPlayedMessage(lastMessages);
     }
-  }, [messages.length, lastPlayedMessage ]);
+  }, [messages, lastPlayedMessage]);
 
   // handel selected image
   const selectedImage = (img, content) => {
