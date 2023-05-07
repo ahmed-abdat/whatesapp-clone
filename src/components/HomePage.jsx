@@ -50,6 +50,9 @@ export default function HomePage() {
   // is profile show
   const isProfileShow = useUsers((state) => state.isProfileShow);
 
+  // set currrent user
+  const setCurrentUser = useUser((state) => state.setCurrentUser);
+
   // get current user
   const getCurrentUser = useUser((state) => state.getCurrentUser);
   const currentUser = getCurrentUser();
@@ -65,6 +68,7 @@ export default function HomePage() {
   // delete the current user from the all the chat view
   const deleteTheCurrentUserFromAllChat = async () => {
     const q = query(collection(db, "messages"));
+    console.log('delete the current user from all chat');
     //  get all the chat
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
@@ -203,19 +207,21 @@ export default function HomePage() {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
+        console.log("hidden");
         deleteTheCurrentUserFromAllChat();
         // update isOnline to false
-        updateDoc(doc(db, "users", currentUser.uid), {
+        updateDoc(doc(db, "users", getCurrentUser().uid), {
           isOnline: false,
           lastSeen: serverTimestamp(),
         }).catch((err) => console.log(err));
       } else {
+        console.log("show");
         // update how is view the chat
-        if (selectedUser) {
-          howIsView(selectedUser.uid);
+        if (getSelectedUser()?.uid) {
+          howIsView(getSelectedUser().uid);
         }
         // update isOnline to true
-        updateDoc(doc(db, "users", currentUser.uid), {
+        updateDoc(doc(db, "users", getCurrentUser().uid), {
           isOnline: true,
           lastSeen: serverTimestamp(),
         }).catch((err) => console.log(err));
@@ -259,6 +265,17 @@ export default function HomePage() {
       return user.displayName.toLowerCase().includes(search.toLowerCase()) || user?.phoneNumber?.includes(search);
     });
   }
+
+
+  // update the isOnline property in the user doc
+  useEffect(() => {
+    if (currentUser) {
+      updateDoc(doc(db, "users", currentUser.uid), {
+        isOnline: true,
+        lastSeen: serverTimestamp(),
+      }).then(() => console.log('connect ')) .catch((err) => console.log(err));
+    }
+  }, []);
 
 
   return (

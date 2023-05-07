@@ -287,6 +287,7 @@ export default function ChatPageUser() {
             console.log("both connecte" . querySnapshot.data().sender, querySnapshot.data().receiver);
             isReceived = true;
           }
+          console.log(querySnapshot.data().sender, querySnapshot.data().receiver);
           const messageRef = collection(db, "messages", uniqueChatId, "chat");
           const messageData = {
             id: getUniqueId(),
@@ -298,6 +299,7 @@ export default function ChatPageUser() {
             isReceived: isReceived,
             media: path ? path : null,
           };
+          console.log(isReceived);
           addDoc(messageRef, messageData).then(() => fetchImagesInChat(uniqueChatId)).catch((e) => console.log(e.message));
           // update last message in both user lastMessage collection
           const currentUserLastMessageRef = collection(
@@ -321,7 +323,7 @@ export default function ChatPageUser() {
             messageData
           ).catch((e) => console.log(e.message));
         })
-        .catch((e) => console.log(e.message));
+        .catch((e) => console.error(e.message));
       updateChatView(uniqueChatId);
       
     } catch (error) {
