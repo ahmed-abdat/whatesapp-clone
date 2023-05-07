@@ -26,6 +26,7 @@ import useUsers from "../store/useUsers";
 import { HiChatBubbleBottomCenterText } from "react-icons/hi2";
 import ViewAllUsersHeader from "./HomePage/ViewAllUsersHeader";
 import useSelectedUser from "../store/useSelectedUser";
+import NoSearchFound from "./HomePage/NoSearchFound";
 import { useRef } from "react";
 
 // lazy loade
@@ -280,8 +281,7 @@ export default function HomePage() {
       updateDoc(doc(db, "users", currentUser.uid), {
         isOnline: true,
         lastSeen: serverTimestamp(),
-      })
-        .catch((err) => console.log(err));
+      }).catch((err) => console.log(err));
     }
   }, []);
 
@@ -321,9 +321,13 @@ export default function HomePage() {
             <div className="user-profile--container">
               {!isLoading ? (
                 search.length > 0 ? (
-                  filetrSearch(allUsers).map((user) => {
-                    return <HomePageUser key={user.uid} {...user} />;
-                  })
+                  filetrSearch(allUsers).length > 0 ? (
+                    filetrSearch(allUsers).map((user) => {
+                      return <HomePageUser key={user.uid} {...user} />;
+                    })
+                  ) : (
+                    <NoSearchFound />
+                  )
                 ) : (
                   allUsers.map((user) => {
                     return <HomePageUser key={user.uid} {...user} />;
@@ -361,13 +365,21 @@ export default function HomePage() {
                         return <HomePageUser key={user.id} {...user} />;
                       })
                     ) : search.length > 0 && isUnreadMessage ? (
-                      filetrSearch(filterFreinds).map((user) => {
-                        return <HomePageUser key={user.id} {...user} />;
-                      })
+                      filetrSearch(filterFreinds).length > 0 ? (
+                        filetrSearch(filterFreinds).map((user) => {
+                          return <HomePageUser key={user.id} {...user} />;
+                        })
+                      ) : (
+                        <NoSearchFound />
+                      )
                     ) : search.length > 0 && !isUnreadMessage ? (
-                      filetrSearch(freindsList).map((user) => {
-                        return <HomePageUser key={user.id} {...user} />;
-                      })
+                      filetrSearch(freindsList).length > 0 ? (
+                        filetrSearch(freindsList).map((user) => {
+                          return <HomePageUser key={user.id} {...user} />;
+                        })
+                      ) : (
+                        <NoSearchFound />
+                      )
                     ) : (
                       freindsList.map((user) => {
                         return <HomePageUser key={user.id} {...user} />;

@@ -1,0 +1,9 @@
+.no-search-found {
+    width: 100%;
+    height: calc(100vh - 180px);
+    text-align: center;
+    font-size: 0.875rem;
+    color: #8696a0;
+    margin-top: 3rem;
+}
+
