@@ -40,7 +40,7 @@ import "../styles/chatPageUser.css";
 import { BsImageFill } from "react-icons/bs";
 import { lazy, Suspense } from "react";
 import useMessages from "../../store/useMessages";
-import EmojiPicker, { Emoji } from "emoji-picker-react";
+import EmojiPicker from "emoji-picker-react";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 // lazy loade
@@ -284,7 +284,7 @@ export default function ChatPageUser() {
         .then((querySnapshot) => {
           let isReceived = false;
           if (querySnapshot.data().sender && querySnapshot.data().receiver) {
-            console.log("both connecte");
+            console.log("both connecte" . querySnapshot.data().sender, querySnapshot.data().receiver);
             isReceived = true;
           }
           const messageRef = collection(db, "messages", uniqueChatId, "chat");
@@ -633,6 +633,15 @@ export default function ChatPageUser() {
       messageInputRef.current.blur();
     }
   };
+
+//  track the changes in the selected user
+  useEffect(() => {
+    const docRef = doc(db, 'users' , getSelectedUser()?.uid)
+    const unsubscribe = onSnapshot(docRef, (doc) => {
+      setSelectedUser({...doc.data() , id: doc.id})
+    })
+    return () => unsubscribe()
+  }, [getSelectedUser()?.uid])
 
   return (
     <div className={`chat-page--container ${!isSelectedUser ? "hide" : ""}`}>
