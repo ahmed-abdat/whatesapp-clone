@@ -294,7 +294,7 @@ export default function ChatPageUser() {
             to: selectedUserId,
             createdAt: serverTimestamp(),
             isRead: false,
-            isReceived: isReceived,
+            isReceived,
             media: path ? path : null,
           };
           addDoc(messageRef, messageData).then(() => fetchImagesInChat(uniqueChatId)).catch((e) => console.log(e.message));
@@ -480,14 +480,12 @@ export default function ChatPageUser() {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
 
     const lastMessages = lastMessage();
-    console.log('is received' , lastMessages.isReceived);
     if (
       lastMessages &&
       lastMessages.from !== getCurrentUser().uid &&
-      lastMessages.isReceived === false &&
+      lastMessages?.isReceived === true &&
       lastMessages !== lastPlayedMessage
     ) {
-      console.log('is received' , lastMessages.isReceived);
       setLastPlayedMessage(lastMessages);
       console.log('play sound');
       const sound = new Audio(ViewChatSound);
