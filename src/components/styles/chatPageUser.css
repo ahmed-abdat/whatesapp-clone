@@ -319,7 +319,27 @@
   display: flex;
   align-items: center;
   width: 100%;
+  position: relative;
 }
+
+.chat-page--container footer .input .overite-input {
+  position: absolute;
+  left: 0;
+  max-height: 10.35em;
+  min-height: 2.47em;
+  font-size: 1rem;
+  font-weight: 400;
+  display: flex;
+  padding: 5px 12px;
+  margin: 5px 8px;
+  color: #667781;
+  border-radius: 8px;
+  flex-grow: 1;
+  outline: none;
+  border: none;
+  width: fit-content;
+}
+
 
 .chat-page--container footer .input input {
   max-height: 10.35em;
@@ -330,7 +350,8 @@
   padding: 5px 12px;
   margin: 5px 8px;
   background-color: #fff;
-  color: #667781;
+  color: #fff;
+  caret-color: #111b21;
   border-radius: 8px;
   flex-grow: 1;
   outline: none;

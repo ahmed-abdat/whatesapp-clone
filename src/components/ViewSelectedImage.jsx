@@ -4,7 +4,6 @@ import "./styles/ViewSelectedImage.css";
 import { useRef, useState } from "react";
 import { FaKeyboard } from "react-icons/fa";
 import SmileFace from "./svg/SmileFace";
-import { useEffect } from "react";
 
 export default function ViewSelectedImage({
   file,

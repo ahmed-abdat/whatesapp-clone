@@ -108,8 +108,8 @@ export default function ChatPageUser() {
 
   // message
   const [message, setMessage] = useState("");
+  const [messageWithEmoji, setMessageWithEmoji] = useState("");
   const [emojys, setEmojys] = useState([]);
-  // const [messageWithEmoji, setMessageWithEmoji] = useState("");
   const messageInputRef = useRef(null);
 
   // last doc
@@ -138,6 +138,7 @@ export default function ChatPageUser() {
     }
 
     setMessage(value);
+
   };
 
   // is selected user
@@ -575,17 +576,45 @@ export default function ChatPageUser() {
     })
   }
 
+  // replace emoji url with emoji image
+  const replaceEmojiWithImage = (message) => {
+      const words = message.split(/\s+/);
+      const urlReg = /https:\/\/cdn\.jsdelivr\.net\/npm\/emoji-datasource-apple\/img\/apple\/64\/[^/]+\.png/gim;
+      const newArray = [];
+      
+      for (const word of words) {
+        const urlMatch = word.match(urlReg);
+    
+        if (urlMatch) {
+          newArray.push(<img src={urlMatch[0]} alt={urlMatch[0]} className="emoji" />);
+        } else if (newArray.length > 0 && typeof newArray[newArray.length - 1] === 'string') {
+          newArray[newArray.length - 1] += ' ' + word;
+        } else {
+          newArray.push(word);
+        }
+      }
+      
+      return newArray
+    };
+
 
   // handel input and Emoji picker
   const handelEmojiPicker = (emojiData) => {
     const emoji = emojiData.emoji;
     const emojiUnified = emojiData.unified ;
     const emojiURL = emojiData.getImageUrl()
-
+    
+    
+    
     setEmojys((prevEmojys) => [...prevEmojys, { emoji, emojiUnified , emojiURL}]);
     setMessage((prevMessage) => {
       return `${prevMessage} ${emoji}`
     });
+    // const currentEmojys = [...emojys , { emoji, emojiUnified , emojiURL}]
+    // const currentMessage = `${message} ${emoji}`
+    // const newMessage =  updateEmojiURL(currentEmojys , currentMessage);
+    // const updatedMessage = replaceEmojiWithImage(newMessage);
+    // setMessageWithEmoji(updatedMessage);
   };
 
 
@@ -809,6 +838,11 @@ export default function ChatPageUser() {
           </div>
           <form onSubmit={handelSendMessage}>
             <div className="input">
+            {/* <div className={`overite-input ${isArabic ? "f-ar" : "f-en dr-en"}`}>
+              {messageWithEmoji.map((content, index) => (
+            <React.Fragment key={index}>{content} </React.Fragment>
+          ))}
+            </div> */}
               <input
                 type="text"
                 placeholder="اكتب رسالة"
