@@ -394,7 +394,7 @@ textarea::-webkit-scrollbar {
   }
 
   .chat-page--container .chat-content .message--container .after {
-    top: -3px;
+    top: -4px;
   }
   .chat-page--container .back .icon {
     display: block;
