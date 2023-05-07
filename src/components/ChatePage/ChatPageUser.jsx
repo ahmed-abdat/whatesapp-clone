@@ -487,7 +487,6 @@ export default function ChatPageUser() {
       lastMessages !== lastPlayedMessage
     ) {
       setLastPlayedMessage(lastMessages);
-      console.log('play sound');
       const sound = new Audio(ViewChatSound);
       sound.play();
     }
@@ -578,26 +577,6 @@ export default function ChatPageUser() {
     })
   }
 
-  // replace emoji url with emoji image
-  const replaceEmojiWithImage = (message) => {
-      const words = message.split(/\s+/);
-      const urlReg = /https:\/\/cdn\.jsdelivr\.net\/npm\/emoji-datasource-apple\/img\/apple\/64\/[^/]+\.png/gim;
-      const newArray = [];
-      
-      for (const word of words) {
-        const urlMatch = word.match(urlReg);
-    
-        if (urlMatch) {
-          newArray.push(<img src={urlMatch[0]} alt={urlMatch[0]} className="emoji" />);
-        } else if (newArray.length > 0 && typeof newArray[newArray.length - 1] === 'string') {
-          newArray[newArray.length - 1] += ' ' + word;
-        } else {
-          newArray.push(word);
-        }
-      }
-      
-      return newArray
-    };
 
 
   // handel input and Emoji picker
