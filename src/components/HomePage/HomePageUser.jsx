@@ -49,7 +49,9 @@ export default function HomePageUser({
     },
   });
 
-  const lastSean = lastMessage.createdAt?.seconds ? lastMessage.createdAt.seconds * 1000 : lastMessage.createdAt
+  
+
+  const lastSean =  lastMessage.createdAt?.seconds ? lastMessage.createdAt.seconds * 1000 : lastMessage.createdAt ;
   
   const lastSeanMessage = moment(lastSean);
   const HourAndMinitFormat = lastSeanMessage.format("hh:mm");
@@ -60,7 +62,7 @@ export default function HomePageUser({
   
   // track the time ago
   useEffect(() => {
-    const lastSean = lastMessage.createdAt?.seconds ? lastMessage.createdAt.seconds * 1000 : lastMessage.createdAt
+    const lastSean =  lastMessage.createdAt?.seconds ? lastMessage.createdAt.seconds * 1000 : lastMessage.createdAt ;
     const lastSeanMessage = moment(lastSean);
     const HourAndMinitFormate = lastSeanMessage.format("hh:mm");
     const interval = setInterval(() => {
@@ -92,16 +94,17 @@ export default function HomePageUser({
   const getUnreadMessage = async (uid) => {
     const curretnUserId = getCurrentUser().uid;
     const selectedUserId = uid;
-    const uniqueChatId =
-      curretnUserId > selectedUserId
-        ? `${curretnUserId + selectedUserId}`
-        : `${selectedUserId + curretnUserId}`;
-
-    const collectionRef = collection(db, "messages", uniqueChatId, "chat");
+    const currentUserChat = collection(db, "users", curretnUserId ,'messages' , selectedUserId, "chat");
+    const selectedUserChat = collection(db, "users", selectedUserId ,'messages' , curretnUserId, "chat");
     const q = query(
-      collectionRef,
+      currentUserChat,
       where("isRead", "==", false),
-      where("from", "==", selectedUserId)
+      where("to", "==", getCurrentUser().uid)
+    );
+    const qe = query(
+      selectedUserChat,
+      where("isRead", "==", false),
+      where("to", "==", getCurrentUser().uid)
     );
     getDocs(q)
       .then((querySnapshot) => {
@@ -109,7 +112,19 @@ export default function HomePageUser({
           updateLastMessage(curretnUserId, selectedUserId);
           updateDoc(doc.ref, {
             isRead: true,
-          });
+          }).catch((e) => console.log(e.message));
+        });
+      })
+      .catch((error) => {
+        console.log("Error getting documents: ", error);
+      });
+    getDocs(qe)
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          updateLastMessage(curretnUserId, selectedUserId);
+          updateDoc(doc.ref, {
+            isRead: true,
+          }).catch((e) => console.log(e.message));
         });
       })
       .catch((error) => {
@@ -216,11 +231,7 @@ export default function HomePageUser({
   const getUnreadMessageNumber = async (uid) => {
     const curretnUserId = getCurrentUser().uid;
     const selectedUserId = uid;
-    const uniqueChatId =
-      curretnUserId > selectedUserId
-        ? `${curretnUserId + selectedUserId}`
-        : `${selectedUserId + curretnUserId}`;
-    const collectionRef = collection(db, "messages", uniqueChatId, "chat");
+    const collectionRef = collection(db, "users", curretnUserId ,'messages' , selectedUserId, "chat");
     const q = query(
       collectionRef,
       where("isRead", "==", false),
@@ -306,6 +317,7 @@ export default function HomePageUser({
     
     return newArray
   };
+
 
   const newContent = findEmoji(lastMessage.content);
 

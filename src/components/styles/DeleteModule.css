@@ -1,0 +1,117 @@
+
+.module {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(255,255,255,.7);
+    z-index: 200;
+    backdrop-filter: blur(4px);
+}
+
+.module .module--container {
+    box-shadow: 0 17px 50px 0 rgba(11,20,26,.19), 0 12px 15px 0 rgba(11,20,26,.24);
+    border-top: #F15A59 solid 4px;
+    position: relative;
+    max-width: 440px;
+    width: 95%;
+    min-width: 250px;
+    padding: 0.5rem 1rem 1rem;
+    background-color: #fff;
+    border-radius: 0.8rem;
+    -webkit-border-radius: 0.8rem;
+    -moz-border-radius: 0.8rem;
+    -ms-border-radius: 0.8rem;
+    -o-border-radius: 0.8rem;
+}
+
+.module .close {
+    color: #537188;
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    cursor: pointer;
+}
+
+.module .icon {
+    font-size: 3rem;
+    background: #F15A59;
+    border-radius: 50%;
+    color: #fff;
+    width: 4rem;
+    height: 4rem;
+    padding: 0.4rem;
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+    -webkit-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    -o-transform: translateX(-50%);
+}
+
+.module .module--title {
+    text-align: center;
+    margin-bottom: 0.7rem;
+    color: #3b4a54;
+    font-size: 1.1rem;
+}
+
+.module .module--info {
+    font-size: 0.94rem;
+    text-align: center;
+    color: #667781;
+}
+
+/* ? module btns */
+
+.module .btns {
+    margin-top: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.module .btns .btn {
+    border: none;
+    outline: none;
+    padding: 0.5rem 3rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.module .btns .btn.btn--cancel {
+    background: #fff;
+    color: #008069;
+    border: 1px solid #e9edef;
+    transition: all 0.3s ease-in-out;
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+}
+
+.module .btns .btn.btn--cancel:hover {
+    box-shadow: 0 2px 7px rgba(11,20,26,.09), 0 1px 2px rgba(11,20,26,.05);
+
+}
+
+.module .btns .btn.btn--delete {
+    background: #F15A59;
+    color: #fff;
+    border: 1px solid #F15A59;
+    transition: all 0.3s ease-in-out;
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+}
+
+.module .btns .btn.btn--delete:hover {
+    background-color: #d53939;
+}

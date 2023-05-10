@@ -16,11 +16,11 @@ const useMessages = create((set , get) => ({
         }
         set(() => ({ allMessages : newMessages }));
     },
-    getLastMessage : () => {
+    getlastMessage : () => {
         const messages = get().allMessages
-        return messages[messages.length - 1]
+        const lastMessage = messages[messages.length - 1]
+        return lastMessage
     },
-    
 }));
 
 export default useMessages;

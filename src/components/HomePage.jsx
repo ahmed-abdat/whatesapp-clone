@@ -69,7 +69,6 @@ export default function HomePage() {
   // delete the current user from the all the chat view
   const deleteTheCurrentUserFromAllChat = async () => {
     const q = query(collection(db, "messages"));
-    console.log("delete the current user from all chat");
     //  get all the chat
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
@@ -184,11 +183,14 @@ export default function HomePage() {
         const findUser = users.find(
           (user) => user.uid === message.from || user.uid === message.to
         );
+
         return { ...findUser, lastMessage: message };
       });
+      const filteredUsers = sortedUsers.filter(
+        (user) => user.displayName !== undefined
+      );
       setAllUsers(users);
-
-      setFreindsList(sortedUsers);
+      setFreindsList(filteredUsers);
       setIsLoading(false);
     });
     return () => usersSnapshot();
@@ -203,7 +205,10 @@ export default function HomePage() {
       );
       return { ...findUser, lastMessage: message };
     });
-    setFreindsList(usersFilter);
+    const filteredUsers = usersFilter.filter(
+      (user) => user.displayName !== undefined
+    );
+    setFreindsList(filteredUsers);
   }, [lastMessage]);
 
   const selectedUser = getSelectedUser();
@@ -212,7 +217,6 @@ export default function HomePage() {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
-        console.log("hidden");
         deleteTheCurrentUserFromAllChat();
         // update isOnline to false
         updateDoc(doc(db, "users", getCurrentUser().uid), {
@@ -220,7 +224,6 @@ export default function HomePage() {
           lastSeen: serverTimestamp(),
         }).catch((err) => console.log(err));
       } else {
-        console.log("show");
         // update how is view the chat
         if (getSelectedUser()?.uid) {
           howIsView(getSelectedUser().uid);
@@ -258,10 +261,10 @@ export default function HomePage() {
   }, []);
 
   // filter the freind list so show only the unread message from the other useres
-  const filterFreinds = freindsList.filter(
+  const filterFreinds = freindsList.map(
     (user) =>
-      user.lastMessage.from !== getCurrentUser().uid &&
-      user.lastMessage.isRead === false
+      user?.lastMessage.from !== getCurrentUser().uid &&
+      user?.lastMessage.isRead === false
   );
 
   // filter search function
@@ -281,9 +284,10 @@ export default function HomePage() {
       updateDoc(doc(db, "users", currentUser.uid), {
         isOnline: true,
         lastSeen: serverTimestamp(),
-      }).catch((err) => console.log(err));
+      }).catch((err) => console.error(err));
     }
   }, []);
+
 
   return (
     <div className="home-page">
@@ -304,7 +308,7 @@ export default function HomePage() {
               usersLength={allUsers.length}
             />
           ) : (
-            <HomePageHeader setIsAllUsersShow={setIsAllUsersShowe} />
+            <HomePageHeader setIsAllUsersShow={setIsAllUsersShowe}/>
           )}
           {/* home page search */}
           <HomepageSearch

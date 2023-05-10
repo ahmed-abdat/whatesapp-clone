@@ -12,8 +12,6 @@ const useSelectedUser = create((set, get) => ({
   },
   getSelectedUser: () => {
     const { selectedUser } = get();
-    // const savedUser = JSON.parse(localStorage.getItem("SelectedUser"));
-    // const selectedUsere = selectedUser ? selectedUser : savedUser;
     return selectedUser;
   },
 }));

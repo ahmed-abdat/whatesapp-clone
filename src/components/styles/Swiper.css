@@ -50,6 +50,14 @@
     right: 0;
 }
 
+.disabeled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    background-color: #e9edef;
+    color: #aebac1;
+}
+
 
 
 .swiper--container .swiper--image {

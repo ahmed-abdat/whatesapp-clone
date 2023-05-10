@@ -29,8 +29,10 @@ import {
   serverTimestamp,
   limit,
   startAfter,
+  deleteDoc,
 } from "firebase/firestore";
 import { db, storage } from "../../config/firebase";
+import { MdDeleteForever } from "react-icons/md";
 import SpinerLoader from "../SpinerLoader";
 import useUser from "../../store/useUser";
 import useUsers from "../../store/useUsers";
@@ -41,10 +43,13 @@ import { BsImageFill } from "react-icons/bs";
 import { lazy, Suspense } from "react";
 import useMessages from "../../store/useMessages";
 import EmojiPicker from "emoji-picker-react";
+
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 // lazy loade
 const ViewSelectedImage = lazy(() => import("../ViewSelectedImage"));
+const DeleteModule = lazy(() => import("../DeleteModule"));
+const SelectedUserProfile = lazy(() => import("../SelectedUserProfile"));
 
 export default function ChatPageUser() {
   // get selected user
@@ -69,7 +74,9 @@ export default function ChatPageUser() {
     },
   });
   const now = moment();
-  const lastSeen = getSelectedUser()?.lastSeen?.seconds ? getSelectedUser()?.lastSeen?.seconds * 1000 : getSelectedUser()?.lastSeen;
+  const lastSeen = getSelectedUser()?.lastSeen?.seconds
+    ? getSelectedUser()?.lastSeen?.seconds * 1000
+    : getSelectedUser()?.lastSeen;
   const lastSeenMoment = moment(lastSeen);
   const HourAndMinitFormat = lastSeenMoment.format("hh:mm");
   const dateFormat = lastSeenMoment.format("DD/MM/YYYY");
@@ -111,14 +118,20 @@ export default function ChatPageUser() {
   const [emojys, setEmojys] = useState([]);
   const messageInputRef = useRef(null);
 
+  const [isPopupShow, setIsPopupShow] = useState(false);
+  const [isModuleshow, setIsModuleShow] = useState(false);
+  const headerIconsRef = useRef(null);
+  const popupContainerRef = useRef(null);
+
+  // selected user profile show
+  const [isSelectedUserProfileShow, setIsSelectedUserProfileShow] =
+    useState(false);
+
   // last doc
   const [lastDoc, setLastDoc] = useState(null);
   const [isLastDocUpdated, setIsLastDocUpdated] = useState(false);
   const [isLastDocExist, setIsLastDocExist] = useState(false);
   const [images, setImages] = useState([]);
-
-  // lastMessage played
-  const [lastPlayedMessage, setLastPlayedMessage] = useState(null);
 
   // is Emoji Picker Show
   const [isEmojiPickerShow, setIsEmojiPickerShow] = useState(false);
@@ -137,7 +150,6 @@ export default function ChatPageUser() {
     }
 
     setMessage(value);
-
   };
 
   // is selected user
@@ -154,14 +166,26 @@ export default function ChatPageUser() {
   // set isAllUsersShow
   const setIsAllUsersShowe = useUsers((state) => state.setIsAllUsersShow);
 
-  // allMessages
-  const lastMessage = useMessages((state) => state.getLastMessage);
+  // last message
+  const lastMessage = useMessages((state) => state.getlastMessage);
+  // is both user connected
+  const [isBothUserConnected, setIsBothUserConnected] = useState(false);
+
+  // get unique chat id
+  const uniqueChatid = (currentUserId, selectedUserId) => {
+    if (currentUserId > selectedUserId) {
+      return currentUserId + selectedUserId;
+    } else {
+      return selectedUserId + currentUserId;
+    }
+  };
 
   // handel back
   const handelBack = () => {
     setIsAllUsersShowe(false);
     const curretnUserId = getCurrentUser().uid;
-    const uniqueChatId = getUniqueChatId();
+    const selectedUserId = getSelectedUser().uid;
+    const uniqueChatId = uniqueChatid(curretnUserId, selectedUserId);
     const chatRef = doc(db, "messages", uniqueChatId);
     getDoc(chatRef).then((doc) => {
       const document = doc.data();
@@ -188,21 +212,11 @@ export default function ChatPageUser() {
   const [messages, setMessages] = useState([]);
   const [isMessagesLoaded, setIsMessagesLoaded] = useState(false);
 
-  // get unique id for chat
-  const getUniqueId = () => {
-    let timestamp = new Date().getTime().toString(16); // Convert the current time to a hexadecimal string
-    let random = Math.random().toString(16).slice(2); // Generate a random number and convert it to a hexadecimal string
-    return timestamp + random;
-  };
-
   const updateEmojiURL = (emojis, message) => {
     emojis.forEach((emoji) => {
       // check if the message include emoji
       if (message.includes(emoji.emoji)) {
-        message = message.replace(
-          emoji.emoji,
-          emoji.emojiURL
-        );
+        message = message.replace(emoji.emoji, emoji.emojiURL);
       }
     });
     return message;
@@ -212,13 +226,18 @@ export default function ChatPageUser() {
   const getUnreadMessage = async () => {
     const curretnUserId = getCurrentUser().uid;
     const selectedUserId = getSelectedUser().uid;
-    const uniqueChatId = getUniqueChatId();
-
-    const collectionRef = collection(db, "messages", uniqueChatId, "chat");
+    const collectionRef = collection(
+      db,
+      "users",
+      curretnUserId,
+      "messages",
+      selectedUserId,
+      "chat"
+    );
     const q = query(
       collectionRef,
-      where("isRead", "==", false),
-      where("from", "==", curretnUserId)
+      where("isRead", "==", false)
+      // where("from", "==", curretnUserId)
     );
     getDocs(q)
       .then((querySnapshot) => {
@@ -259,12 +278,16 @@ export default function ChatPageUser() {
   };
 
   // update how is view this chat
-  const updateChatView = (uniqueChatId) => {
+  const updateChatView = (currentUserId, selectedUserId) => {
+    const uniqueChatId = uniqueChatid(currentUserId, selectedUserId);
     const chatRef = doc(db, "messages", uniqueChatId);
     getDoc(chatRef).then((doc) => {
       const document = doc.data();
       if (document.sender && document.receiver) {
+        setIsBothUserConnected(true);
         getUnreadMessage();
+      } else {
+        setIsBothUserConnected(false);
       }
     });
   };
@@ -272,32 +295,63 @@ export default function ChatPageUser() {
   // add message to database
   const addMessageTODataBase = async (
     message,
-    uniqueChatId,
-    selectedUserId,
     currentUserId,
+    selectedUserId,
     path
   ) => {
     try {
-      const docRef = doc(db, "messages", uniqueChatId);
-      getDoc(docRef)
+      const uniqueChatId = uniqueChatid(currentUserId, selectedUserId);
+      const currentUserColl = collection(db, "messages");
+      const currentUserDoc = doc(currentUserColl, uniqueChatId);
+      getDoc(currentUserDoc)
         .then((querySnapshot) => {
           let isReceived = false;
-          if (querySnapshot.data().sender && querySnapshot.data().receiver) {
-            console.log("both connecte");
+          let isRead = false;
+          if (querySnapshot.data()?.sender && querySnapshot.data()?.receiver) {
             isReceived = true;
+            isRead = true;
           }
-          const messageRef = collection(db, "messages", uniqueChatId, "chat");
+          const currentUserCollChat = collection(
+            db,
+            "users",
+            currentUserId,
+            "messages",
+            selectedUserId,
+            "chat"
+          );
           const messageData = {
-            id: getUniqueId(),
+            id: selectedUserId,
             content: message,
             from: currentUserId,
             to: selectedUserId,
             createdAt: serverTimestamp(),
-            isRead: false,
+            isRead,
             isReceived,
             media: path ? path : null,
           };
-          addDoc(messageRef, messageData).then(() => fetchImagesInChat(uniqueChatId)).catch((e) => console.log(e.message));
+          if(path) fetchImagesInChat(currentUserId , selectedUserId)
+          addDoc(currentUserCollChat, messageData)
+            .then((docRef) => {
+              const id = docRef.id;
+              const selectedUserDoc = doc(
+                db,
+                "users",
+                selectedUserId,
+                "messages",
+                currentUserId,
+                "chat",
+                id
+              );
+              getDoc(selectedUserDoc)
+                .then((doc) => {
+                  setDoc(selectedUserDoc, messageData).catch((e) =>
+                    console.error(e.message)
+                  );
+                })
+                .catch((e) => console.error(e.message));
+            })
+            .catch((e) => console.error(e));
+
           // update last message in both user lastMessage collection
           const currentUserLastMessageRef = collection(
             db,
@@ -320,31 +374,28 @@ export default function ChatPageUser() {
             messageData
           ).catch((e) => console.log(e.message));
         })
-        .catch((e) => console.log(e.message));
-      updateChatView(uniqueChatId);
-      
+        .catch((e) => console.error(e.message));
+      updateChatView(currentUserId, selectedUserId);
     } catch (error) {
-      console.log(error.message);
+      console.error(error.message);
     }
   };
 
   // update the message in the local state
-  const updateMessageLocaly = (message, uniqueChatId, file) => {
-    const docRef = doc(db, "messages", uniqueChatId);
-    let isReceived = false;
-    getDoc(docRef).then((querySnapshot) => {
-      if (querySnapshot.data().sender && querySnapshot.data().receiver) {
-        isReceived = true;
-      }
-    });
+  const updateMessageLocaly = (
+    message,
+    currentUserId,
+    selectedUserId,
+    file
+  ) => {
     const messageData = {
-      id: getUniqueId(),
+      id: selectedUserId,
       content: message,
       createdAt: new Date().getTime(),
       isRead: false,
-      from: getCurrentUser().uid,
-      to: getSelectedUser().uid,
-      isReceived,
+      from: currentUserId,
+      to: selectedUserId,
+      isReceived: false,
       media: file ? file : null,
     };
     setMessages((prev) => [...prev, messageData]);
@@ -359,33 +410,15 @@ export default function ChatPageUser() {
     }, 100);
   };
 
-  // get unique chat id
-  const getUniqueChatId = () => {
-    const selectedUserId = getSelectedUser().uid;
-    const currentUserId = getCurrentUser().uid;
-    if (currentUserId > selectedUserId) {
-      return `${currentUserId + selectedUserId}`;
-    } else {
-      return `${selectedUserId + currentUserId}`;
-    }
-  };
-
   // help upload image to database
-  const helpUploadImage = (path , newMessage) => {
+  const helpUploadImage = (path, newMessage) => {
     const currentUserId = getCurrentUser().uid;
     const selectedUserId = getSelectedUser().uid;
-    const uniqueChatId = getUniqueChatId();
-    addMessageTODataBase(
-      newMessage,
-      uniqueChatId,
-      selectedUserId,
-      currentUserId,
-      path
-    );
+    addMessageTODataBase(newMessage, currentUserId, selectedUserId, path);
   };
 
   // update the photo img in firebase
-  const uploadTheImageFile = (file , newMessage) => {
+  const uploadTheImageFile = (file, newMessage) => {
     // unique image name
     const imageName = new Date().getTime() + file.name;
     const storageRef = ref(
@@ -407,7 +440,7 @@ export default function ChatPageUser() {
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           const fullPath = uploadTask.snapshot.ref.fullPath;
-          helpUploadImage(downloadURL , newMessage);
+          helpUploadImage(downloadURL, newMessage);
         });
       }
     );
@@ -418,26 +451,20 @@ export default function ChatPageUser() {
     e && e.preventDefault();
     const currentUserId = getCurrentUser().uid;
     const selectedUserId = getSelectedUser().uid;
-    const uniqueChatId = getUniqueChatId();
-    const newMessage =  updateEmojiURL(emojys , message);
+    const newMessage = updateEmojiURL(emojys, message);
     if (
       file ||
       (file !== null && message.length > 0 && message.trim().length > 0)
     ) {
-      uploadTheImageFile(file , newMessage);
-      
-      updateMessageLocaly(newMessage, uniqueChatId, file);
+      uploadTheImageFile(file, newMessage);
+
+      updateMessageLocaly(newMessage, currentUserId, selectedUserId, file);
       setFile(null);
       return;
     }
     if (message.length > 0 && message.trim().length > 0) {
-      addMessageTODataBase(
-        newMessage,
-        uniqueChatId,
-        selectedUserId,
-        currentUserId
-      );
-      updateMessageLocaly(newMessage, uniqueChatId);
+      addMessageTODataBase(newMessage, currentUserId, selectedUserId);
+      updateMessageLocaly(newMessage, currentUserId, selectedUserId);
     }
   };
 
@@ -447,29 +474,43 @@ export default function ChatPageUser() {
     setEmojys([]);
     setIsEmojiPickerShow(false);
     setIsArabic(true);
-    const uniqueChatId = getUniqueChatId();
-    fetchImagesInChat(uniqueChatId)
-    setIsLastDocUpdated(false);
-    // get the last 10 messages
-    const messageRef = collection(db, "messages", uniqueChatId, "chat");
-    const q = query(messageRef, orderBy("createdAt", "desc"), limit(20));
-    setIsMessagesLoaded(true);
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const messages = [];
-      // get the last doc
-      const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
-      setIsLastDocExist(true);
-      setLastDoc(lastDoc);
-      querySnapshot.forEach((doc) => {
-        messages.push({ ...doc.data(), id: doc.id });
+    const currentUserId = getCurrentUser()?.uid;
+    const selectedUserId = getSelectedUser()?.uid;
+    let unsubscribe;
+    if (selectedUserId) {
+      fetchImagesInChat(currentUserId, selectedUserId);
+      setIsLastDocUpdated(false);
+      // get the last 10 messages
+      const messageRef = collection(
+        db,
+        "users",
+        currentUserId,
+        "messages",
+        selectedUserId,
+        "chat"
+      );
+      const q = query(messageRef, orderBy("createdAt", "desc"), limit(20));
+      setIsMessagesLoaded(true);
+      unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const messages = [];
+        // get the last doc
+        const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+        setIsLastDocExist(true);
+        setLastDoc(lastDoc);
+        querySnapshot.forEach((doc) => {
+          messages.push({ ...doc.data(), id: doc.id });
+        });
+        const reversedMessages = messages.reverse();
+        setMessages(reversedMessages);
+        setAllMessages(reversedMessages, false);
+        setIsMessagesLoaded(false);
       });
-      const reversedMessages = messages.reverse();
-      setMessages(reversedMessages);
-      setAllMessages(reversedMessages, false);
-      setIsMessagesLoaded(false);
-    });
-    return () => unsubscribe();
-  }, [getSelectedUser().uid]);
+    } else {
+      setIsSelectedUser(false);
+      setSelectedUser(null);
+    }
+    return () => unsubscribe?.();
+  }, [ getSelectedUser()?.uid]);
 
   // scroll to bottom when new message send
   useEffect(() => {
@@ -477,30 +518,61 @@ export default function ChatPageUser() {
       scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }
 
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-
-    const lastMessages = lastMessage();
+    const lasteMessage = lastMessage();
     if (
-      lastMessages &&
-      lastMessages.from !== getCurrentUser().uid &&
-      lastMessages?.isReceived === true &&
-      lastMessages !== lastPlayedMessage
+      lasteMessage?.from !== getCurrentUser().uid &&
+      isBothUserConnected === true
     ) {
-      setLastPlayedMessage(lastMessages);
       const sound = new Audio(ViewChatSound);
       sound.play();
+      const currentUserId = getCurrentUser()?.uid;
+      const selectedUserId = getSelectedUser()?.uid;
+      if(currentUserId && selectedUserId && lasteMessage?.media !== null){
+        fetchImagesInChat(currentUserId, selectedUserId);
+      }
+      console.log("sound");
     }
-  }, [lastMessage()?.content , lastPlayedMessage , isLastDocUpdated]);
+  }, [lastMessage()?.content, isLastDocUpdated, messages.length]);
+
+
+
+  // get unique chat id
+  const getUniqueChatId = (currentUserId, selectedUserId) => {
+    if (currentUserId > selectedUserId) {
+      return currentUserId + selectedUserId;
+    } else {
+      return selectedUserId + currentUserId;
+    }
+  };
+
+  // is both user connected
+  useEffect(() => {
+    const currentUserId = getCurrentUser()?.uid;
+    const selectedUserId = getSelectedUser()?.uid;
+    const uniqueChatId = getUniqueChatId(currentUserId, selectedUserId);
+    const howIsViewingRef = doc(db, "messages", uniqueChatId);
+    const unsubscribe = onSnapshot(howIsViewingRef, (doc) => {
+      if (doc.exists()) {
+        const data = doc.data();
+        if (data?.sender && data?.receiver) {
+          setIsBothUserConnected(true);
+        } else {
+          setIsBothUserConnected(false);
+        }
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   // handel selected image
-  const selectedImage = (img, content) => {
-    if (img && content) {
-      setImageAndContent({ img, content });
+  const selectedImage = (src, content) => {
+    if (src && content) {
+      setImageAndContent({ src, content });
       setIsImageSelected(true);
-    } else if (img) {
-      setImageAndContent({ img });
+    } else if (src) {
+      setImageAndContent({ src });
       setIsImageSelected(true);
-    } 
+    }
   };
 
   // handel file upload
@@ -518,10 +590,18 @@ export default function ChatPageUser() {
 
   // handel fetch more messages
   const handelFetchMoreMessages = () => {
-    const uniqueChatId = getUniqueChatId();
+    const currentUserId = getCurrentUser()?.uid;
+    const selectedUserId = getSelectedUser()?.uid;
     // check if the last doc is null
     if (!lastDoc) return;
-    const messageRef = collection(db, "messages", uniqueChatId, "chat");
+    const messageRef = collection(
+      db,
+      "users",
+      currentUserId,
+      "messages",
+      selectedUserId,
+      "chat"
+    );
     const q = query(
       messageRef,
       orderBy("createdAt", "desc"),
@@ -556,41 +636,49 @@ export default function ChatPageUser() {
   };
 
   // fetch all the images in the chat
-  const fetchImagesInChat = (uniqueChatId) => {
-    const messageRef = collection(db, "messages", uniqueChatId, "chat");
+  const fetchImagesInChat = (currentUserId, selectedUserId) => {
+    const messageRef = collection(
+      db,
+      "users",
+      currentUserId,
+      "messages",
+      selectedUserId,
+      "chat"
+    );
     const q = query(messageRef, where("media", "!=", null));
-    getDocs(q).then(querySnapshot => {
-        const images = [];
-        querySnapshot.forEach((doc) => {
-          images.push({ ...doc.data(), id: doc.id });
-        });
-        const srcImages = images.map((image) => {
-          return {
-            src: image.media,
-            alt: image.content,
-            time: image.createdAt?.seconds ? image.createdAt.seconds  : image.createdAt,
-          };
-        });
-        // sort the images by time
-        srcImages.sort((a, b) => a.time - b.time);
-        setImages(srcImages);
-    })
-  }
-
-
+    getDocs(q).then((querySnapshot) => {
+      const images = [];
+      querySnapshot.forEach((doc) => {
+        images.push({ ...doc.data(), id: doc.id });
+      });
+      const srcImages = images.map((image) => {
+        return {
+          src: image.media,
+          alt: image.content,
+          time: image.createdAt?.seconds
+            ? image.createdAt.seconds
+            : image.createdAt,
+        };
+      });
+      // sort the images by time
+      srcImages.sort((a, b) => a.time - b.time);
+      setImages(srcImages);
+    });
+  };
 
   // handel input and Emoji picker
   const handelEmojiPicker = (emojiData) => {
     const emoji = emojiData.emoji;
-    const emojiUnified = emojiData.unified ;
-    const emojiURL = emojiData.getImageUrl()
-    setEmojys((prevEmojys) => [...prevEmojys, { emoji, emojiUnified , emojiURL}]);
+    const emojiUnified = emojiData.unified;
+    const emojiURL = emojiData.getImageUrl();
+    setEmojys((prevEmojys) => [
+      ...prevEmojys,
+      { emoji, emojiUnified, emojiURL },
+    ]);
     setMessage((prevMessage) => {
-      return `${prevMessage} ${emoji}`
+      return `${prevMessage} ${emoji}`;
     });
   };
-
-
 
   // handel input Message focus
   const handelInputFocus = () => {
@@ -607,14 +695,91 @@ export default function ChatPageUser() {
     }
   };
 
-//  track the changes in the selected user
+  //  track the changes in the selected user
   useEffect(() => {
-    const docRef = doc(db, 'users' , getSelectedUser()?.uid)
-    const unsubscribe = onSnapshot(docRef, (doc) => {
-      setSelectedUser({...doc.data() , id: doc.id})
-    })
-    return () => unsubscribe()
-  }, [getSelectedUser()?.uid])
+    let unsubscribe = null;
+    if (getSelectedUser()?.uid) {
+      const docRef = doc(db, "users", getSelectedUser()?.uid);
+      unsubscribe = onSnapshot(docRef, (doc) => {
+        setSelectedUser({ ...doc.data(), id: doc.id });
+      });
+    } else {
+      setIsSelectedUser(false);
+      setSelectedUser(null);
+    }
+    return () => unsubscribe?.();
+  }, [getSelectedUser()?.uid]);
+
+  // handle outside click
+  useEffect(() => {
+    function handleOutsideClick(e) {
+      if (
+        headerIconsRef.current &&
+        (headerIconsRef?.current?.contains(e.target) ||
+          popupContainerRef?.current?.contains(e.target))
+      ) {
+        return;
+      }
+      setIsPopupShow(false);
+    }
+
+    document.addEventListener("click", handleOutsideClick);
+    return () => document.removeEventListener("click", handleOutsideClick);
+  }, []);
+
+  // handel show module
+  const handelShowModel = () => {
+    setIsModuleShow(true);
+    setIsPopupShow(false);
+  };
+  // handel close module
+  const handelCloseModule = () => {
+    setIsModuleShow(false);
+  };
+
+  // handel delete chat messages
+  const handelDeleteChatMessages = async () => {
+    const currentUserId = getCurrentUser()?.uid;
+    const selectedUserId = getSelectedUser()?.uid;
+    try {
+      const chatRef = collection(
+        db,
+        "users",
+        currentUserId,
+        "messages",
+        selectedUserId,
+        "chat"
+      );
+      const q = query(chatRef);
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        deleteDoc(doc.ref).catch((e) => console.log(e.message));
+        // delete the last Message doc
+        delteLastMessageDoc(currentUserId, selectedUserId);
+        setIsModuleShow(false);
+        setIsSelectedUser(false);
+        setSelectedUser(null);
+      });
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  // delte the last message doc
+  const delteLastMessageDoc = async (currentUserId, selectedUserId) => {
+    const lastMessageRef = doc(
+      db,
+      "users",
+      currentUserId,
+      "lastMessage",
+      selectedUserId
+    );
+    getDoc(lastMessageRef)
+      .then((doc) => {
+        deleteDoc(doc.ref).catch((e) => console.log(e.message));
+      })
+      .catch((e) => console.log(e.message));
+  };
 
 
   return (
@@ -629,62 +794,69 @@ export default function ChatPageUser() {
             isArabic={isArabic}
             handelSendMessage={handelSendMessage}
             message={message}
-            EmojyPiker={ <EmojiPicker
-              onEmojiClick={handelEmojiPicker}
-              autoFocusSearch={false}
-              lazyLoadEmojis={true}
-              theme="auto"
-              categories={[
-                {
-                  category: 'suggested',
-                  name: 'المستخدمة مؤخراً'
-                },
-                {
-                  category: 'smileys_people',
-                  name: 'الوجوه والناس'
-                },
-               {
-                category : 'animals_nature',
-                name : 'الحيوانات والطبيعة'
-                },
-                {
-                  category : 'food_drink',
-                  name : 'الطعام والشراب'
-                },
-                {
-                  category : 'travel_places',
-                  name : 'السفر والأماكن'
-                },
-                {
-                  category : 'activities',
-                  name : 'الأنشطة'
-                },
-                {
-                  category : 'objects',
-                  name : 'الأشياء'
-                },
-                {
-                  category : 'symbols',
-                  name : 'الرموز'
-                },
-                {
-                  category : 'flags',
-                  name : 'الأعلام'
-                },
-
-              ]}
-              searchDisabled={true}
-            />}
+            EmojyPiker={
+              <EmojiPicker
+                onEmojiClick={handelEmojiPicker}
+                autoFocusSearch={false}
+                lazyLoadEmojis={true}
+                theme="auto"
+                categories={[
+                  {
+                    category: "suggested",
+                    name: "المستخدمة مؤخراً",
+                  },
+                  {
+                    category: "smileys_people",
+                    name: "الوجوه والناس",
+                  },
+                  {
+                    category: "animals_nature",
+                    name: "الحيوانات والطبيعة",
+                  },
+                  {
+                    category: "food_drink",
+                    name: "الطعام والشراب",
+                  },
+                  {
+                    category: "travel_places",
+                    name: "السفر والأماكن",
+                  },
+                  {
+                    category: "activities",
+                    name: "الأنشطة",
+                  },
+                  {
+                    category: "objects",
+                    name: "الأشياء",
+                  },
+                  {
+                    category: "symbols",
+                    name: "الرموز",
+                  },
+                  {
+                    category: "flags",
+                    name: "الأعلام",
+                  },
+                ]}
+                searchDisabled={true}
+              />
+            }
           />
         </Suspense>
       )}
 
       {isImageSelected && (
         <ViewFullImage
-          file={imageAndContent}
+          selectedImage={imageAndContent}
           setIsImageSelected={setIsImageSelected}
           images={images}
         />
+      )}
+
+      {isSelectedUserProfileShow && (
+        <Suspense fallback={<SpinerLoader />}>
+          <SelectedUserProfile setisProfileShow={setIsSelectedUserProfileShow} images={images}/>
+        </Suspense>
       )}
       <header>
         <div className="back" onClick={handelBack}>
@@ -698,20 +870,46 @@ export default function ChatPageUser() {
             />
           </div>
         </div>
-        <div className="info">
+        <div
+          className="info"
+          onClick={() => setIsSelectedUserProfileShow(true)}
+        >
           <h3>{getSelectedUser()?.displayName || "ahmed"}</h3>
           <p className="f-ar dr">
             {getSelectedUser()?.isOnline ? "متصل الآن" : timeAgo}
           </p>
         </div>
-        <div className="icons">
-          <div className="icon">
-            <HiSearch />
-          </div>
-          <div className="icon">
-            <HiDotsVertical />
-          </div>
+       {
+        messages.length > 0 && ( <div className="icons" ref={headerIconsRef}>
+        <div className="icon">
+          <HiSearch />
         </div>
+        <div
+          className={`icon ${isPopupShow ? "bg--hover" : ""}`}
+          onClick={() => setIsPopupShow((prev) => !prev)}
+        >
+          <HiDotsVertical />
+        </div>
+      </div>)
+       }
+        {(isPopupShow) && (
+          <div className="popup--container" ref={popupContainerRef}>
+            <ul className="popup--item f-ar">
+              <li onClick={() => setIsSelectedUserProfileShow(true)}> مشاهدة جهة الإتصال </li>
+              <li onClick={handelShowModel}> مسح محتوى الدردشة </li>
+            </ul>
+          </div>
+        )}
+        {isModuleshow && (
+          <Suspense fallback={<SpinerLoader />}>
+            <DeleteModule
+              handelCancel={handelCloseModule}
+              handelDelete={handelDeleteChatMessages}
+              moduleTitle="delete chat"
+              icon={<MdDeleteForever />}
+            />
+          </Suspense>
+        )}
       </header>
       {/* chat container */}
       <div className="chat-content">
@@ -762,42 +960,41 @@ export default function ChatPageUser() {
               theme="auto"
               categories={[
                 {
-                  category: 'suggested',
-                  name: 'المستخدمة مؤخراً'
+                  category: "suggested",
+                  name: "المستخدمة مؤخراً",
                 },
                 {
-                  category: 'smileys_people',
-                  name: 'الوجوه والناس'
-                },
-               {
-                category : 'animals_nature',
-                name : 'الحيوانات والطبيعة'
+                  category: "smileys_people",
+                  name: "الوجوه والناس",
                 },
                 {
-                  category : 'food_drink',
-                  name : 'الطعام والشراب'
+                  category: "animals_nature",
+                  name: "الحيوانات والطبيعة",
                 },
                 {
-                  category : 'travel_places',
-                  name : 'السفر والأماكن'
+                  category: "food_drink",
+                  name: "الطعام والشراب",
                 },
                 {
-                  category : 'activities',
-                  name : 'الأنشطة'
+                  category: "travel_places",
+                  name: "السفر والأماكن",
                 },
                 {
-                  category : 'objects',
-                  name : 'الأشياء'
+                  category: "activities",
+                  name: "الأنشطة",
                 },
                 {
-                  category : 'symbols',
-                  name : 'الرموز'
+                  category: "objects",
+                  name: "الأشياء",
                 },
                 {
-                  category : 'flags',
-                  name : 'الأعلام'
+                  category: "symbols",
+                  name: "الرموز",
                 },
-
+                {
+                  category: "flags",
+                  name: "الأعلام",
+                },
               ]}
               searchDisabled={true}
             />

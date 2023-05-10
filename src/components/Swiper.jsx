@@ -4,10 +4,11 @@ import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "./styles/Swiper.css";
 
-export default function Swiper({ images, selectedImage }) {
+export default function Swiper({ images, selectedImageSrc }) {
   const selectedImageIndex = images.findIndex(
-    (image) => image.src === selectedImage
+    (image) => image.src === selectedImageSrc
   );
+
   // track the inedx of the selected image
   const [imageIndex, setImageIndex] = useState(selectedImageIndex);
   const [isLastIndex, setIsLastIndex] = useState(false);
@@ -90,15 +91,15 @@ export default function Swiper({ images, selectedImage }) {
               effect="blur"
             />
             {/* carsor for next and prev image */}
-            {(!isLastIndex && isArrowShow)&& (
-              <div className="arrow--container next" onClick={handelNextImage}>
+            {(  isArrowShow)&& (
+              <div className={`arrow--container next ${isLastIndex ? 'disabeled' : ''}`} onClick={handelNextImage}>
                 <div className="swiper--next d-f" >
                 <BiChevronLeft />
               </div>
               </div>
             )}
-            {(!isFirstIndex && isArrowShow) && (
-             <div className="arrow--container prev" onClick={handelPrevImage}>
+            {(  isArrowShow) && (
+             <div className={`arrow--container prev ${isFirstIndex ? 'disabeled' : ''}`} onClick={handelPrevImage}>
                <div className="swiper--prev d-f" >
                 <BiChevronRight />
               </div>

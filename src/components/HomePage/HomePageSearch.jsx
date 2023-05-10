@@ -3,32 +3,28 @@ import { BsX } from "react-icons/bs";
 import { HiSearch } from "react-icons/hi";
 import { MdFilterList } from "react-icons/md";
 
-export default function HomepageSearch({ isUnreadMessageShow , isUnreadMessage , setIsUnreadMessage , search ,setSearch}) {
-  // search
-
-  const [isSearch, setIsSearch] = useState(false);
-  const [isArabic, setIsArabic] = useState(true);
+export default function HomepageSearch({
+  isUnreadMessageShow,
+  isUnreadMessage,
+  setIsUnreadMessage,
+  search,
+  setSearch,
+}) {
+  // is Arabic
+  const isArabicText = (text) => {
+    if (text.length < 1) return true;
+    return /[\u0600-\u06FF]/.test(text);
+  };
 
   // handel change
   const handelChnage = (e) => {
     const { value } = e.target;
-    const isArabic = /[\u0600-\u06FF]/.test(value);
-    isArabic ? setIsArabic(true) : setIsArabic(false);
     setSearch(value);
-    if (value.length > 0) {
-      setIsSearch(true);
-    } else {
-      setIsArabic(true);
-      setIsSearch(false);
-    }
   };
-
 
   // handel clear
   const handelClear = () => {
     setSearch("");
-    setIsSearch(false);
-    setIsArabic(true);
   };
   return (
     <div className="search--container">
@@ -39,18 +35,18 @@ export default function HomepageSearch({ isUnreadMessageShow , isUnreadMessage ,
           placeholder="البحث عن دردشة أو بدء دردشة جديدة"
           onChange={handelChnage}
           value={search}
-          className={isArabic ? "dr-ar" : "dr-en"}
+          className={isArabicText(search) ? "dr-ar" : "dr-en"}
         />
-        {isSearch && <BsX onClick={handelClear} />}
+        {search.length > 0 && <BsX onClick={handelClear} />}
       </div>
-      {
-        isUnreadMessageShow && <div
-        className={`icon ${isUnreadMessage && "unred-bg"}`}
-        onClick={() => setIsUnreadMessage((prev) => !prev)}
-      >
-        <MdFilterList />
-      </div>
-      }
+      {isUnreadMessageShow && (
+        <div
+          className={`icon ${isUnreadMessage && "unred-bg"}`}
+          onClick={() => setIsUnreadMessage((prev) => !prev)}
+        >
+          <MdFilterList />
+        </div>
+      )}
     </div>
   );
 }

@@ -3,16 +3,15 @@ import Swiper from "../Swiper";
 import "./styles/ViewFullImage.css";
 
 
-export default function ViewFullImage({ file, setIsImageSelected , images}) {
+export default function ViewFullImage({ selectedImage, setIsImageSelected , images}) {
   // handel Back
   const handelBack = () => {
     setIsImageSelected(false);
   };
 
+
   // sort the images by the 
 
-  //   is content Arabic
-  const isArabic = /[\u0600-\u06FF]/.test(file.content);
 
   return (
     <div className="viewFullPage">
@@ -22,7 +21,7 @@ export default function ViewFullImage({ file, setIsImageSelected , images}) {
         </div>
       </div>
       <div className="image d-f">
-      <Swiper images={images} selectedImage={file.img}/>
+      <Swiper images={images} selectedImageSrc={selectedImage.src}/>
       </div>
     </div>
   );

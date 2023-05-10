@@ -438,6 +438,7 @@ export default function UserProfile() {
           handelDeleteUserImg={handelDeleteUserImg}
           handleFile={handleFile}
           setIsImageView={setIsImageView}
+          isOnlyShowImage={false}
         />
       )}
     </div>

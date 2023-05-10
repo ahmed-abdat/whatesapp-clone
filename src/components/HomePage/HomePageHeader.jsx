@@ -2,18 +2,25 @@ import { BsFillChatRightTextFill } from "react-icons/bs";
 import { HiDotsVertical } from "react-icons/hi";
 import useUsers from "../../store/useUsers";
 import useUser from "../../store/useUser";
-import { useEffect, useRef, useState } from "react";
+import { lazy , Suspense , useEffect, useRef, useState } from "react";
 import { app, auth } from "../../config/firebase";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { doc, getFirestore, updateDoc , serverTimestamp } from "firebase/firestore/lite";
+import { doc, getFirestore, updateDoc , serverTimestamp, deleteDoc, collection, getDocs } from "firebase/firestore/lite";
 import useSelectedUser from "../../store/useSelectedUser";
+import SpinerLoader from "../SpinerLoader";
 import defaultAvatar from "../../assets/img/default-avatar.svg";
 import "../styles/HeaderPopup.css";
 
-export default function HomePageHeader({setIsAllUsersShow}) {
+
+const DeleteModule = lazy(() => import('../DeleteModule'))
+
+export default function HomePageHeader({setIsAllUsersShow }) {
   const getCurrentUser = useUser((state) => state.getCurrentUser);
   const setIsProfileShow = useUsers((state) => state.setIsProfileShow);
+
+  // state
+  const [isModuleshow , setIsModuleShow] = useState(false)
 
   const [isPopupShow, setIsPopupShow] = useState(false);
   const headerIconsRef = useRef(null);
@@ -27,6 +34,7 @@ export default function HomePageHeader({setIsAllUsersShow}) {
 
   // set selected user
   const setSelectedUser = useSelectedUser((state) => state.setSelectedUser);
+
 
   // navigate
   const navigate = useNavigate();
@@ -99,6 +107,79 @@ export default function HomePageHeader({setIsAllUsersShow}) {
     setIsPopupShow(false)
     setIsProfileShow(true)
   }
+
+    // delet all Messages collection 
+    const deleteAllChatMessages = async (id) => {
+      const firestore = getFirestore(app);
+      const currentUserId = getCurrentUser().uid;
+      const lastMessageCollection = collection(firestore , 'users' , currentUserId , 'messages' , id , 'chat');
+      getDocs(lastMessageCollection).then((snapshot) => {
+        snapshot.forEach( async doc => {
+          await deleteDoc(doc.ref).then(() => console.log('document delte with succes')).catch((e) => console.log(e.message))
+        })
+      }
+      )
+    }
+
+  // handel delet account
+  const handelDeletAccount = async () => {
+    const currentUserId = getCurrentUser().uid;
+    const firestore = getFirestore(app);
+    const docRef = doc(firestore, "users", currentUserId);
+    try {
+      setIsLogoutLoading(true)
+      // delete the user from the database
+      await deleteDoc(docRef);
+      // delete the lastMessage collection of the user
+      deleteLastMessageCollection();
+      // signout the user
+       setTimeout(() => {
+        setSelectedUser(null);
+        localStorage.clear();
+        signOut(auth)
+          .then(() => {
+            setCurrentUser(null);
+            console.log("signout succesfully");
+            setIsLogoutLoading(false);
+          })
+          .catch((error) => {
+            console.error(error.message);
+          });
+        navigate("/welcoome");
+       }, 2500);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  // delete the lastMessage collection of the user
+  const deleteLastMessageCollection = async () => {
+    const firestore = getFirestore(app);
+    const currentUserId = getCurrentUser().uid;
+    const lastMessageCollection = collection(firestore , 'users' , currentUserId , 'lastMessage' );
+    getDocs(lastMessageCollection).then((snapshot) => {
+      let arr = []
+      snapshot.forEach( async doc => {
+        arr.push(doc.id)
+        await deleteDoc(doc.ref)
+      })
+      arr?.map((userID) => deleteAllChatMessages(userID))
+    }
+    )
+  }
+
+  // handel show module 
+  const handelShowModel = () => {
+    setIsModuleShow(true)
+    setIsPopupShow(false)
+  }
+
+  // handel close module
+  const handelCloseModule = () => {
+    setIsModuleShow(false)
+  }
+
+
   return (
     <header>
       <div className="header--container">
@@ -118,12 +199,17 @@ export default function HomePageHeader({setIsAllUsersShow}) {
       {isPopupShow && (
         <div className="popup--container" ref={popupContainerRef}>
           <ul className="popup--item f-ar">
-            <li> مجموعة جديدة </li>
             <li onClick={handelGoToProfile}> الملف الشخصي </li>
             <li onClick={handelSignout}>تسجيل الخروج</li>
+            <li onClick={handelShowModel}> حذف حسابك </li>
           </ul>
         </div>
       )}
+      {
+        isModuleshow && <Suspense fallback={<SpinerLoader />} >
+          <DeleteModule handelCancel={handelCloseModule} handelDelete={handelDeletAccount}/>
+        </Suspense>
+      }
     </header>
   );
 }
