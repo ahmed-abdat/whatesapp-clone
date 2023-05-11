@@ -3,6 +3,7 @@ import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "./styles/Swiper.css";
+import {FiDownload} from "react-icons/fi"
 import { storage } from "../config/firebase";
 import { saveAs } from 'file-saver'
 import { getDownloadURL, ref } from "firebase/storage";
@@ -73,7 +74,8 @@ export default function Swiper({ images, selectedImageSrc }) {
 
   // handel download image
   const downloadImage = (imageUrl) => {
-    saveAs(imageUrl, 'image.jpg');
+    const imageName = imageUrl.split('?')[0].split('/')[7];
+    saveAs(imageUrl, imageName);
   } 
 
 
@@ -83,6 +85,7 @@ export default function Swiper({ images, selectedImageSrc }) {
 
   return (
     <div className="swiper--container">
+      <FiDownload               onClick={() => downloadImage(image.src)}/>
       {/* render the current image and add a cursor to navigate between images */}
       <div
         className={`swiper--wrapper`}
@@ -95,11 +98,10 @@ export default function Swiper({ images, selectedImageSrc }) {
               alt="image"
               height={"100%"}
               src={image.src}
-              onClick={() => downloadImage(image.src)}
+              onClick={()=> setIsArrowShow(prev => !prev)}
               width={"100%"}
               effect="blur"
             />
-            <button onClick={() => downloadImage(image.src)}>download Image</button>
             {/* carsor for next and prev image */}
             {(  isArrowShow)&& (
               <div className={`arrow--container next ${isLastIndex ? 'disabeled' : ''}`} onClick={handelNextImage}>
