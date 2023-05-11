@@ -1,6 +1,7 @@
 import { MdClose } from "react-icons/md";
 import Swiper from "../Swiper";
 import "./styles/ViewFullImage.css";
+import { storage } from "../../config/firebase";
 
 
 export default function ViewFullImage({ selectedImage, setIsImageSelected , images}) {
@@ -8,7 +9,7 @@ export default function ViewFullImage({ selectedImage, setIsImageSelected , imag
   const handelBack = () => {
     setIsImageSelected(false);
   };
-
+ 
 
   // sort the images by the 
 

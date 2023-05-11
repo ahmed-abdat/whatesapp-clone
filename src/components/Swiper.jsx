@@ -3,6 +3,9 @@ import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "./styles/Swiper.css";
+import { storage } from "../config/firebase";
+import { saveAs } from 'file-saver'
+import { getDownloadURL, ref } from "firebase/storage";
 
 export default function Swiper({ images, selectedImageSrc }) {
   const selectedImageIndex = images.findIndex(
@@ -14,6 +17,7 @@ export default function Swiper({ images, selectedImageSrc }) {
   const [isLastIndex, setIsLastIndex] = useState(false);
   const [isFirstIndex, setIsFirstIndex] = useState(false);
   const [isArrowShow, setIsArrowShow] = useState(true);
+  const [imageURL , setImageURL] = useState(null)
 
   // handel next image
   const handelPrevImage = () => {
@@ -67,6 +71,11 @@ export default function Swiper({ images, selectedImageSrc }) {
       return newArray
     };
 
+  // handel download image
+  const downloadImage = (imageUrl) => {
+    saveAs(imageUrl, 'image.jpg');
+  } 
+
 
 
 
@@ -79,17 +88,18 @@ export default function Swiper({ images, selectedImageSrc }) {
         className={`swiper--wrapper`}
         style={{ transform: `translateX(-${imageIndex * 100}%)` }}
       >
-        {images.map((image, index) => (
-          <div key={index} className="swiper--image">
+        {images.map((image) => (
+          <div key={image.src} className="swiper--image">
             {/* <img src={image.src} alt="" onClick={()=> setIsArrowShow(prev => !prev)} /> */}
             <LazyLoadImage
               alt="image"
               height={"100%"}
               src={image.src}
-              onClick={()=> setIsArrowShow(prev => !prev)}
+              onClick={() => downloadImage(image.src)}
               width={"100%"}
               effect="blur"
             />
+            <button onClick={() => downloadImage(image.src)}>download Image</button>
             {/* carsor for next and prev image */}
             {(  isArrowShow)&& (
               <div className={`arrow--container next ${isLastIndex ? 'disabeled' : ''}`} onClick={handelNextImage}>

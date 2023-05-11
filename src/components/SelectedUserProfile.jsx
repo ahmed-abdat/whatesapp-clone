@@ -44,7 +44,10 @@ export default function SelectedUserProfile({ setisProfileShow }) {
         images.push({
           src: doc.data().media,
           alt: doc.data().content,
-          time: doc.data().createdAt?.seconds,
+          time: doc.data().createdAt?.seconds
+          ? doc.data().createdAt.seconds
+          : doc.data().createdAt,
+          fallPath : doc.data()?.mediaFullPath 
         });
       });
       setImages(images);
@@ -96,8 +99,6 @@ export default function SelectedUserProfile({ setisProfileShow }) {
           images={images}
           setIsImageSelected={setIsViewFullImage}
         />
-      ) : isImagesLoading ? (
-        <SpinerLoader />
       ) : (
         <>
           <header>
@@ -151,16 +152,18 @@ export default function SelectedUserProfile({ setisProfileShow }) {
               صور و الوسائط <span>{images.length}</span>
               <GraitherThen />
             </p>
-            <div className="media--images">
-              {selecteduserImages.map((image) => (
-                <img
-                  src={image.src}
-                  key={image.src}
-                  alt="media"
-                  onClick={() => handelSelectedImage(image)}
-                />
-              ))}
-            </div>
+           {
+            isImagesLoading ? <SpinerLoader /> :  <div className="media--images">
+            {selecteduserImages.map((image) => (
+              <img
+                src={image.src}
+                key={image.src}
+                alt="media"
+                onClick={() => handelSelectedImage(image)}
+              />
+            ))}
+          </div>
+           }
           </section>
         </>
       )}

@@ -337,13 +337,13 @@ export default function HomePageUser({
           <h3
             className={`${
               isArabic(displayName) ? "f-ar dr-ar" : "f-en dr-en"
-            } ${isMessageNotRead ? "unread-name" : ""}`}
+            } ${(isMessageNotRead && UnreadMessages > 0) ? "unread-name" : ""}`}
           >
             {displayName || "Ahmed Abdat"}
           </h3>
           {lastMessage?.createdAt && (
             <p
-              className={`dr-ar f-ar ${isMessageNotRead ? "unread-color" : ""}`}
+              className={`dr-ar f-ar ${(isMessageNotRead && UnreadMessages > 0) ? "unread-color" : ""}`}
             >{`${timeAgo} ${
               lastSeanMessage.format("a") === "am" ? "ص" : "م"
             }`}</p>
@@ -356,7 +356,7 @@ export default function HomePageUser({
                 <BsImageFill />
               <p
                 className={`${contentClass()} ${
-                  isMessageNotRead ? "unread-message-content" : ""
+                  (isMessageNotRead && UnreadMessages > 0) ? "unread-message-content" : ""
                 }`}
                 >
               {newContent.map((content, index) => (
@@ -372,7 +372,7 @@ export default function HomePageUser({
           ) : lastMessage?.content ? (
             <p
               className={`${contentClass()} ${
-                isMessageNotRead ? "unread-message-content" : ""
+                (isMessageNotRead && UnreadMessages > 0) ? "unread-message-content" : ""
               }`}
             >
               {newContent.map((content, index) => (

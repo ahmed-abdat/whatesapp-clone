@@ -2,18 +2,16 @@ import { BsFillChatRightTextFill } from "react-icons/bs";
 import { HiDotsVertical } from "react-icons/hi";
 import useUsers from "../../store/useUsers";
 import useUser from "../../store/useUser";
-import { lazy , Suspense , useEffect, useRef, useState } from "react";
+import {  useEffect, useRef, useState } from "react";
 import { app, auth } from "../../config/firebase";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { doc, getFirestore, updateDoc , serverTimestamp, deleteDoc, collection, getDocs } from "firebase/firestore/lite";
 import useSelectedUser from "../../store/useSelectedUser";
-import SpinerLoader from "../SpinerLoader";
 import defaultAvatar from "../../assets/img/default-avatar.svg";
+import DeleteModule from "../DeleteModule";
 import "../styles/HeaderPopup.css";
 
-
-const DeleteModule = lazy(() => import('../DeleteModule'))
 
 export default function HomePageHeader({setIsAllUsersShow }) {
   const getCurrentUser = useUser((state) => state.getCurrentUser);
@@ -206,9 +204,8 @@ export default function HomePageHeader({setIsAllUsersShow }) {
         </div>
       )}
       {
-        isModuleshow && <Suspense fallback={<SpinerLoader />} >
+        isModuleshow && 
           <DeleteModule handelCancel={handelCloseModule} handelDelete={handelDeletAccount}/>
-        </Suspense>
       }
     </header>
   );

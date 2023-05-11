@@ -261,7 +261,7 @@ export default function HomePage() {
   }, []);
 
   // filter the freind list so show only the unread message from the other useres
-  const filterFreinds = freindsList.map(
+  const filterFreinds = freindsList.filter(
     (user) =>
       user?.lastMessage.from !== getCurrentUser().uid &&
       user?.lastMessage.isRead === false

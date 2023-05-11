@@ -43,12 +43,12 @@ import { BsImageFill } from "react-icons/bs";
 import { lazy, Suspense } from "react";
 import useMessages from "../../store/useMessages";
 import EmojiPicker from "emoji-picker-react";
+import DeleteModule from "../DeleteModule";
 
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 // lazy loade
 const ViewSelectedImage = lazy(() => import("../ViewSelectedImage"));
-const DeleteModule = lazy(() => import("../DeleteModule"));
 const SelectedUserProfile = lazy(() => import("../SelectedUserProfile"));
 
 export default function ChatPageUser() {
@@ -297,7 +297,8 @@ export default function ChatPageUser() {
     message,
     currentUserId,
     selectedUserId,
-    path
+    path,
+    fullPath
   ) => {
     try {
       const uniqueChatId = uniqueChatid(currentUserId, selectedUserId);
@@ -328,8 +329,9 @@ export default function ChatPageUser() {
             isRead,
             isReceived,
             media: path ? path : null,
+            mediaFullPath: fullPath ? fullPath : null,
           };
-          if(path) fetchImagesInChat(currentUserId , selectedUserId)
+          if (path) fetchImagesInChat(currentUserId, selectedUserId);
           addDoc(currentUserCollChat, messageData)
             .then((docRef) => {
               const id = docRef.id;
@@ -411,10 +413,16 @@ export default function ChatPageUser() {
   };
 
   // help upload image to database
-  const helpUploadImage = (path, newMessage) => {
+  const helpUploadImage = (path, newMessage, fullPath) => {
     const currentUserId = getCurrentUser().uid;
     const selectedUserId = getSelectedUser().uid;
-    addMessageTODataBase(newMessage, currentUserId, selectedUserId, path);
+    addMessageTODataBase(
+      newMessage,
+      currentUserId,
+      selectedUserId,
+      path,
+      fullPath
+    );
   };
 
   // update the photo img in firebase
@@ -440,7 +448,8 @@ export default function ChatPageUser() {
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           const fullPath = uploadTask.snapshot.ref.fullPath;
-          helpUploadImage(downloadURL, newMessage);
+          console.log("File available at", fullPath);
+          helpUploadImage(downloadURL, newMessage, fullPath);
         });
       }
     );
@@ -510,7 +519,7 @@ export default function ChatPageUser() {
       setSelectedUser(null);
     }
     return () => unsubscribe?.();
-  }, [ getSelectedUser()?.uid]);
+  }, [getSelectedUser()?.uid]);
 
   // scroll to bottom when new message send
   useEffect(() => {
@@ -527,14 +536,12 @@ export default function ChatPageUser() {
       sound.play();
       const currentUserId = getCurrentUser()?.uid;
       const selectedUserId = getSelectedUser()?.uid;
-      if(currentUserId && selectedUserId && lasteMessage?.media !== null){
+      if (currentUserId && selectedUserId && lasteMessage?.media !== null) {
         fetchImagesInChat(currentUserId, selectedUserId);
       }
       console.log("sound");
     }
   }, [lastMessage()?.content, isLastDocUpdated, messages.length]);
-
-
 
   // get unique chat id
   const getUniqueChatId = (currentUserId, selectedUserId) => {
@@ -649,20 +656,17 @@ export default function ChatPageUser() {
     getDocs(q).then((querySnapshot) => {
       const images = [];
       querySnapshot.forEach((doc) => {
-        images.push({ ...doc.data(), id: doc.id });
+        images.push({
+          src: doc.data().media,
+          alt: doc.data().content,
+          time: doc.data().createdAt?.seconds
+            ? doc.data().createdAt.seconds
+            : doc.data().createdAt,
+            fallPath : doc.data()?.mediaFullPath 
+        });
       });
-      const srcImages = images.map((image) => {
-        return {
-          src: image.media,
-          alt: image.content,
-          time: image.createdAt?.seconds
-            ? image.createdAt.seconds
-            : image.createdAt,
-        };
-      });
-      // sort the images by time
-      srcImages.sort((a, b) => a.time - b.time);
-      setImages(srcImages);
+      images.sort((a, b) => a.time - b.time);
+      setImages(images);
     });
   };
 
@@ -781,7 +785,6 @@ export default function ChatPageUser() {
       .catch((e) => console.log(e.message));
   };
 
-
   return (
     <div className={`chat-page--container ${!isSelectedUser ? "hide" : ""}`}>
       {file && (
@@ -855,7 +858,10 @@ export default function ChatPageUser() {
 
       {isSelectedUserProfileShow && (
         <Suspense fallback={<SpinerLoader />}>
-          <SelectedUserProfile setisProfileShow={setIsSelectedUserProfileShow} images={images}/>
+          <SelectedUserProfile
+            setisProfileShow={setIsSelectedUserProfileShow}
+            images={images}
+          />
         </Suspense>
       )}
       <header>
@@ -879,36 +885,37 @@ export default function ChatPageUser() {
             {getSelectedUser()?.isOnline ? "متصل الآن" : timeAgo}
           </p>
         </div>
-       {
-        messages.length > 0 && ( <div className="icons" ref={headerIconsRef}>
-        <div className="icon">
-          <HiSearch />
-        </div>
-        <div
-          className={`icon ${isPopupShow ? "bg--hover" : ""}`}
-          onClick={() => setIsPopupShow((prev) => !prev)}
-        >
-          <HiDotsVertical />
-        </div>
-      </div>)
-       }
-        {(isPopupShow) && (
+        {messages.length > 0 && (
+          <div className="icons" ref={headerIconsRef}>
+            <div className="icon">
+              <HiSearch />
+            </div>
+            <div
+              className={`icon ${isPopupShow ? "bg--hover" : ""}`}
+              onClick={() => setIsPopupShow((prev) => !prev)}
+            >
+              <HiDotsVertical />
+            </div>
+          </div>
+        )}
+        {isPopupShow && (
           <div className="popup--container" ref={popupContainerRef}>
             <ul className="popup--item f-ar">
-              <li onClick={() => setIsSelectedUserProfileShow(true)}> مشاهدة جهة الإتصال </li>
+              <li onClick={() => setIsSelectedUserProfileShow(true)}>
+                {" "}
+                مشاهدة جهة الإتصال{" "}
+              </li>
               <li onClick={handelShowModel}> مسح محتوى الدردشة </li>
             </ul>
           </div>
         )}
         {isModuleshow && (
-          <Suspense fallback={<SpinerLoader />}>
-            <DeleteModule
-              handelCancel={handelCloseModule}
-              handelDelete={handelDeleteChatMessages}
-              moduleTitle="delete chat"
-              icon={<MdDeleteForever />}
-            />
-          </Suspense>
+          <DeleteModule
+            handelCancel={handelCloseModule}
+            handelDelete={handelDeleteChatMessages}
+            moduleTitle="delete chat"
+            icon={<MdDeleteForever />}
+          />
         )}
       </header>
       {/* chat container */}
@@ -920,7 +927,7 @@ export default function ChatPageUser() {
         <div className="message--container">
           <div className="container">
             {/* see more messages */}
-            {isLastDocExist && messages.length > 10 && (
+            {isLastDocExist && messages.length >= 20 && (
               <div className="d-f">
                 <button
                   className="seeMore f-ar dr-ar"
