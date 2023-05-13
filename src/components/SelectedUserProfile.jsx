@@ -45,9 +45,9 @@ export default function SelectedUserProfile({ setisProfileShow }) {
           src: doc.data().media,
           alt: doc.data().content,
           time: doc.data().createdAt?.seconds
-          ? doc.data().createdAt.seconds
-          : doc.data().createdAt,
-          fallPath : doc.data()?.mediaFullPath 
+            ? doc.data().createdAt.seconds
+            : doc.data().createdAt,
+          fallPath: doc.data()?.mediaFullPath,
         });
       });
       setImages(images);
@@ -88,7 +88,7 @@ export default function SelectedUserProfile({ setisProfileShow }) {
     <div className="selected-user-profile">
       {isImageView && getSelectedUser()?.photoURL ? (
         <ViewImage
-          title="الصورة الشخصية"
+          title={getSelectedUser().displayName}
           isOnlyShowImage={true}
           setIsImageView={setIsImageView}
           image={getSelectedUser()?.photoURL}
@@ -152,18 +152,20 @@ export default function SelectedUserProfile({ setisProfileShow }) {
               صور و الوسائط <span>{images.length}</span>
               <GraitherThen />
             </p>
-           {
-            isImagesLoading ? <SpinerLoader /> :  <div className="media--images">
-            {selecteduserImages.map((image) => (
-              <img
-                src={image.src}
-                key={image.src}
-                alt="media"
-                onClick={() => handelSelectedImage(image)}
-              />
-            ))}
-          </div>
-           }
+            {isImagesLoading ? (
+              <SpinerLoader />
+            ) : (
+              <div className="media--images">
+                {selecteduserImages.map((image) => (
+                  <img
+                    src={image.src}
+                    key={image.src}
+                    alt="media"
+                    onClick={() => handelSelectedImage(image)}
+                  />
+                ))}
+              </div>
+            )}
           </section>
         </>
       )}
