@@ -13,7 +13,8 @@
     width: 450px;
     min-width: 250px;
     max-width: 96%;
-    max-height: calc(100vh - 0px);
+    max-height: 100vh;
+    max-height: 100dvh;
     box-shadow: 0 10px 40px -20px rgba(0, 0, 0, 0.5);
     border-radius: 6px;
     -webkit-border-radius: 6px;

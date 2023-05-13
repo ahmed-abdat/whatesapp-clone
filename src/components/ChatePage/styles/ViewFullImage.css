@@ -1,6 +1,6 @@
 .viewFullPage {
   width: 100%;
-  /* height: 100vh; */
+  height: 100vh;
   height: 100dvh;
   background-color:#fffffff4;
   color: #333;

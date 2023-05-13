@@ -4,7 +4,8 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
-    width: 100vw;
+    height: 100dvh;
+    width: 100%;
     font-family: "Amiri", sans-serif;
 }
 
