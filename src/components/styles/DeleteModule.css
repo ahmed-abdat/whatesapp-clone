@@ -81,7 +81,7 @@
 .module .btns .btn {
     border: none;
     outline: none;
-    padding: 0.5rem 3rem;
+    padding: 0.5rem 1.5rem;
     border-radius: 0.5rem;
     font-size: 0.9rem;
 }
