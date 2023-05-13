@@ -17,13 +17,13 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: 60px;
+  height: 65px;
   padding-inline:  16px;
   border-right: 1px solid #d1d7db;
 }
 
 .viewFullPage .header .icon {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     cursor: pointer;
     padding: 0.3rem;
 }
