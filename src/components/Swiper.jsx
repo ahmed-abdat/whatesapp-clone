@@ -18,7 +18,7 @@ export default function Swiper({ images, selectedImageSrc }) {
   const [isLastIndex, setIsLastIndex] = useState(false);
   const [isFirstIndex, setIsFirstIndex] = useState(false);
   const [isArrowShow, setIsArrowShow] = useState(true);
-  const [imageURL , setImageURL] = useState(null)
+  
 
   // handel next image
   const handelPrevImage = () => {
@@ -72,10 +72,13 @@ export default function Swiper({ images, selectedImageSrc }) {
       return newArray
     };
 
+
   // handel download image
-  const downloadImage = (imageUrl) => {
-    const imageName = imageUrl.split('?')[0].split('/')[7];
-    saveAs(imageUrl, imageName);
+  const downloadImage = () => {
+    const imageURL = images[imageIndex].src;
+    console.log(images[imageIndex].src);
+    const imageName = imageURL.split('?')[0].split('/')[7];
+    saveAs(imageURL, imageName);
   } 
 
 
@@ -85,7 +88,9 @@ export default function Swiper({ images, selectedImageSrc }) {
 
   return (
     <div className="swiper--container">
-      <FiDownload               onClick={() => downloadImage(image.src)}/>
+            <div className="download">
+            <FiDownload  onClick={downloadImage}/>
+            </div>
       {/* render the current image and add a cursor to navigate between images */}
       <div
         className={`swiper--wrapper`}
