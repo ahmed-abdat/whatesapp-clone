@@ -1,6 +1,7 @@
 .viewFullPage {
   width: 100%;
-  height: 100vh;
+  /* height: 100vh; */
+  height: 100dvh;
   background-color:#fffffff4;
   color: #333;
   display: flex;
@@ -14,6 +15,7 @@
 .viewFullPage .header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   width: 100%;
   height: 60px;
   padding-inline:  16px;
