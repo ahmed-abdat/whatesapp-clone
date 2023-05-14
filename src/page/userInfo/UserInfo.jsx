@@ -1,9 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import "./userInfo.css";
 import useUser from "../../store/useUser";
-import { useEffect, useState } from "react";
-import {  getFirestore, doc, setDoc  , serverTimestamp} from "firebase/firestore/lite";
-import {app} from '../../config/firebase'
+import { useState } from "react";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  serverTimestamp,
+} from "firebase/firestore/lite";
+import { app } from "../../config/firebase";
 import { ToastContainer, toast } from "react-toastify";
 import {
   deleteObject,
@@ -12,12 +17,9 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { storage } from "../../config/firebase";
-import DefaultAvatar from '../../assets/img/default-avatar.svg'
-
 import "react-toastify/dist/ReactToastify.css";
-import { useDeferredValue } from "react";
 import Camera from "../../components/svg/Camera";
-import { MdDelete } from "react-icons/md";
+import { getAuth, updateProfile } from "firebase/auth";
 
 export default function UserInfo() {
   // get current user
@@ -27,12 +29,15 @@ export default function UserInfo() {
   const setCurrentUser = useUser((state) => state.setCurrentUser);
   const getIsEmailUser = useUser((state) => state.getIsEmailUser);
 
+  // get isAnonymousUser
+  const getIsAnonymousUser = useUser((state) => state.getIsAnonymousUser);
+  const setIsAnonymousUser = useUser((state) => state.setIsAnonymousUser);
   // state
   const [file, setFile] = useState(null);
 
   // displayName user
   const [displayName, setDisplayName] = useState(user?.displayName || "");
-  const [avatarName , setAvatarName] = useState(user?.displayName || "user")
+  const [avatarName, setAvatarName] = useState(user?.displayName || "user");
   // is name Arabic
   const [isArabic, setIsArabic] = useState(false);
 
@@ -52,15 +57,6 @@ export default function UserInfo() {
   // navigate
   const navigate = useNavigate();
 
-  // set phoneuserVerified
-  const setIsPhoneUserVerified = useUser(
-    (state) => state.setIsPhoneUserVerified
-  );
-
-  // get phoneuserVerified
-  const getIsPhoneUserVerified = useUser(
-    (state) => state.getIsPhoneUserVerified
-  );
 
   // update the photo img in firebase
   const uploadTheImageFile = () => {
@@ -115,19 +111,24 @@ export default function UserInfo() {
       ...formData,
       displayName,
       phoneNumber,
-      photoURL: downloadURL ? downloadURL : user.photoURL ? user.photoURL : getAvatarURL(avatarName),
-      imageFullPath: fullPath,
+      photoURL: downloadURL
+        ? downloadURL
+        : user?.photoURL
+        ? user.photoURL
+        : getAvatarURL(avatarName),
+      imageFullPath: fullPath ? fullPath : null,
     };
-    const required = getIsEmailUser()
-      ? isUserEmailRequiredment()
-      : isUserPhoneRequiredment();
+    const required =
+      getIsEmailUser() || getIsAnonymousUser()
+        ? isUserEmailRequiredment()
+        : isUserPhoneRequiredment();
     required && updateUser(updatedUserData);
   };
 
   // handelChangeData
   const handelChangeData = (e) => {
-     // is name Arabic
-  const isArabic = /[\u0600-\u06FF]/.test(user?.displayName);
+    // is name Arabic
+    const isArabic = /[\u0600-\u06FF]/.test(user?.displayName);
     const { value, name } = e.target;
     setFormData((prevData) => {
       return {
@@ -141,46 +142,43 @@ export default function UserInfo() {
   const updateUser = async (user) => {
     setIsLoding(true);
     try {
-      const {
-        displayName,
-        email,
-        uid,
-        phoneNumber,
-        photoURL,
-        imageFullPath,
-      } = user;
       const phoneUseData = {
-        displayName,
-        uid,
-        phoneNumber,
-        photoURL: photoURL ? photoURL : null,
+        displayName: user.displayName,
+        uid: user.uid,
+        phoneNumber: user.phoneNumber,
+        photoURL: user?.photoURL ? user.photoURL : null,
         isOnline: true,
-        photoPath: imageFullPath ? imageFullPath : null,
+        photoPath: user?.imageFullPath ? user.imageFullPath : null,
         lastSeen: serverTimestamp(),
-        userStatus : 'جديد في واتساب',
-        lastMessage : ''
+        userStatus: "جديد في واتساب",
+        lastMessage: "",
       };
       const emailUserData = {
-        email,
-        displayName,
-        phoneNumber: phoneNumber ? phoneNumber : null,
-        uid,
+        email: user.email,
+        displayName: user.displayName,
+        phoneNumber: user?.phoneNumber ? user.phoneNumber : null,
+        uid: user.uid,
         isOnline: true,
-        photoURL: photoURL ? photoURL : null,
-        photoPath: imageFullPath ? imageFullPath : null,
+        photoURL: user?.photoURL ? user.photoURL : null,
+        photoPath: user?.imageFullPath ? user.imageFullPath : null,
         lastSeen: serverTimestamp(),
-        userStatus : 'جديد في واتساب',
-        lastMessage : ''
+        userStatus: "جديد في واتساب",
+        lastMessage: "",
       };
-
-      
-      const userData = getIsEmailUser() ? emailUserData : phoneUseData;
+      const auth = getAuth();
+      const userData =
+        getIsEmailUser() || getIsAnonymousUser() ? emailUserData : phoneUseData;
       const firestore = getFirestore(app);
-      const docRef = doc(firestore, 'users', uid);
+      const docRef = doc(firestore, "users", user.uid);
+      if (getIsAnonymousUser()) {
+        updateGoogleProfile(
+          auth.currentUser,
+          userData.displayName,
+          userData.photoURL
+        );
+      }
       await setDoc(docRef, userData);
-
       setCurrentUser(userData);
-      setIsPhoneUserVerified(true);
       toast.success("تم تحديث الملف الشخصي ");
       setTimeout(() => {
         navigate("/");
@@ -190,6 +188,20 @@ export default function UserInfo() {
       setIsLoding(false);
       console.error(error.message);
       toast.error("لم تتم العملية بنجاح حاول مرة أخرى");
+    }
+  };
+
+  // update user google profile
+  const updateGoogleProfile = async (currentUsere, displayName, photoURL) => {
+    try {
+      console.log(currentUsere, displayName, photoURL);
+      await updateProfile(currentUsere, {
+        displayName: displayName,
+        photoURL: photoURL,
+      });
+      console.log("update succes");
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
@@ -216,25 +228,23 @@ export default function UserInfo() {
   const handelSubmit = async (e) => {
     e.preventDefault();
 
-    if ( file) {
+    if (file) {
       const required = getIsEmailUser()
         ? isUserEmailRequiredment()
         : isUserPhoneRequiredment();
       required && uploadTheImageFile();
-      return
-    } 
-      handelUploadUserInfo();
-    
+      return;
+    }
+    handelUploadUserInfo();
   };
 
   // handel validate user phone
   const isUserPhoneRequiredment = () => {
     if (displayName.length >= 2) {
       return true;
-    } 
-      toast.error("الإسم يجب أن يكون أكثر من حرفين");
-      return false;
-    
+    }
+    toast.error("الإسم يجب أن يكون أكثر من حرفين");
+    return false;
   };
 
   // handel validate user email
@@ -258,28 +268,20 @@ export default function UserInfo() {
     setDisplayName(value);
   };
 
-  useEffect(() => {
-    if (!getIsEmailUser() && !getIsPhoneUserVerified()) {
-      toast.warning("الرجاء ضغض على التالي للمتابعة");
-    } 
-  }, []);
-
   // handel blure input
   const handelBlur = (e) => {
     const { value } = e.target;
-    if(value.length === 0){
-      setAvatarName('user')
-      return
+    if (value.length === 0) {
+      setAvatarName("user");
+      return;
     }
     setAvatarName(value);
   };
 
-  // handel set avatar name 
+  // handel set avatar name
   const getAvatarURL = (name) => {
-    return `https://avatars.dicebear.com/api/avataaars/${name}.svg`
-  }
-  
-
+    return `https://avatars.dicebear.com/api/avataaars/${name}.svg`;
+  };
 
   return (
     <div className="userInfo dr-ar">
@@ -304,19 +306,23 @@ export default function UserInfo() {
               />
             </div>
             <label
-                htmlFor="file-input"
-                className={`camera d-f ${isLoading || (precentage !== null && precentage <= 99) ? 'disabel' : ''}`}
-              >
-                <Camera />
-              </label>
-              <input
-                onChange={handleFile}
-                id="file-input"
-                type="file"
-                name="file"
-                style={{ display: "none" }}
-              />
+              htmlFor="file-input"
+              className={`camera d-f ${
+                isLoading || (precentage !== null && precentage <= 99)
+                  ? "disabel"
+                  : ""
+              }`}
+            >
+              <Camera />
             </label>
+            <input
+              onChange={handleFile}
+              id="file-input"
+              type="file"
+              name="file"
+              style={{ display: "none" }}
+            />
+          </label>
         </div>
 
         <div className="input name">
@@ -338,7 +344,7 @@ export default function UserInfo() {
             <input
               disabled={getIsEmailUser() ? true : false}
               name="email"
-              type="text"
+              type="email"
               placeholder="أدخل بريدك الإلكتروني هنا"
               id="email"
               onChange={handelChangeData}
@@ -346,19 +352,21 @@ export default function UserInfo() {
             />
           </div>
         )}
-        <div className="input phone">
-          <label htmlFor="phoneNumber"> رقم الهاتف</label>
-          <input
-            type="text"
-            placeholder="أدخل رقم هاتفك هنا"
-            id="phoneNumber"
-            name="phoneNumber"
-            onChange={handelPhone}
-            value={phoneNumber}
-            disabled={getIsEmailUser() ? false : true}
-          />
-        </div>
-       
+        {!getIsAnonymousUser() && (
+          <div className="input phone">
+            <label htmlFor="phoneNumber"> رقم الهاتف</label>
+            <input
+              type="text"
+              placeholder="أدخل رقم هاتفك هنا"
+              id="phoneNumber"
+              name="phoneNumber"
+              onChange={handelPhone}
+              value={phoneNumber}
+              disabled={getIsEmailUser() || getIsAnonymousUser() ? false : true}
+            />
+          </div>
+        )}
+
         <ToastContainer
           position="top-center"
           autoClose={2000}

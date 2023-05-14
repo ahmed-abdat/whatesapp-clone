@@ -162,6 +162,7 @@
   border-top-left-radius: 7.5px;
   margin-bottom: 0.2rem;
   height: 322.667px;
+  min-height: 200px;
   width: 100%;
   max-width: 500px;
   min-width: 200px;

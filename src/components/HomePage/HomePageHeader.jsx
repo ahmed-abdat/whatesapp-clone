@@ -4,7 +4,7 @@ import useUsers from "../../store/useUsers";
 import useUser from "../../store/useUser";
 import {  useEffect, useRef, useState } from "react";
 import { app, auth } from "../../config/firebase";
-import { signOut } from "firebase/auth";
+import { deleteUser, getAuth, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { doc, getFirestore, updateDoc , serverTimestamp, deleteDoc, collection, getDocs } from "firebase/firestore/lite";
 import useSelectedUser from "../../store/useSelectedUser";
@@ -32,6 +32,9 @@ export default function HomePageHeader({setIsAllUsersShow }) {
 
   // set selected user
   const setSelectedUser = useSelectedUser((state) => state.setSelectedUser);
+
+  // get isAnonymousUser
+  const getIsAnonymousUser = useUser((state) => state.getIsAnonymousUser);
 
 
   // navigate
@@ -61,8 +64,12 @@ export default function HomePageHeader({setIsAllUsersShow }) {
   const handelSignout = () => {
     setIsLogoutLoading(true);
     // signout the user
-    if (getCurrentUser()?.uid) {
+    if (getCurrentUser()?.uid && !getIsAnonymousUser()) {
       updateIsOnline();
+    }
+    if(getIsAnonymousUser()){
+      delteUsere();
+      deleteLastMessageCollection()
     }
     setTimeout(() => {
       setIsSelectedUser(false);
@@ -80,6 +87,21 @@ export default function HomePageHeader({setIsAllUsersShow }) {
       navigate("/welcoome");
     }, 2000);
   };
+
+  // delete anyonymous user account 
+  const delteUsere = async () => {
+    const currentUserId = getCurrentUser().uid;
+    const firestore = getFirestore(app);
+    const docRef = doc(firestore, "users", currentUserId);
+    try {
+      const auth = getAuth()
+      await deleteDoc(docRef);
+      await deleteUser(auth.currentUser)
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
 
   // update the user isOnline property to true
   const updateIsOnline = async () => {
@@ -128,6 +150,8 @@ export default function HomePageHeader({setIsAllUsersShow }) {
       setIsLogoutLoading(true)
       // delete the user from the database
       await deleteDoc(docRef);
+      const auth = getAuth()
+      await deleteUser(auth.currentUser)
       // delete the lastMessage collection of the user
       deleteLastMessageCollection();
       // signout the user
@@ -152,6 +176,7 @@ export default function HomePageHeader({setIsAllUsersShow }) {
 
   // delete the lastMessage collection of the user
   const deleteLastMessageCollection = async () => {
+  try {
     const firestore = getFirestore(app);
     const currentUserId = getCurrentUser().uid;
     const lastMessageCollection = collection(firestore , 'users' , currentUserId , 'lastMessage' );
@@ -164,6 +189,9 @@ export default function HomePageHeader({setIsAllUsersShow }) {
       arr?.map((userID) => deleteAllChatMessages(userID))
     }
     )
+  } catch (e) {
+    console.error(e.message)
+  }
   }
 
   // handel show module 
@@ -199,7 +227,7 @@ export default function HomePageHeader({setIsAllUsersShow }) {
           <ul className="popup--item f-ar">
             <li onClick={handelGoToProfile}> الملف الشخصي </li>
             <li onClick={handelSignout}>تسجيل الخروج</li>
-            <li onClick={handelShowModel}> حذف حسابك </li>
+            {!getIsAnonymousUser() && <li onClick={handelShowModel}> حذف حسابك </li>}
           </ul>
         </div>
       )}

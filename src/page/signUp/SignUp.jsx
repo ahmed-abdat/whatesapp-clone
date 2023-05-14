@@ -9,6 +9,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   onAuthStateChanged,
+  signInAnonymously,
 } from "firebase/auth";
 import {
   doc,
@@ -20,16 +21,16 @@ import {
 import { useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
 import useUser from "../../store/useUser";
+import GestIcon from '../../assets/img/anonymous-user.jpg'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import './SignUp.css'
 
 
 export default function SignUp() {
   const [phone, setPhone] = useState("");
   const [isLoading, setIsLoding] = useState(false);
-  const [data, setData] = useState([]);
+
 
   // get curentUser
   const getCurrentUser = useUser((state) => state.getCurrentUser);
@@ -38,6 +39,9 @@ export default function SignUp() {
 
   // get isEmailUser
   const getIsEmailUser = useUser((state) => state.getIsEmailUser);
+
+  // set isAnonymousUser
+  const setIsAnonymousUser = useUser((state) => state.setIsAnonymousUser);
 
   // get phoneUserVerified
   const getIsPhoneUserVerified = useUser(
@@ -117,8 +121,9 @@ export default function SignUp() {
       const docRef = doc(firestore, "users", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
+        console.log(docSnap.data());
         updateIsOnline(docSnap.id)
-        setCurrentUser(docSnap.data());
+        setCurrentUser({...docSnap.data() , id : docSnap.id});
          setTimeout(() => {
           navigate("/");
          }, 1500);
@@ -181,6 +186,20 @@ export default function SignUp() {
     return ()=> unsubscribe();
   }, []);
 
+  // sign up anonymous user
+  const signUpAnonymous = () => {
+    signInAnonymously(auth).then((userCredential) => {
+      setIsAnonymousUser(true)
+      setIsEmailUser(false)
+      const user = userCredential.user;
+      setCurrentUser(user)
+      navigate("/userInfo");
+    }).catch((error) => {
+      cosole.error(error.message);
+    });
+  };
+
+
   // save the user in firestore
 
   return (
@@ -198,7 +217,6 @@ export default function SignUp() {
           defaultCountry="MR"
           international
           limitMaxLength
-          // countries={["MR", "MA", "TN", "DZ", "LY", "EG", "SD", "SA"]}
           labels={ar}
         />
         <button type="submit" className="btn" disabled={isLoading}>
@@ -216,6 +234,13 @@ export default function SignUp() {
           src="https://img.icons8.com/color/24/000000/google-logo.png"
         />
         <p className="btn google-btn dr-ar"> تسجيل الدخول عن طريق Google</p>
+      </div>
+      <div className="signup-google geust dr-en" onClick={signUpAnonymous}>
+        <img
+          className="google-icon"
+          src={GestIcon} alt="gest icon"
+        />
+        <p className="btn google-btn dr-ar"> تسجيل الدخول كضيف  </p>
       </div>
       <ToastContainer
         position="top-center"

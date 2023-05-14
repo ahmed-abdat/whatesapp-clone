@@ -23,10 +23,11 @@ function App() {
   const getCurrentUser = useUser(state => state.getCurrentUser)
   const getIsPhoneUserVerified = useUser(state => state.getIsPhoneUserVerified)
   const getIsEmailUser = useUser(state => state.getIsEmailUser)
+  const getIsAnonymousUser = useUser((state) => state.getIsAnonymousUser)
   
   function RequireAuth({ children }) {
   
-    return (getCurrentUser() && getIsPhoneUserVerified()) || (getCurrentUser() && getIsEmailUser()) ? children : <Navigate to={"/welcoome"} />;
+    return (getCurrentUser() && getIsPhoneUserVerified()) || (getCurrentUser() && getIsEmailUser()) || (getCurrentUser() && getIsAnonymousUser())  ? children : <Navigate to={"/welcoome"} />;
   }
   
 

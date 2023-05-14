@@ -5,8 +5,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { Link, useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
 import useUser from "../../store/useUser";
-import { doc, setDoc } from "firebase/firestore";
-import { db } from "../../config/firebase";
+import { doc, getDoc, setDoc , getFirestore } from "firebase/firestore/lite";
+import { app } from "../../config/firebase";
 
 export default function Otp({}) {
   const confirmationResult = useSignUp((state) => state.confirmationResult);
@@ -30,7 +30,7 @@ export default function Otp({}) {
 
   const handleOtpChange = (element, index) => {
     // If the entered value is not a number, don't update the state
-    if (isNaN(element.value) || element.value === '') return false;
+    if (isNaN(element.value) || element.value === "") return false;
     // always start from the first input
     if (index !== 0 && otp[index - 1] === "") {
       // blur the current input and focus to the first input
@@ -70,37 +70,60 @@ export default function Otp({}) {
     setIsotpVerifie(false);
   };
 
-  //
+  // firestore for lite firebase
+  const firestore = getFirestore(app)
 
   const handelSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
-    confirmationResult
-      .confirm(otp.join(""))
-      .then((result) => {
-        setUser(result.user);
-        setCurrentUser(result.user);
-        setIsPhoneUserVerified(true);
-        toast.success("تمت المصادقة");
-        setTimeout(() => {
-          navigate("/userInfo");
+    try {
+      confirmationResult
+        .confirm(otp.join(""))
+        .then((result) => {
+          console.log(result.user.uid);
+          getUserInfo(result.user.uid , result.user);
+          setIsPhoneUserVerified(true);
+          toast.success("تمت المصادقة");
+          setTimeout(() => {
+            navigate("/userInfo");
+            setIsLoading(false);
+          }, 2000);
+        })
+        .catch((error) => {
           setIsLoading(false);
-        }, 2000);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        if (error.code === "auth/code-expired") {
-          toast.error("لقد إنتهت صلاحية رمز التأكيد");
-          return;
-        }
-        toast.error("! رمز تأكيد ليس صحيح");
-        // console.error(error);
-      });
+          if (error.code === "auth/code-expired") {
+            toast.error("لقد إنتهت صلاحية رمز التأكيد");
+            return;
+          }
+          toast.error("! رمز تأكيد ليس صحيح");
+          // console.error(error);
+        });
+    } catch (error) {
+      setIsLoading(false);
+      toast.error("حدث خطأ ما رجاءا قم بإدخال الرقم و المحاولة مرة أخرى");
+      console.log(error.message);
+    }
+  };
+
+  // get the current user info
+  const getUserInfo = async (id , usere) => {
+    const userRef = doc(firestore, "users", id);
+    const docSnap = await getDoc(userRef);
+    if (docSnap.exists()) {
+      console.log("Document data:", { ...docSnap.data(), id: docSnap.id });
+      const user = { ...docSnap.data(), id: docSnap.id };
+      setUser(user);
+      setCurrentUser(user);
+    } else {
+      console.log("No such document!");
+      setUser(usere);
+      setCurrentUser(usere);
+    }
   };
 
   // set doc to the firebase
   const setUser = async (user) => {
-    const userRef = doc(db, "users", user.uid);
+    const userRef = doc(firestore, "users", user.uid);
     await setDoc(userRef, {
       uid: user.uid,
       phoneNumber: getPhone(),

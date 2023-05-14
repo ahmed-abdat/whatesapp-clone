@@ -5,6 +5,7 @@ const useUser = create((set , get) => ({
   isEmailUser : false,
   isPhoneUserVerified : false,
   isLogoutLoading : false,
+  isAnonymousUser : false,
   setCurrentUser: (user) => {
     localStorage.setItem("currentUser", JSON.stringify(user));
     set(() => ({ currentUser: user }));
@@ -41,6 +42,14 @@ const useUser = create((set , get) => ({
     const updatedUser = { ...curentUser , ...user };
     set(() => ({ currentUser : updatedUser })),
     localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+  },
+  setIsAnonymousUser : (boolean) => {
+    localStorage.setItem("isAnonymousUser", JSON.stringify(boolean));
+    set(() => ({ isAnonymousUser : boolean }));
+  },
+  getIsAnonymousUser : ()=> {
+    const savedIsAnonymousUser =  JSON.parse(localStorage.getItem('isAnonymousUser'))
+    return savedIsAnonymousUser
   },
 }));
 

@@ -41,7 +41,6 @@ export default function HomePage() {
   const [isBtnTextShow, setIsBtnTextShow] = useState(false);
   const [search, setSearch] = useState("");
 
-  const btnMessageRef = useRef(null);
 
   // isAllUsersShow
   const isAllUsersShowe = useUsers((state) => state.isAllUsersShow);
@@ -254,16 +253,15 @@ export default function HomePage() {
       // scroll to the btn Message Ref
       if (freindsList.length < 1) {
         setIsBtnTextShow(true);
-        btnMessageRef?.current?.scrollIntoView({ behavior: "smooth" });
       }
-    }, 6000);
+    }, 5000);
     return () => clearTimeout(timer);
   }, []);
 
   // filter the freind list so show only the unread message from the other useres
   const filterFreinds = freindsList.filter(
     (user) =>
-      user?.lastMessage.from !== getCurrentUser().uid &&
+      user?.lastMessage.from !== getCurrentUser()?.uid &&
       user?.lastMessage.isRead === false
   );
 
@@ -347,7 +345,6 @@ export default function HomePage() {
                 className={`button ${
                   isBtnTextShow && freindsList.length < 1 ? "with-text" : ""
                 }`}
-                ref={btnMessageRef}
                 onClick={() => setIsAllUsersShowe(true)}
               >
                 <button

@@ -1,8 +1,5 @@
-// import HomePage from "../../components/HomePage";
-// import ChatPage from "../../components/ChatPage";
 import useSelectedUser from "../../store/useSelectedUser";
 import SpinerLoader from "../../components/SpinerLoader";
-// import ChatPageUser from "../../components/ChatPageUser";
 import { lazy } from "react";
 import { Suspense } from "react";
 import { useEffect } from "react";

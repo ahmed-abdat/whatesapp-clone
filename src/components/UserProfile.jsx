@@ -12,7 +12,8 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import { app, storage } from "../config/firebase";
+import { app, auth, storage } from "../config/firebase";
+import { FcGoogle } from "react-icons/fc";
 import { doc, updateDoc, getFirestore } from "firebase/firestore/lite";
 import { useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
@@ -20,6 +21,7 @@ import defaultAvatar from "../assets/img/default-avatar.svg";
 import ViewImage from "./ViewImage";
 import "react-toastify/dist/ReactToastify.css";
 import "./styles/userProfile.css";
+import { GoogleAuthProvider, linkWithPopup } from "firebase/auth";
 
 export default function UserProfile() {
   // get current user
@@ -84,6 +86,14 @@ export default function UserProfile() {
   const [isDisplayNameEdit, setIsDisplayNameEdit] = useState(false);
   // is userStatus edit
   const [isUserStatusEdit, setIsUserStatusEdit] = useState(false);
+
+  // get isAnonymousUser
+  const getIsAnonymousUser = useUser((state) => state.getIsAnonymousUser);
+  const setIsAnonymousUser = useUser((state) => state.setIsAnonymousUser);
+  const [isAnonymousUsere , setIsAnonymousUsere] = useState(getIsAnonymousUser())
+
+  // firestore
+  const firestore = getFirestore(app);
 
   // handle back
   const handelBack = () => {
@@ -150,7 +160,6 @@ export default function UserProfile() {
       photoPath: fullPath,
     };
     updateProfile(updatedFeild);
-    const firestore = getFirestore(app);
     const userRef = doc(firestore, "users", getCurrentUser().uid);
     updateDoc(userRef, updatedFeild)
       .then(() => {
@@ -172,7 +181,6 @@ export default function UserProfile() {
       profile.displayName.trim() !== user?.displayName &&
       profile.displayName !== ""
     ) {
-      const firestore = getFirestore(app);
       const userRef = doc(firestore, "users", getCurrentUser().uid);
       updateDoc(userRef, {
         displayName: profile.displayName,
@@ -200,7 +208,6 @@ export default function UserProfile() {
       profile.userStatus.trim() !== user?.userStatus &&
       profile.userStatus !== ""
     ) {
-      const firestore = getFirestore(app);
       const userRef = doc(firestore, "users", getCurrentUser().uid);
       updateDoc(userRef, {
         userStatus: profile.userStatus,
@@ -225,7 +232,6 @@ export default function UserProfile() {
     if (!getCurrentUser().photoPath) {
       updateProfile({ photoPath: null, photoURL: null });
       setFile(null);
-      const firestore = getFirestore(app);
       const userRef = doc(firestore, "users", getCurrentUser().uid);
       await updateDoc(userRef, {
         photoPath: null,
@@ -238,7 +244,6 @@ export default function UserProfile() {
       setIsImageLoading(true);
       await deleteObject(oldRef);
       console.log("fill deleted successfully");
-      const firestore = getFirestore(app);
       const userRef = doc(firestore, "users", getCurrentUser().uid);
       await updateDoc(userRef, {
         photoPath: null,
@@ -265,6 +270,45 @@ export default function UserProfile() {
     }
   };
 
+  // link geust account to google account
+  const linkToGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    linkWithPopup(auth.currentUser, provider)
+      .then((result) => {
+        updateEmail(result.user.uid, result.user.email);
+        setIsAnonymousUsere(false);
+        setIsAnonymousUser(false);
+        toast.success("تم ربط حسابك بنجاح ");
+        updateProfile({email : result.user.email})
+      })
+      .catch((error) => {
+        if (
+          error.message === "Firebase: Error (auth/credential-already-in-use)."
+        ) {
+          toast.error(
+            "عذرا هذا الإيميل مربوط بحساب آخر  !"
+          );
+          return;
+        }
+        console.error(error.message);
+        toast.error("لم تتم العملية بنجاح حاول مرة أخرى");
+      });
+  };
+
+  // update email user
+  const updateEmail = async (id, email) => {
+    try {
+      const userDoc = doc(firestore, "users", id);
+      await updateDoc(userDoc, {
+        email,
+      });
+    } catch (e) {
+      console.error(e.message);
+    }
+    finally {
+      updateProfile({email})
+    }
+  };
 
 
   return (
@@ -318,11 +362,11 @@ export default function UserProfile() {
           </div>
           <ToastContainer
             position="top-center"
-            autoClose={2000}
+            autoClose={3500}
             hideProgressBar={false}
             newestOnTop={false}
             closeOnClick
-            rtl={false}
+            rtl={true}
             pauseOnFocusLoss
             draggable
             pauseOnHover
@@ -352,7 +396,13 @@ export default function UserProfile() {
                     }
                   />
                   {isDisplayNameEdit && (
-                    <span className={`length ${displayNameRef.current?.value?.length > 0 ? 'visible' : 'invisible'}`}>
+                    <span
+                      className={`length ${
+                        displayNameRef.current?.value?.length > 0
+                          ? "visible"
+                          : "invisible"
+                      }`}
+                    >
                       {maxDisplayNameLength - profile.displayName.length}
                     </span>
                   )}
@@ -392,7 +442,13 @@ export default function UserProfile() {
                     }
                   />
                   {isUserStatusEdit && (
-                    <span className={`length ${displayNameRef.current?.value?.length > 0 ? 'visible' : 'invisible'}`}>
+                    <span
+                      className={`length ${
+                        displayNameRef.current?.value?.length > 0
+                          ? "visible"
+                          : "invisible"
+                      }`}
+                    >
                       {maxUserStatusLength - profile.userStatus.length}
                     </span>
                   )}
@@ -419,7 +475,7 @@ export default function UserProfile() {
               </div>
             )}
             {/* profile email */}
-            {user?.email && (
+            {getCurrentUser()?.email && (
               <div className="profile--phone-number">
                 <div className="icon">
                   <MdOutlineEmail />
@@ -427,6 +483,17 @@ export default function UserProfile() {
                 <div className="display">
                   <h3>البريد الإلكتروني</h3>
                   <h4 className="dr-en">{user?.email}</h4>
+                </div>
+              </div>
+            )}
+            {isAnonymousUsere && (
+              <div className="profile--phone-number">
+                <div className="icon cur-pnter" onClick={linkToGoogle}>
+                  <FcGoogle />
+                </div>
+                <div className="display">
+                  <h3> ربط الحساب </h3>
+                  <h4 className="dr-en cur-pnter"> ربط حسابك بجوجل </h4>
                 </div>
               </div>
             )}

@@ -134,6 +134,11 @@
   font-weight: 400;
 }
 
+/* geust link with google  */
+.cur-pnter {
+  cursor: pointer;
+}
+
 /* input */
 
 .user-profile .display .input {
