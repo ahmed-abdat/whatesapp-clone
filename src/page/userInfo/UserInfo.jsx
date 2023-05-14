@@ -194,7 +194,6 @@ export default function UserInfo() {
   // update user google profile
   const updateGoogleProfile = async (currentUsere, displayName, photoURL) => {
     try {
-      console.log(currentUsere, displayName, photoURL);
       await updateProfile(currentUsere, {
         displayName: displayName,
         photoURL: photoURL,

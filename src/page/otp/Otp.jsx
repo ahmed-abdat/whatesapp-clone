@@ -80,7 +80,6 @@ export default function Otp({}) {
       confirmationResult
         .confirm(otp.join(""))
         .then((result) => {
-          console.log(result.user.uid);
           getUserInfo(result.user.uid , result.user);
           setIsPhoneUserVerified(true);
           toast.success("تمت المصادقة");
@@ -110,9 +109,7 @@ export default function Otp({}) {
     const userRef = doc(firestore, "users", id);
     const docSnap = await getDoc(userRef);
     if (docSnap.exists()) {
-      console.log("Document data:", { ...docSnap.data(), id: docSnap.id });
-      const user = { ...docSnap.data(), id: docSnap.id };
-      setUser(user);
+      setUser(docSnap.data());
       setCurrentUser(user);
     } else {
       console.log("No such document!");
@@ -168,7 +165,6 @@ export default function Otp({}) {
                   value={data}
                   onChange={(e) => handleOtpChange(e.target, index)}
                   onKeyDown={(e) => handelDeleteInput(e, index)}
-                  disabled={isOtpVerifie}
                   onFocus={(e) => e.target.select()}
                 />
               );
