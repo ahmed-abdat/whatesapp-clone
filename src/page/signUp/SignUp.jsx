@@ -121,9 +121,9 @@ export default function SignUp() {
       const docRef = doc(firestore, "users", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        console.log(docSnap.data());
+        setIsLoding(false)
         updateIsOnline(docSnap.id)
-        setCurrentUser({...docSnap.data() , id : docSnap.id});
+        setCurrentUser(docSnap.data());
          setTimeout(() => {
           navigate("/");
          }, 1500);
@@ -153,6 +153,7 @@ export default function SignUp() {
   // sign up with google
   const signInWithGoogle = () => {
     const provider = new GoogleAuthProvider();
+    setIsLoding(true);
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
@@ -188,19 +189,24 @@ export default function SignUp() {
 
   // sign up anonymous user
   const signUpAnonymous = () => {
+    setIsLoding(true)
     signInAnonymously(auth).then((userCredential) => {
       setIsAnonymousUser(true)
       setIsEmailUser(false)
       const user = userCredential.user;
       setCurrentUser(user)
+      setIsLoding(false)
       navigate("/userInfo");
     }).catch((error) => {
       cosole.error(error.message);
     });
   };
 
-
-  // save the user in firestore
+// clear the localsotrage
+useEffect(() => {
+  setCurrentUser(null)
+  localStorage.clear()
+}, [])
 
   return (
     <div className="signup--container">
@@ -228,14 +234,14 @@ export default function SignUp() {
       </div>
       <div className="or">أو</div>
       {/* signup from google */}
-      <div className="signup-google dr-en" onClick={signInWithGoogle}>
+      <div className={`signup-google dr-en ${isLoading ? 'disabel' : ''}`} onClick={signInWithGoogle}>
         <img
           className="google-icon"
           src="https://img.icons8.com/color/24/000000/google-logo.png"
         />
         <p className="btn google-btn dr-ar"> تسجيل الدخول عن طريق Google</p>
       </div>
-      <div className="signup-google geust dr-en" onClick={signUpAnonymous}>
+      <div className={`signup-google geust dr-en ${isLoading ? 'disabel' : ''}`} onClick={signUpAnonymous}>
         <img
           className="google-icon"
           src={GestIcon} alt="gest icon"
