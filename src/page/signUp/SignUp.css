@@ -79,7 +79,7 @@
 }
 
 .signup--container .signup-google.geust {
-  margin-top: 0.5rem;
+  margin-top: 0.8rem;
 }
 
 .signup--container .signup-google {
@@ -93,7 +93,7 @@
 .signup--container .google-icon {
   background-color: inherit;
   padding: 0.35rem;
-  width: 40px;
+  width: 36px;
 }
 
 .signup--container .signup-google .google-btn {
