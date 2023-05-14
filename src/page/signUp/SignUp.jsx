@@ -161,13 +161,10 @@ export default function SignUp() {
         toast.success("تم تسجيل الدخول بنجاح");
         setIsEmailUser(true);
       })
-      .catch((error) => {
+      .catch((e) => {
         toast.error("حدث خطأ أثناء تسجيل الدخول");
-        // Handle Errors here.
-        const errorCode = error.code;
-        console.error(error);
-        const errorMessage = error.message;
-        console.error(errorMessage);
+        console.error(e.message);
+        setIsLoding(false);
       });
   };
 

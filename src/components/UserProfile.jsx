@@ -1,6 +1,7 @@
 import { BiArrowBack, BiCheck } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import { RiInformationLine } from "react-icons/ri";
+import { FiLogOut } from "react-icons/fi";
 import { MdDelete, MdOutlineEmail, MdOutlineLocalPhone } from "react-icons/md";
 import { HiPencil } from "react-icons/hi";
 import useUsers from "../store/useUsers";
@@ -14,14 +15,15 @@ import {
 } from "firebase/storage";
 import { app, auth, storage } from "../config/firebase";
 import { FcGoogle } from "react-icons/fc";
-import { doc, updateDoc, getFirestore } from "firebase/firestore/lite";
+import { doc, updateDoc, getFirestore, deleteDoc, getDocs } from "firebase/firestore/lite";
 import { useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import defaultAvatar from "../assets/img/default-avatar.svg";
 import ViewImage from "./ViewImage";
+import DeleteModule from "./DeleteModule";
 import "react-toastify/dist/ReactToastify.css";
 import "./styles/userProfile.css";
-import { GoogleAuthProvider, linkWithPopup } from "firebase/auth";
+import { GoogleAuthProvider, deleteUser, linkWithPopup } from "firebase/auth";
 
 export default function UserProfile() {
   // get current user
@@ -34,6 +36,7 @@ export default function UserProfile() {
   const [file, setFile] = useState(null);
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [isImageView, setIsImageView] = useState(false);
+  const [isModuleshow , setIsModuleShow] = useState(false)
 
   // set is profile show
   const setIsProfileShow = useUsers((state) => state.setIsProfileShow);
@@ -90,7 +93,13 @@ export default function UserProfile() {
   // get isAnonymousUser
   const getIsAnonymousUser = useUser((state) => state.getIsAnonymousUser);
   const setIsAnonymousUser = useUser((state) => state.setIsAnonymousUser);
-  const [isAnonymousUsere , setIsAnonymousUsere] = useState(getIsAnonymousUser())
+  const [isAnonymousUsere, setIsAnonymousUsere] = useState(
+    getIsAnonymousUser()
+  );
+    // setIsLogoutLoading
+    const setIsLogoutLoading = useUser((state) => state.setIsLogoutLoading);
+    // set current user
+    const setCurrentUser = useUser((state) => state.setCurrentUser);
 
   // firestore
   const firestore = getFirestore(app);
@@ -279,15 +288,13 @@ export default function UserProfile() {
         setIsAnonymousUsere(false);
         setIsAnonymousUser(false);
         toast.success("تم ربط حسابك بنجاح ");
-        updateProfile({email : result.user.email})
+        updateProfile({ email: result.user.email });
       })
       .catch((error) => {
         if (
           error.message === "Firebase: Error (auth/credential-already-in-use)."
         ) {
-          toast.error(
-            "عذرا هذا الإيميل مربوط بحساب آخر  !"
-          );
+          toast.error("عذرا هذا الإيميل مربوط بحساب آخر  !");
           return;
         }
         console.error(error.message);
@@ -304,12 +311,81 @@ export default function UserProfile() {
       });
     } catch (e) {
       console.error(e.message);
-    }
-    finally {
-      updateProfile({email})
+    } finally {
+      updateProfile({ email });
     }
   };
 
+    // handel show module 
+    const handelShowModel = () => {
+      setIsModuleShow(true)
+    }
+  
+    // handel close module
+    const handelCloseModule = () => {
+      setIsModuleShow(false)
+    }
+
+ // handel delet account
+ const handelDeletAccount = async () => {
+  const currentUserId = getCurrentUser().uid;
+  const docRef = doc(firestore, "users", currentUserId);
+  try {
+    setIsLogoutLoading(true)
+    // delete the user from the database
+    await deleteDoc(docRef);
+    await deleteUser(auth.currentUser)
+    // delete the lastMessage collection of the user
+    deleteLastMessageCollection();
+    // signout the user
+     setTimeout(() => {
+      localStorage.clear();
+      signOut(auth)
+        .then(() => {
+          setCurrentUser(null);
+          console.log("signout succesfully");
+          setIsLogoutLoading(false);
+        })
+        .catch((error) => {
+          console.error(error.message);
+        });
+      navigate("/welcoome");
+     }, 2500);
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
+  // delete the lastMessage collection of the user
+  const deleteLastMessageCollection = async () => {
+    try {
+      const currentUserId = getCurrentUser().uid;
+      const lastMessageCollection = collection(firestore , 'users' , currentUserId , 'lastMessage' );
+      getDocs(lastMessageCollection).then((snapshot) => {
+        let arr = []
+        snapshot.forEach( async doc => {
+          arr.push(doc.id)
+          await deleteDoc(doc.ref)
+        })
+        arr?.map((userID) => deleteAllChatMessages(userID))
+      }
+      )
+    } catch (e) {
+      console.error(e.message)
+    }
+    }
+
+        // delet all Messages collection 
+        const deleteAllChatMessages = async (id) => {
+          const currentUserId = getCurrentUser().uid;
+          const lastMessageCollection = collection(firestore , 'users' , currentUserId , 'messages' , id , 'chat');
+          getDocs(lastMessageCollection).then((snapshot) => {
+            snapshot.forEach( async doc => {
+              await deleteDoc(doc.ref).then(() => console.log('document delte with succes')).catch((e) => console.log(e.message))
+            })
+          }
+          )
+        }
 
   return (
     <div className={`user-profile`}>
@@ -486,18 +562,31 @@ export default function UserProfile() {
                 </div>
               </div>
             )}
-            {isAnonymousUsere && (
-              <div className="profile--phone-number">
-                <div className="icon cur-pnter" onClick={linkToGoogle}>
+          </div>
+         <div className="btnse">
+         {isAnonymousUsere && (
+            <div className="link-account"  onClick={linkToGoogle}>
+              <button className="btne btn google-btn">
+                <div className="icon">
                   <FcGoogle />
                 </div>
-                <div className="display">
-                  <h3> ربط الحساب </h3>
-                  <h4 className="dr-en cur-pnter"> ربط حسابك بجوجل </h4>
-                </div>
-              </div>
-            )}
+                <h4 className="cur-pnter dr-en f-ar">Google ربط حسابك ب  </h4>
+              </button>
+            </div>
+          )}
+          {/* logout button */}
+          <div className="profile--logout" onClick={handelShowModel}>
+           <button className="btne btn logout-btn">
+           <div className="icon">
+              <FiLogOut />
+            </div>
+              <h4 className="dr-ar cur-pnter f-ar" >تسجيل الخروج</h4>
+           </button>
           </div>
+         </div>
+         {
+          isModuleshow && <DeleteModule handelCancel={handelBack} handelDelete={handelDeletAccount}  />
+         }
         </>
       ) : (
         <ViewImage
