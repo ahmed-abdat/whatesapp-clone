@@ -23,6 +23,8 @@ import {
   getDocs,
   serverTimestamp,
   collection,
+  query,
+  deleteField,
 } from "firebase/firestore/lite";
 import { useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
@@ -33,10 +35,12 @@ import "react-toastify/dist/ReactToastify.css";
 import "./styles/userProfile.css";
 import { GoogleAuthProvider, deleteUser, linkWithPopup, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import useSelectedUser from "../store/useSelectedUser";
 
 export default function UserProfile() {
   // get current user
   const getCurrentUser = useUser((state) => state.getCurrentUser);
+  const getSelectedUser = useSelectedUser((state) => state.getSelectedUser);
   const user = getCurrentUser();
 
   // set update profile
@@ -377,6 +381,37 @@ export default function UserProfile() {
       }
     };
 
+        // delete the current user from the all the chat view
+        const deleteTheCurrentUserFromAllChat = async () => {
+        try {
+          const q = query(collection(firestore, "messages"));
+          //  get all the chat
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach((doc) => {
+            // chcek if the current user is in the chat view whetever is it sender or receiver and update the chat view
+            const docData = doc.data();
+            if (
+              docData.sender === getCurrentUser().uid ||
+              docData.receiver === getSelectedUser().uid
+            ) {
+              const isSender = docData.sender === getCurrentUser().uid;
+              // if the user is the sender delete the field sender and if the user is the receiver delete the field receiver
+              if (isSender) {
+                updateDoc(doc.ref, {
+                  sender: deleteField(),
+                }).catch((err) => console.log(err));
+              } else {
+                updateDoc(doc.ref, {
+                  receiver: deleteField(),
+                }).catch((err) => console.log(err));
+              }
+            }
+          });
+        } catch (e) {
+          console.error(e.message)
+        }
+        };
+
   // handel signout
   const handelSignout = () => {
     setIsLogoutLoading(true);
@@ -388,6 +423,7 @@ export default function UserProfile() {
       delteUsere();
       deleteLastMessageCollection();
     }
+    deleteTheCurrentUserFromAllChat();
     setTimeout(() => {
       localStorage.clear();
       setIsProfileShow(false)
