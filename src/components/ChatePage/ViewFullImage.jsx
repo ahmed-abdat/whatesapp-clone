@@ -83,7 +83,6 @@ export default function ViewFullImage({ selectedImage, setIsImageSelected , imag
   // handel download image
   const downloadImage = () => {
     const imageURL = images[imageIndex].src;
-    console.log(images[imageIndex].src);
     const imageName = imageURL.split('?')[0].split('/')[7];
     saveAs(imageURL, imageName);
   } 

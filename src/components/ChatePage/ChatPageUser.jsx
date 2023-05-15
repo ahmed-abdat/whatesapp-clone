@@ -887,9 +887,9 @@ export default function ChatPageUser() {
         </div>
         {messages.length > 0 && (
           <div className="icons" ref={headerIconsRef}>
-            <div className="icon">
+            {/* <div className="icon">
               <HiSearch />
-            </div>
+            </div> */}
             <div
               className={`icon ${isPopupShow ? "bg--hover" : ""}`}
               onClick={() => setIsPopupShow((prev) => !prev)}

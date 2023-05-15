@@ -17,6 +17,7 @@ import {
 } from "firebase/firestore/lite";
 import { app } from "../config/firebase";
 import SpinerLoader from "./SpinerLoader";
+import SelectedUserGalary from "./SelectedUserGalary";
 
 export default function SelectedUserProfile({ setisProfileShow }) {
   const getSelectedUser = useSelectedUser((state) => state.getSelectedUser);
@@ -66,6 +67,7 @@ export default function SelectedUserProfile({ setisProfileShow }) {
   const [isSelectedUserChange, setIsSelectedUserChange] = useState(false);
   const [viewFullImage, setViewFullImage] = useState(null);
   const [isViewFullImage, setIsViewFullImage] = useState(false);
+  const [isGalaryShow , setIsGalaryShow] = useState(false)
 
   // close the selected user profile and the view image when the selected user change
   useEffect(() => {
@@ -84,6 +86,11 @@ export default function SelectedUserProfile({ setisProfileShow }) {
     setIsViewFullImage(true);
   };
 
+  // handel close galary
+  const handelCloseGalary = () => {
+    setIsGalaryShow(false)
+  }
+
   return (
     <div className="selected-user-profile">
       {isImageView && getSelectedUser()?.photoURL ? (
@@ -99,75 +106,77 @@ export default function SelectedUserProfile({ setisProfileShow }) {
           images={images}
           setIsImageSelected={setIsViewFullImage}
         />
+      ) : isGalaryShow ? (
+       <SelectedUserGalary closeGalary={handelCloseGalary} displayName={getSelectedUser().displayName} images={images}/>
       ) : (
         <>
-          <header>
-            <div className="header--text">
-              <BiArrowBack
-                className="r-180"
-                onClick={() => setisProfileShow(false)}
-              />
-              <h4 className="f-ar"> معلومات جهة الاتصال</h4>
-            </div>
-          </header>
-          {/* image and display Name  */}
-          <section className="image-displayName">
-            <div className="img d-f">
-              <img
-                src={getSelectedUser()?.photoURL || defaultAvatar}
-                alt="selecteduser image"
-                onClick={() => setIsImageView(true)}
-              />
-            </div>
-            <div className="selcted-user-info">
-              <h2
-                className={`${
-                  isArabic(getSelectedUser().displayName) ? "f-ar" : "f-en"
-                }`}
-              >
-                {getSelectedUser()?.displayName}
-              </h2>
-              <p className="f-en dr-en">
-                {getSelectedUser()?.email
-                  ? getSelectedUser().email
-                  : getSelectedUser()?.phoneNumber}
-              </p>
-            </div>
-          </section>
-          {/* status */}
-          <section className="status">
-            <p
+        <header>
+          <div className="header--text">
+            <BiArrowBack
+              className="r-180"
+              onClick={() => setisProfileShow(false)}
+            />
+            <h4 className="f-ar"> معلومات جهة الاتصال</h4>
+          </div>
+        </header>
+        {/* image and display Name  */}
+        <section className="image-displayName">
+          <div className="img d-f">
+            <img
+              src={getSelectedUser()?.photoURL || defaultAvatar}
+              alt="selecteduser image"
+              onClick={() => setIsImageView(true)}
+            />
+          </div>
+          <div className="selcted-user-info">
+            <h2
               className={`${
-                isArabic(getSelectedUser().userStatus)
-                  ? "f-ar dr-ar"
-                  : "f-en dr-en"
+                isArabic(getSelectedUser().displayName) ? "f-ar" : "f-en"
               }`}
             >
-              {getSelectedUser().userStatus}
+              {getSelectedUser()?.displayName}
+            </h2>
+            <p className="f-en dr-en">
+              {getSelectedUser()?.email
+                ? getSelectedUser().email
+                : getSelectedUser()?.phoneNumber}
             </p>
-          </section>
-          {/* media */}
-          <section className="media">
-            <p className="media--header">
-              صور و الوسائط <span>{images.length}</span>
-              <GraitherThen />
-            </p>
-            {isImagesLoading ? (
-              <SpinerLoader />
-            ) : (
-              <div className="media--images">
-                {selecteduserImages.map((image) => (
-                  <img
-                    src={image.src}
-                    key={image.src}
-                    alt="media"
-                    onClick={() => handelSelectedImage(image)}
-                  />
-                ))}
-              </div>
-            )}
-          </section>
-        </>
+          </div>
+        </section>
+        {/* status */}
+        <section className="status">
+          <p
+            className={`${
+              isArabic(getSelectedUser().userStatus)
+                ? "f-ar dr-ar"
+                : "f-en dr-en"
+            }`}
+          >
+            {getSelectedUser().userStatus}
+          </p>
+        </section>
+        {/* media */}
+        <section className="media">
+          <p className="media--header" onClick={() => setIsGalaryShow(true)}>
+            صور و الوسائط <span>{images.length}</span>
+            <GraitherThen />
+          </p>
+          {isImagesLoading ? (
+            <SpinerLoader />
+          ) : (
+            <div className="media--images">
+              {selecteduserImages.map((image) => (
+                <img
+                  src={image.src}
+                  key={image.src}
+                  alt="media"
+                  onClick={() => handelSelectedImage(image)}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+      </>
       )}
     </div>
   );
