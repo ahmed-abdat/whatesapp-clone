@@ -902,8 +902,7 @@ export default function ChatPageUser() {
           <div className="popup--container" ref={popupContainerRef}>
             <ul className="popup--item f-ar">
               <li onClick={() => setIsSelectedUserProfileShow(true)}>
-                {" "}
-                مشاهدة جهة الإتصال{" "}
+                مشاهدة جهة الإتصال
               </li>
               <li onClick={handelShowModel}> مسح محتوى الدردشة </li>
             </ul>

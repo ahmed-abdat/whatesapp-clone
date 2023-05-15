@@ -76,7 +76,7 @@ export default function Message({
   const isCurrentUserSender = isSender === getCurrentUser().uid;
 
   return (
-    <div className={`message ${isCurrentUserSender ? "sender" : "receiver"}`}>
+    <div className={`message ${isCurrentUserSender ? "sender" : "receiver"} ${media && !content ? 'sm-p' : ''}`}>
       {media ? (
         media?.name ? (
           <div className="img d-f">
@@ -105,13 +105,17 @@ export default function Message({
       <div className={`after ${isCurrentUserSender ? "send" : "receive"}`}>
         {isCurrentUserSender ? <MessageSender /> : <MessageReceiver />}
       </div>
-      <div className="content">
+      {
+        content && (
+          <div className="content">
         <p className={`${isArabic ? "f-ar dr-ar" : "f-en dr-en"}`}>
           {newContent.map((content, index) => (
             <React.Fragment key={index}>{content} </React.Fragment>
           ))}
         </p>
       </div>
+        )
+      }
       <div className={`time ${media && !content ? "onlyImage" : ""}`}>
         <p>{`${HourAndMinitFormat} ${AmPm}`}</p>
         {isCurrentUserSender && (
@@ -120,6 +124,11 @@ export default function Message({
           </div>
         )}
       </div>
+      {media && !content && (
+        <div className="shadow">
+
+        </div>
+      )}
     </div>
   );
 }
