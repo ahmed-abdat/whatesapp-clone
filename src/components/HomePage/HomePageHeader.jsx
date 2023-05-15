@@ -71,36 +71,36 @@ export default function HomePageHeader({ setIsAllUsersShow }) {
   const getSelectedUser = useSelectedUser((state) => state.getSelectedUser);
   const firestore = getFirestore(app);
 
-    // delete the current user from the all the chat view
-    const deleteTheCurrentUserFromAllChat = async () => {
-      try {
-        const q = query(collection(firestore, "messages"));
-        //  get all the chat
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-          // chcek if the current user is in the chat view whetever is it sender or receiver and update the chat view
-          const docData = doc.data();
-          if (
-            docData.sender === getCurrentUser().uid ||
-            docData.receiver === getSelectedUser().uid
-          ) {
-            const isSender = docData.sender === getCurrentUser().uid;
-            // if the user is the sender delete the field sender and if the user is the receiver delete the field receiver
-            if (isSender) {
-              updateDoc(doc.ref, {
-                sender: deleteField(),
-              }).catch((err) => console.log(err));
-            } else {
-              updateDoc(doc.ref, {
-                receiver: deleteField(),
-              }).catch((err) => console.log(err));
-            }
+  // delete the current user from the all the chat view
+  const deleteTheCurrentUserFromAllChat = async () => {
+    try {
+      const q = query(collection(firestore, "messages"));
+      //  get all the chat
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        // chcek if the current user is in the chat view whetever is it sender or receiver and update the chat view
+        const docData = doc.data();
+        if (
+          docData.sender === getCurrentUser().uid ||
+          docData.receiver === getSelectedUser().uid
+        ) {
+          const isSender = docData.sender === getCurrentUser().uid;
+          // if the user is the sender delete the field sender and if the user is the receiver delete the field receiver
+          if (isSender) {
+            updateDoc(doc.ref, {
+              sender: deleteField(),
+            }).catch((err) => console.log(err));
+          } else {
+            updateDoc(doc.ref, {
+              receiver: deleteField(),
+            }).catch((err) => console.log(err));
           }
-        });
-      } catch (e) {
-        console.error(e.message)
-      }
-      };
+        }
+      });
+    } catch (e) {
+      console.error(e.message);
+    }
+  };
 
   // handel signout
   const handelSignout = () => {
@@ -113,7 +113,7 @@ export default function HomePageHeader({ setIsAllUsersShow }) {
       delteUsere();
       deleteLastMessageCollection();
     }
-    deleteTheCurrentUserFromAllChat()
+    deleteTheCurrentUserFromAllChat();
     setTimeout(() => {
       setIsSelectedUser(false);
       setSelectedUser(null);
@@ -145,17 +145,17 @@ export default function HomePageHeader({ setIsAllUsersShow }) {
     }
   };
 
-    // delete user image 
-    const deleteImagProfile = async () => {
-      if(!getCurrentUser()?.photoPath) return;
-      const oldRef = ref(storage, getCurrentUser().photoPath);
-      try {;
-        await deleteObject(oldRef);
-        console.log("fill deleted successfully");
-      } catch (error) {
-        console.error("Error updating document: ", error);
-      }
-    };
+  // delete user image
+  const deleteImagProfile = async () => {
+    if (!getCurrentUser()?.photoPath) return;
+    const oldRef = ref(storage, getCurrentUser().photoPath);
+    try {
+      await deleteObject(oldRef);
+      console.log("fill deleted successfully");
+    } catch (error) {
+      console.error("Error updating document: ", error);
+    }
+  };
 
   // update the user isOnline property to true
   const updateIsOnline = async () => {
@@ -306,11 +306,13 @@ export default function HomePageHeader({ setIsAllUsersShow }) {
           handelDelete={handelSignout}
           moduleTitle="delete geust account"
         />
-      ) : isModuleshow && (
-        <DeleteModule
-          handelCancel={handelCloseModule}
-          handelDelete={handelDeletAccount}
-        />
+      ) : (
+        isModuleshow && (
+          <DeleteModule
+            handelCancel={handelCloseModule}
+            handelDelete={handelDeletAccount}
+          />
+        )
       )}
     </header>
   );

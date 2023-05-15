@@ -33,7 +33,12 @@ import ViewImage from "./ViewImage";
 import DeleteModule from "./DeleteModule";
 import "react-toastify/dist/ReactToastify.css";
 import "./styles/userProfile.css";
-import { GoogleAuthProvider, deleteUser, linkWithPopup, signOut } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  deleteUser,
+  linkWithPopup,
+  signOut,
+} from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import useSelectedUser from "../store/useSelectedUser";
 
@@ -103,7 +108,6 @@ export default function UserProfile() {
   // is userStatus edit
   const [isUserStatusEdit, setIsUserStatusEdit] = useState(false);
 
-
   // get isAnonymousUser
   const getIsAnonymousUser = useUser((state) => state.getIsAnonymousUser);
   const setIsAnonymousUser = useUser((state) => state.setIsAnonymousUser);
@@ -115,7 +119,7 @@ export default function UserProfile() {
   // set current user
   const setCurrentUser = useUser((state) => state.setCurrentUser);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // firestore
   const firestore = getFirestore(app);
@@ -350,17 +354,17 @@ export default function UserProfile() {
       await deleteDoc(docRef);
       await deleteUser(auth.currentUser);
       deleteImagProfile();
-      console.log('delte user succes');
+      console.log("delte user succes");
     } catch (error) {
       console.log(error.message);
     }
   };
 
-  // delete user image 
+  // delete user image
   const deleteImagProfile = async () => {
-    if(!getCurrentUser()?.photoPath) return;
+    if (!getCurrentUser()?.photoPath) return;
     const oldRef = ref(storage, getCurrentUser().photoPath);
-    try {;
+    try {
       await deleteObject(oldRef);
       console.log("fill deleted successfully");
     } catch (error) {
@@ -368,49 +372,49 @@ export default function UserProfile() {
     }
   };
 
-    // update the user isOnline property to true
-    const updateIsOnline = async () => {
-      try {
-        const docRef = doc(firestore, "users", getCurrentUser().uid);
-        await updateDoc(docRef, {
-          isOnline: false,
-          lastSeen: serverTimestamp(),
-        });
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
+  // update the user isOnline property to true
+  const updateIsOnline = async () => {
+    try {
+      const docRef = doc(firestore, "users", getCurrentUser().uid);
+      await updateDoc(docRef, {
+        isOnline: false,
+        lastSeen: serverTimestamp(),
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
-        // delete the current user from the all the chat view
-        const deleteTheCurrentUserFromAllChat = async () => {
-        try {
-          const q = query(collection(firestore, "messages"));
-          //  get all the chat
-          const querySnapshot = await getDocs(q);
-          querySnapshot.forEach((doc) => {
-            // chcek if the current user is in the chat view whetever is it sender or receiver and update the chat view
-            const docData = doc.data();
-            if (
-              docData.sender === getCurrentUser().uid ||
-              docData.receiver === getSelectedUser().uid
-            ) {
-              const isSender = docData.sender === getCurrentUser().uid;
-              // if the user is the sender delete the field sender and if the user is the receiver delete the field receiver
-              if (isSender) {
-                updateDoc(doc.ref, {
-                  sender: deleteField(),
-                }).catch((err) => console.log(err));
-              } else {
-                updateDoc(doc.ref, {
-                  receiver: deleteField(),
-                }).catch((err) => console.log(err));
-              }
-            }
-          });
-        } catch (e) {
-          console.error(e.message)
+  // delete the current user from the all the chat view
+  const deleteTheCurrentUserFromAllChat = async () => {
+    try {
+      const q = query(collection(firestore, "messages"));
+      //  get all the chat
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        // chcek if the current user is in the chat view whetever is it sender or receiver and update the chat view
+        const docData = doc.data();
+        if (
+          docData.sender === getCurrentUser().uid ||
+          docData.receiver === getSelectedUser().uid
+        ) {
+          const isSender = docData.sender === getCurrentUser().uid;
+          // if the user is the sender delete the field sender and if the user is the receiver delete the field receiver
+          if (isSender) {
+            updateDoc(doc.ref, {
+              sender: deleteField(),
+            }).catch((err) => console.log(err));
+          } else {
+            updateDoc(doc.ref, {
+              receiver: deleteField(),
+            }).catch((err) => console.log(err));
+          }
         }
-        };
+      });
+    } catch (e) {
+      console.error(e.message);
+    }
+  };
 
   // handel signout
   const handelSignout = () => {
@@ -426,7 +430,7 @@ export default function UserProfile() {
     deleteTheCurrentUserFromAllChat();
     setTimeout(() => {
       localStorage.clear();
-      setIsProfileShow(false)
+      setIsProfileShow(false);
       signOut(auth)
         .then(() => {
           setCurrentUser(null);
@@ -435,11 +439,10 @@ export default function UserProfile() {
         .catch((error) => {
           console.log(error.message);
         });
-        setIsLogoutLoading(false);
+      setIsLogoutLoading(false);
       navigate("/welcoome");
     }, 2000);
   };
-
 
   // delete the lastMessage collection of the user
   const deleteLastMessageCollection = async () => {
@@ -672,7 +675,10 @@ export default function UserProfile() {
               </div>
             )}
             {/* logout button */}
-            <div className="profile--logout" onClick={getIsAnonymousUser() ? handelShowModel : handelSignout}>
+            <div
+              className="profile--logout"
+              onClick={getIsAnonymousUser() ? handelShowModel : handelSignout}
+            >
               <button className="btne btn logout-btn">
                 <div className="icon">
                   <FiLogOut />
