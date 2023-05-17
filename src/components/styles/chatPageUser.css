@@ -312,11 +312,12 @@
   display: flex;
   align-items: center;
   flex-direction: column;
+  justify-content: center;
   background: #f0f2f5;
   max-width: 100%;
   padding: 5px 16px;
   gap: 0.5rem 0;
-  height: 60px;
+  min-height: 60px;
   transition: all 0.3s ease;
   -webkit-transition: all 0.3s ease;
   -moz-transition: all 0.3s ease;
@@ -489,7 +490,7 @@ textarea::-webkit-scrollbar {
     height: 100%;
   }
   .chat-page--container footer audio {
-    max-width: 200px;
+    max-width: 190px;
   }
 
   .chat-page--container .chat-content .message--container .message {

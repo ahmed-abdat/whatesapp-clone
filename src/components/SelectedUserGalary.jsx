@@ -9,6 +9,7 @@ export default function SelectedUserGalary({
   const [viewFullImage, setViewFullImage] = useState(null);
   const [isViewFullImage, setIsViewFullImage] = useState(false);
 
+
   // handel Selected image
   const handelSelectedImage = (image) => {
     setViewFullImage(image);

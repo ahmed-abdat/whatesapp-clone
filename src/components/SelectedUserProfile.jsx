@@ -37,18 +37,17 @@ export default function SelectedUserProfile({ setisProfileShow }) {
       getSelectedUser().uid,
       "chat"
     );
-    const q = query(messageRef, where("media", "!=", null));
+    const q = query(messageRef, where("media.type", "==", 'image/jpeg'));
     setisImagesLoading(true);
     getDocs(q).then((querySnapshot) => {
       const images = [];
       querySnapshot.forEach((doc) => {
         images.push({
-          src: doc.data().media,
-          alt: doc.data().content,
+          src : doc.data().media.src,
+          alt: doc.data().media.type,
           time: doc.data().createdAt?.seconds
             ? doc.data().createdAt.seconds
             : doc.data().createdAt,
-          fallPath: doc.data()?.mediaFullPath,
         });
       });
       setImages(images);
@@ -90,6 +89,7 @@ export default function SelectedUserProfile({ setisProfileShow }) {
   const handelCloseGalary = () => {
     setIsGalaryShow(false)
   }
+
 
   return (
     <div className="selected-user-profile">

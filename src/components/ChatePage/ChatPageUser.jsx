@@ -685,17 +685,17 @@ export default function ChatPageUser() {
       "chat"
     );
     console.log('fetch image in chat');
-    const q = query(messageRef, where("media", "!=", null));
+    const q = query(messageRef, where("media.type", "==", 'image/jpeg'));
     getDocs(q).then((querySnapshot) => {
       const images = [];
       querySnapshot.forEach((doc) => {
         images.push({
-          src: doc.data().media,
-          alt: doc.data().content,
+          src : doc.data().media.src,
+          alt: doc.data().media.type,
           time: doc.data().createdAt?.seconds
             ? doc.data().createdAt.seconds
             : doc.data().createdAt,
-          fallPath: doc.data()?.mediaFullPath,
+        
         });
       });
       images.sort((a, b) => a.time - b.time);
@@ -1141,7 +1141,9 @@ export default function ChatPageUser() {
                 <Voice wh={30}/>
               </button>
             )}
-           {audioDetails && <audio src={audioDetails} controls />}
+           {audioDetails && <audio  controls >
+            <source src={audioDetails} type="audio/webm;codecs=opus"/>
+            </audio>}
             <p className="record-time f-en">{formatTimeAudioRecording(recordingTime)}</p>
             <button className="trash" onClick={handelStopRecording}>
               <FaTrash />

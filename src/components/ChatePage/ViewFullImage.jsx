@@ -11,10 +11,13 @@ import "../styles/Swiper.css";
 
 
 export default function ViewFullImage({ selectedImage, setIsImageSelected , images}) {
+
+
   // handel Back
   const handelBack = () => {
     setIsImageSelected(false);
   };
+
 
   const selectedImageIndex = images.findIndex(
     (image) => image.src === selectedImage.src
