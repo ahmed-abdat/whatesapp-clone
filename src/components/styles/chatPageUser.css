@@ -389,7 +389,7 @@
 .chat-page--container footer .audio-recording .record-time {
   font-size: 1.25rem;
   width: 100%;
-  text-align: right;
+  text-align: center;
 }
 
 .chat-page--container footer .audio-recording .trash {
