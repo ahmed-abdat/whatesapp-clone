@@ -231,14 +231,14 @@ useEffect(() => {
       </div>
       <div className="or">أو</div>
       {/* signup from google */}
-      <div className={`signup-google dr-en ${isLoading ? 'disabel' : ''}`} onClick={signInWithGoogle}>
+      <div className={`signup-google dr-en ${isLoading ? 'disabel-no-opacity' : ''}`} onClick={signInWithGoogle}>
         <img
           className="google-icon"
           src="https://img.icons8.com/color/24/000000/google-logo.png"
         />
         <p className="btn google-btn dr-ar"> تسجيل الدخول عن طريق Google</p>
       </div>
-      <div className={`signup-google geust dr-en ${isLoading ? 'disabel' : ''}`} onClick={signUpAnonymous}>
+      <div className={`signup-google geust dr-en ${isLoading ? 'disabel-no-opacity' : ''}`} onClick={signUpAnonymous}>
         <img
           className="google-icon"
           src={GestIcon} alt="gest icon"

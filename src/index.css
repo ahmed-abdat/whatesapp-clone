@@ -96,6 +96,11 @@ body {
   cursor: not-allowed;
 }
 
+.disabel-no-opacity {
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
 .f-ar {
   font-family: "Vazirmatn" , 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }

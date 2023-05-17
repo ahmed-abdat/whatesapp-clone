@@ -19,6 +19,7 @@ import useUser from "../../store/useUser";
 import Check from "../svg/Check";
 import receiveMessageSound from "../../assets/sounds/receiveMessage.mp3";
 import { BsImageFill } from "react-icons/bs";
+import Voice from "../svg/Voice";
 
 export default function HomePageUser({
   displayName,
@@ -321,6 +322,7 @@ export default function HomePageUser({
 
   const newContent = findEmoji(lastMessage.content);
 
+
   return (
     <div className="user--profile" onClick={handelSelectedUser}>
       <div className="user--profile--img">
@@ -366,9 +368,15 @@ export default function HomePageUser({
                 </span>
             </>
           ) : lastMessage?.media ? (
-            <span className="d-f onlyMedia f-ar dr-ar">
-              <BsImageFill /> صورة
+            lastMessage.media?.type.includes('image') ? (
+              <span className="d-f onlyMedia f-ar dr-ar">
+              <BsImageFill  /> صورة
             </span>
+            ) : (
+              <span className="d-f onlyMedia f-ar dr-ar">
+              <Voice wh={23}/> مقطع صوتي
+            </span>
+            )
           ) : lastMessage?.content ? (
             <p
               className={`${contentClass()} ${

@@ -1,8 +1,8 @@
 import moment from "moment";
 import React from "react";
 import useSelectedUser from "../../store/useSelectedUser";
-import { HiDotsVertical, HiSearch } from "react-icons/hi";
-import { FaKeyboard } from "react-icons/fa";
+import { HiDotsVertical, HiSearch, HiStop } from "react-icons/hi";
+import { FaKeyboard, FaTrash } from "react-icons/fa";
 import SmileFace from "../svg/SmileFace";
 import Send from "../svg/Send";
 import Voice from "../svg/Voice";
@@ -38,14 +38,16 @@ import useUser from "../../store/useUser";
 import useUsers from "../../store/useUsers";
 import ViewChatSound from "../../assets/sounds/viewMessage.mp3";
 import ViewFullImage from "./ViewFullImage";
-import "../styles/chatPageUser.css";
 import { BsImageFill } from "react-icons/bs";
 import { lazy, Suspense } from "react";
 import useMessages from "../../store/useMessages";
 import EmojiPicker from "emoji-picker-react";
 import DeleteModule from "../DeleteModule";
-
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { useAudioRecorder } from "react-audio-voice-recorder";
+import {ImPlay2} from 'react-icons/im'
+import Pause from "../svg/Pause";
+import "../styles/chatPageUser.css";
 
 // lazy loade
 const ViewSelectedImage = lazy(() => import("../ViewSelectedImage"));
@@ -132,6 +134,24 @@ export default function ChatPageUser() {
   const [isLastDocUpdated, setIsLastDocUpdated] = useState(false);
   const [isLastDocExist, setIsLastDocExist] = useState(false);
   const [images, setImages] = useState([]);
+  const [isAudioRecording, setIsAudioRecording] = useState(false);
+  const [audioDetails, setAudioDetails] = useState(null);
+  const {
+    startRecording,
+    stopRecording,
+    recordingTime,
+    recordingBlob,
+    isRecording,
+    isPaused,
+    togglePauseResume,
+  } = useAudioRecorder();
+
+  // get the audio blob URL and set it to the audio tag
+  useEffect(() => {
+    if (!recordingBlob) return;
+    const audioURL = URL.createObjectURL(recordingBlob);
+    setAudioDetails(audioURL);
+  }, [recordingBlob]);
 
   // is Emoji Picker Show
   const [isEmojiPickerShow, setIsEmojiPickerShow] = useState(false);
@@ -183,6 +203,8 @@ export default function ChatPageUser() {
   // handel back
   const handelBack = () => {
     setIsAllUsersShowe(false);
+    setAudioDetails(null)
+    stopRecording()
     const curretnUserId = getCurrentUser().uid;
     const selectedUserId = getSelectedUser().uid;
     const uniqueChatId = uniqueChatid(curretnUserId, selectedUserId);
@@ -298,9 +320,11 @@ export default function ChatPageUser() {
     currentUserId,
     selectedUserId,
     path,
-    fullPath
+    fullPath,
+    file
   ) => {
     try {
+      console.log(file);
       const uniqueChatId = uniqueChatid(currentUserId, selectedUserId);
       const currentUserColl = collection(db, "messages");
       const currentUserDoc = doc(currentUserColl, uniqueChatId);
@@ -320,6 +344,7 @@ export default function ChatPageUser() {
             selectedUserId,
             "chat"
           );
+          
           const messageData = {
             id: selectedUserId,
             content: message,
@@ -328,10 +353,15 @@ export default function ChatPageUser() {
             createdAt: serverTimestamp(),
             isRead,
             isReceived,
-            media: path ? path : null,
-            mediaFullPath: fullPath ? fullPath : null,
+            media: path ? {
+              type : file?.type ? file.type : null,
+              src : path,
+              fullPath
+            } : null,
+            // mediaFullPath: fullPath ? fullPath : null,
           };
-          if (path) fetchImagesInChat(currentUserId, selectedUserId);
+          console.log(`path : ${path?.includes('audio')}`);
+          if (path.includes('image')) fetchImagesInChat(currentUserId, selectedUserId);
           addDoc(currentUserCollChat, messageData)
             .then((docRef) => {
               const id = docRef.id;
@@ -421,7 +451,8 @@ export default function ChatPageUser() {
       currentUserId,
       selectedUserId,
       path,
-      fullPath
+      fullPath,
+      file
     );
   };
 
@@ -472,7 +503,7 @@ export default function ChatPageUser() {
       return;
     }
     if (message.length > 0 && message.trim().length > 0) {
-      addMessageTODataBase(newMessage, currentUserId, selectedUserId);
+      addMessageTODataBase(newMessage, currentUserId, selectedUserId );
       updateMessageLocaly(newMessage, currentUserId, selectedUserId);
     }
   };
@@ -652,6 +683,7 @@ export default function ChatPageUser() {
       selectedUserId,
       "chat"
     );
+    console.log('fetch image in chat');
     const q = query(messageRef, where("media", "!=", null));
     getDocs(q).then((querySnapshot) => {
       const images = [];
@@ -662,7 +694,7 @@ export default function ChatPageUser() {
           time: doc.data().createdAt?.seconds
             ? doc.data().createdAt.seconds
             : doc.data().createdAt,
-            fallPath : doc.data()?.mediaFullPath 
+          fallPath: doc.data()?.mediaFullPath,
         });
       });
       images.sort((a, b) => a.time - b.time);
@@ -784,6 +816,77 @@ export default function ChatPageUser() {
       })
       .catch((e) => console.log(e.message));
   };
+
+  // format the audio time recording 
+  const formatTimeAudioRecording = (sec) => {
+    const minut = Math.floor(sec / 60 )
+    const second = Math.floor(sec % 60)
+    const secondValue = second < 10 ? `0${second}` : second
+    return `${minut}:${secondValue}`
+  }
+
+  // handel start recording
+  const handelStartRecording = () => {
+    setIsAudioRecording(true);
+    startRecording();
+    setAudioDetails(null)
+  };
+
+  // handel stop recording
+  const handelStopRecording = () => {
+    setAudioDetails(null)
+    stopRecording();
+    setIsAudioRecording(false);
+  };
+
+  // handel send Audio Voice
+  const handelSendAudio = () => {
+    setAudioDetails(null)
+    stopRecording();
+    setIsAudioRecording(false);
+    const blobName = recordingBlob?.type ? recordingBlob.type.slice(0,5) : 'audio-voice'
+    const currentUserId = getCurrentUser().uid
+    const selectedUserId = getSelectedUser().uid
+    if(recordingBlob) {
+      updateMessageLocaly('',currentUserId, selectedUserId , recordingBlob)
+      uploadAudio(recordingBlob , blobName)
+    }
+    }
+
+  // upload voice Audio
+  const uploadAudio = (blob , blobName) => {
+    // unique image name
+    const audioname = new Date().getTime() + blobName;
+    const storageRef = ref(
+      storage,
+      `audio/${getCurrentUser().uid}/${audioname}`
+    );
+    const uploadTask = uploadBytesResumable(storageRef, blob);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log("Upload is " + progress + "% done");
+      },
+      (error) => {
+        console.log(error.message);
+        // Handle unsuccessful uploads
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          const fullPath = uploadTask.snapshot.ref.fullPath;
+          const currentUserId = getCurrentUser().uid
+          const selectedUserId = getSelectedUser().uid
+          console.log(blob);
+          addMessageTODataBase('' , currentUserId , selectedUserId , downloadURL , fullPath , blob)
+        });
+      }
+    );
+  };
+
+
+
 
   return (
     <div className={`chat-page--container ${!isSelectedUser ? "hide" : ""}`}>
@@ -1006,50 +1109,88 @@ export default function ChatPageUser() {
             />
           </div>
         )}
-        <div className="forme d-f">
-          <div className="icons">
-            <div className="icon d-f" onClick={handelShowEmojiPicker}>
-              {isEmojiPickerShow ? <FaKeyboard /> : <SmileFace />}
-            </div>
-            <label htmlFor="file-input" className={`icon d-f`}>
-              <BsImageFill />
-            </label>
-            <input
-              onChange={handelFile}
-              id="file-input"
-              type="file"
-              name="file"
-              style={{ display: "none" }}
-            />
+        {isAudioRecording ? (
+          <div className="audio-recording">
+            {/* send */}
+            <button className={`send ${isRecording ? 'disabeled' : ''}`} onClick={handelSendAudio}>
+                <Send wh={18}/>
+            </button>
+            {/* pause and resume */}
+             {
+              isRecording && (
+                <button
+                className="pause-resume"
+                onClick={() => togglePauseResume()}
+              >
+                {isPaused ? <ImPlay2 /> : <Pause wh={30} />}
+              </button>
+              )
+             }
+              {/* stop and recorde */}
+            {isRecording ? (
+              <button className="stop" onClick={() => stopRecording()}>
+                <HiStop />
+              </button>
+            ) : (
+              <button className="record" onClick={() => {
+                setAudioDetails(null)
+                startRecording()
+              }}>
+                <Voice wh={30}/>
+              </button>
+            )}
+           {audioDetails && <audio src={audioDetails} controls />}
+            <p className="record-time f-en">{formatTimeAudioRecording(recordingTime)}</p>
+            <button className="trash" onClick={handelStopRecording}>
+              <FaTrash />
+            </button>
           </div>
-          <form onSubmit={handelSendMessage}>
-            <div className="input">
+        ) : (
+          <div className="forme d-f">
+            <div className="icons">
+              <div className="icon d-f" onClick={handelShowEmojiPicker}>
+                {isEmojiPickerShow ? <FaKeyboard /> : <SmileFace />}
+              </div>
+              <label htmlFor="file-input" className={`icon d-f`}>
+                <BsImageFill />
+              </label>
               <input
-                type="text"
-                placeholder="اكتب رسالة"
-                ref={messageInputRef}
-                onFocus={handelInputFocus}
-                onChange={handelMessage}
-                onKeyDown={(e) => {
-                  e.key === "Enter" && handelSendMessage();
-                }}
-                value={message}
-                className={isArabic ? "f-ar" : "f-en dr-en"}
+                onChange={handelFile}
+                id="file-input"
+                type="file"
+                name="file"
+                style={{ display: "none" }}
               />
             </div>
-            {message.length > 0 ? (
-              <div className="icon">
-                <button style={{ all: "unset" }}>
-                  <Send />
-                </button>
+            <form onSubmit={handelSendMessage}>
+              <div className="input">
+                <input
+                  type="text"
+                  placeholder="اكتب رسالة"
+                  ref={messageInputRef}
+                  onFocus={handelInputFocus}
+                  onChange={handelMessage}
+                  onKeyDown={(e) => {
+                    e.key === "Enter" && handelSendMessage();
+                  }}
+                  value={message}
+                  className={isArabic ? "f-ar" : "f-en dr-en"}
+                />
               </div>
-            ) : (
-              <div className="icon">
-                <Voice />
-              </div>
-            )}
-          </form>
-        </div>
+              {message.length > 0 ? (
+                <div className="icon">
+                  <button style={{ all: "unset" }}>
+                    <Send />
+                  </button>
+                </div>
+              ) : (
+                <div className="icon" onClick={handelStartRecording}>
+                  <Voice />
+                </div>
+              )}
+            </form>
+          </div>
+        )}
       </footer>
     </div>
   );

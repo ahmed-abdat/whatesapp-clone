@@ -75,6 +75,10 @@ export default function Message({
 
   const isCurrentUserSender = isSender === getCurrentUser().uid;
 
+
+
+
+
   return (
     <div className={`message ${isCurrentUserSender ? "sender" : "receiver"} ${media && !content ? 'sm-p' : ''}`}>
       {media ? (
@@ -89,19 +93,27 @@ export default function Message({
               effect="blur"
             />
           </div>
-        ) : (
+        ) : media?.type?.includes('image') ? (
           <div className="img d-f">
             <LazyLoadImage
               onClick={onclike}
               alt="image"
               height={"322.667px"}
-              src={media}
+              src={media.src}
               width={"100%"}
               effect="blur"
             />
-          </div>
-        )
+          </div> 
+        ) :  null
       ) : null}
+
+      {media && media?.type?.includes('audio') ? (
+          <div className="img d-f">
+            <audio src={media.src} controls />
+          </div>
+      ) : null}
+
+      
       <div className={`after ${isCurrentUserSender ? "send" : "receive"}`}>
         {isCurrentUserSender ? <MessageSender /> : <MessageReceiver />}
       </div>

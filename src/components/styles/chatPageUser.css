@@ -140,7 +140,7 @@
 }
 
 .chat-page--container .chat-content .message--container .message {
-  overflow: hidden;
+  /* overflow: hidden; */
   padding-left: 19px;
   padding-right: 25px;
   position: relative;
@@ -158,9 +158,10 @@
 }
 
 .chat-page--container .chat-content .message--container .message .img {
+  position: relative;
   background: #fff;
-  height: 322.667px;
-  min-height: 200px;
+  max-height: 322.667px;
+  min-height: 55px;
   width: 100%;
   max-width: 500px;
   min-width: 200px;
@@ -170,12 +171,14 @@
   -moz-border-radius: inherit;
   -ms-border-radius: inherit;
   -o-border-radius: inherit;
+  height: 100%;
 }
 
 
 .chat-page--container .chat-content .message--container .message .img span {
   width: 100% !important;
   height: 100% !important;
+  display: flex !important;
   overflow: hidden;
   border-radius: 7.5px !important;
   -webkit-border-radius: 7.5px !important;
@@ -321,6 +324,72 @@
   -o-transition: all 0.3s ease;
 }
 
+/* ? Audio Recording  */
+.chat-page--container footer .audio-recording {
+  display: flex;
+  align-items: center;
+  align-self: flex-end;
+  direction: initial;
+  gap: 0 0.5rem;
+  color: #667781;
+}
+
+.disabeled {
+  opacity: 0.4 !important;
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+  user-select: none !important;
+}
+
+.chat-page--container footer .audio-recording button {
+  all : unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.chat-page--container footer .audio-recording button.send {
+  background-color: #00bc94;
+  color: #f0f2f5;
+  width: 30px;
+  height: 35px;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 5px;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
+}
+
+.chat-page--container footer .audio-recording button.pause-resume {
+  width: 30px;
+  font-size: 1.85rem;
+}
+
+/* stop button */
+.chat-page--container footer .audio-recording button.stop {
+  font-size: 2.2rem;
+  color: #ff3b30;
+}
+
+.chat-page--container footer .audio-recording .record-time {
+  font-size: 1.25rem;
+
+}
+
+.chat-page--container footer .audio-recording .trash {
+  font-size: 1.25rem;
+}
+
+/* audio */
+
+
+
+
 .show-emoji {
   height: 520px !important;
 }
@@ -403,7 +472,7 @@ textarea::-webkit-scrollbar {
   font-size: 1.2rem;
 }
 
-.chat-page--container footer svg {
+.chat-page--container footer .forme svg {
   cursor: pointer;
   color: #54656f;
   font-size: 1.45rem;
@@ -418,6 +487,9 @@ textarea::-webkit-scrollbar {
     z-index: 230;
     inset: 0;
     height: 100%;
+  }
+  .chat-page--container footer audio {
+    max-width: 200px;
   }
 
   .chat-page--container .chat-content .message--container .message {
