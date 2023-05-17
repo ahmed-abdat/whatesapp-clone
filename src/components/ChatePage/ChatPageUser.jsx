@@ -360,8 +360,9 @@ export default function ChatPageUser() {
             } : null,
             // mediaFullPath: fullPath ? fullPath : null,
           };
-          console.log(`path : ${path?.includes('audio')}`);
-          if (path.includes('image')) fetchImagesInChat(currentUserId, selectedUserId);
+          if (path ){
+           path?.includes('image') && fetchImagesInChat(currentUserId, selectedUserId);
+          }
           addDoc(currentUserCollChat, messageData)
             .then((docRef) => {
               const id = docRef.id;
@@ -789,12 +790,10 @@ export default function ChatPageUser() {
       const q = query(chatRef);
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
-        deleteDoc(doc.ref).catch((e) => console.log(e.message));
+        deleteDoc(doc.ref).then(() => console.log('succefull delete')).catch((e) => console.log(e.message));
         // delete the last Message doc
         delteLastMessageDoc(currentUserId, selectedUserId);
-        setIsModuleShow(false);
-        setIsSelectedUser(false);
-        setSelectedUser(null);
+
       });
     } catch (error) {
       console.error(error.message);
@@ -812,9 +811,12 @@ export default function ChatPageUser() {
     );
     getDoc(lastMessageRef)
       .then((doc) => {
-        deleteDoc(doc.ref).catch((e) => console.log(e.message));
+        deleteDoc(doc.ref).then(() => console.log('last message delete')).catch((e) => console.log(e.message));
       })
       .catch((e) => console.log(e.message));
+      setIsModuleShow(false);
+      setIsSelectedUser(false);
+      setSelectedUser(null);
   };
 
   // format the audio time recording 
