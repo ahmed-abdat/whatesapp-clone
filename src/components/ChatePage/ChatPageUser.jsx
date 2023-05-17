@@ -45,7 +45,7 @@ import EmojiPicker from "emoji-picker-react";
 import DeleteModule from "../DeleteModule";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { useAudioRecorder } from "react-audio-voice-recorder";
-import {ImPlay2} from 'react-icons/im'
+import { ImPlay2 } from "react-icons/im";
 import Pause from "../svg/Pause";
 import "../styles/chatPageUser.css";
 
@@ -203,8 +203,8 @@ export default function ChatPageUser() {
   // handel back
   const handelBack = () => {
     setIsAllUsersShowe(false);
-    setAudioDetails(null)
-    stopRecording()
+    setAudioDetails(null);
+    stopRecording();
     const curretnUserId = getCurrentUser().uid;
     const selectedUserId = getSelectedUser().uid;
     const uniqueChatId = uniqueChatid(curretnUserId, selectedUserId);
@@ -344,7 +344,7 @@ export default function ChatPageUser() {
             selectedUserId,
             "chat"
           );
-          
+
           const messageData = {
             id: selectedUserId,
             content: message,
@@ -353,15 +353,18 @@ export default function ChatPageUser() {
             createdAt: serverTimestamp(),
             isRead,
             isReceived,
-            media: path ? {
-              type : file?.type ? file.type : null,
-              src : path,
-              fullPath
-            } : null,
+            media: path
+              ? {
+                  type: file?.type ? file.type : null,
+                  src: path,
+                  fullPath,
+                }
+              : null,
             // mediaFullPath: fullPath ? fullPath : null,
           };
-          if (path ){
-           path?.includes('image') && fetchImagesInChat(currentUserId, selectedUserId);
+          if (path) {
+            path?.includes("image") &&
+              fetchImagesInChat(currentUserId, selectedUserId);
           }
           addDoc(currentUserCollChat, messageData)
             .then((docRef) => {
@@ -504,7 +507,7 @@ export default function ChatPageUser() {
       return;
     }
     if (message.length > 0 && message.trim().length > 0) {
-      addMessageTODataBase(newMessage, currentUserId, selectedUserId );
+      addMessageTODataBase(newMessage, currentUserId, selectedUserId);
       updateMessageLocaly(newMessage, currentUserId, selectedUserId);
     }
   };
@@ -684,18 +687,17 @@ export default function ChatPageUser() {
       selectedUserId,
       "chat"
     );
-    console.log('fetch image in chat');
-    const q = query(messageRef, where("media.type", "==", 'image/jpeg'));
+    console.log("fetch image in chat");
+    const q = query(messageRef, where("media.type", "==", "image/jpeg"));
     getDocs(q).then((querySnapshot) => {
       const images = [];
       querySnapshot.forEach((doc) => {
         images.push({
-          src : doc.data().media.src,
+          src: doc.data().media.src,
           alt: doc.data().media.type,
           time: doc.data().createdAt?.seconds
             ? doc.data().createdAt.seconds
             : doc.data().createdAt,
-        
         });
       });
       images.sort((a, b) => a.time - b.time);
@@ -790,10 +792,11 @@ export default function ChatPageUser() {
       const q = query(chatRef);
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
-        deleteDoc(doc.ref).then(() => console.log('succefull delete')).catch((e) => console.log(e.message));
+        deleteDoc(doc.ref)
+          .then(() => console.log("succefull delete"))
+          .catch((e) => console.log(e.message));
         // delete the last Message doc
         delteLastMessageDoc(currentUserId, selectedUserId);
-
       });
     } catch (error) {
       console.error(error.message);
@@ -811,52 +814,56 @@ export default function ChatPageUser() {
     );
     getDoc(lastMessageRef)
       .then((doc) => {
-        deleteDoc(doc.ref).then(() => console.log('last message delete')).catch((e) => console.log(e.message));
+        deleteDoc(doc.ref)
+          .then(() => console.log("last message delete"))
+          .catch((e) => console.log(e.message));
       })
       .catch((e) => console.log(e.message));
-      setIsModuleShow(false);
-      setIsSelectedUser(false);
-      setSelectedUser(null);
+    setIsModuleShow(false);
+    setIsSelectedUser(false);
+    setSelectedUser(null);
   };
 
-  // format the audio time recording 
+  // format the audio time recording
   const formatTimeAudioRecording = (sec) => {
-    const minut = Math.floor(sec / 60 )
-    const second = Math.floor(sec % 60)
-    const secondValue = second < 10 ? `0${second}` : second
-    return `${minut}:${secondValue}`
-  }
+    const minut = Math.floor(sec / 60);
+    const second = Math.floor(sec % 60);
+    const secondValue = second < 10 ? `0${second}` : second;
+    return `${minut}:${secondValue}`;
+  };
 
   // handel start recording
   const handelStartRecording = () => {
     setIsAudioRecording(true);
     startRecording();
-    setAudioDetails(null)
+    setAudioDetails(null);
   };
 
   // handel stop recording
   const handelStopRecording = () => {
-    setAudioDetails(null)
+    setAudioDetails(null);
     stopRecording();
     setIsAudioRecording(false);
   };
 
   // handel send Audio Voice
   const handelSendAudio = () => {
-    setAudioDetails(null)
+    setAudioDetails(null);
     stopRecording();
     setIsAudioRecording(false);
-    const blobName = recordingBlob?.type ? recordingBlob.type.slice(0,5) : 'audio-voice'
-    const currentUserId = getCurrentUser().uid
-    const selectedUserId = getSelectedUser().uid
-    if(recordingBlob) {
-      updateMessageLocaly('',currentUserId, selectedUserId , recordingBlob)
-      uploadAudio(recordingBlob , blobName)
+    const blobName = recordingBlob?.type
+      ? recordingBlob.type.slice(0, 5)
+      : "audio-voice";
+    const currentUserId = getCurrentUser().uid;
+    const selectedUserId = getSelectedUser().uid;
+    if (recordingBlob) {
+      updateMessageLocaly("", currentUserId, selectedUserId, recordingBlob);
+      uploadAudio(recordingBlob, blobName);
     }
-    }
+  };
 
   // upload voice Audio
-  const uploadAudio = (blob , blobName) => {
+  const uploadAudio = (blob, blobName) => {
     // unique image name
     const audioname = new Date().getTime() + blobName;
     const storageRef = ref(
@@ -878,17 +885,21 @@ export default function ChatPageUser() {
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           const fullPath = uploadTask.snapshot.ref.fullPath;
-          const currentUserId = getCurrentUser().uid
-          const selectedUserId = getSelectedUser().uid
+          const currentUserId = getCurrentUser().uid;
+          const selectedUserId = getSelectedUser().uid;
           console.log(blob);
-          addMessageTODataBase('' , currentUserId , selectedUserId , downloadURL , fullPath , blob)
+          addMessageTODataBase(
+            "",
+            currentUserId,
+            selectedUserId,
+            downloadURL,
+            fullPath,
+            blob
+          );
         });
       }
     );
   };
-
-
-
 
   return (
     <div className={`chat-page--container ${!isSelectedUser ? "hide" : ""}`}>
@@ -1113,41 +1124,56 @@ export default function ChatPageUser() {
         )}
         {isAudioRecording ? (
           <div className="audio-recording">
-            {/* send */}
-            <button className={`send ${isRecording ? 'disabeled' : ''}`} onClick={handelSendAudio}>
-                <Send wh={18}/>
+            <div className="first-row">
+              {/* audio */}
+              {audioDetails && <audio controls>
+                <source src={audioDetails} type="audio/webm;codecs=opus" />
+              </audio>}
+            {/* timing */}
+            {
+              isRecording && <p className="record-time f-en">
+              {formatTimeAudioRecording(recordingTime)}
+            </p>
+            }
+            </div>
+         <div className="second-row">
+             {/* send */}
+             <button
+              className={`send ${isRecording ? "disabeled" : ""}`}
+              onClick={handelSendAudio}
+            >
+              <Send wh={18} />
             </button>
             {/* pause and resume */}
-             {
-              isRecording && (
-                <button
+            {isRecording && (
+              <button
                 className="pause-resume"
                 onClick={() => togglePauseResume()}
               >
                 {isPaused ? <ImPlay2 /> : <Pause wh={30} />}
               </button>
-              )
-             }
-              {/* stop and recorde */}
+            )}
+            {/* stop and recorde */}
             {isRecording ? (
               <button className="stop" onClick={() => stopRecording()}>
                 <HiStop />
               </button>
             ) : (
-              <button className="record" onClick={() => {
-                setAudioDetails(null)
-                startRecording()
-              }}>
-                <Voice wh={30}/>
+              <button
+                className="record"
+                onClick={() => {
+                  setAudioDetails(null);
+                  startRecording();
+                }}
+              >
+                <Voice wh={30} />
               </button>
             )}
-           {audioDetails && <audio  controls >
-            <source src={audioDetails} type="audio/webm;codecs=opus"/>
-            </audio>}
-            <p className="record-time f-en">{formatTimeAudioRecording(recordingTime)}</p>
+           
             <button className="trash" onClick={handelStopRecording}>
               <FaTrash />
             </button>
+         </div>
           </div>
         ) : (
           <div className="forme d-f">
