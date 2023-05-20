@@ -48,6 +48,7 @@ import { useAudioRecorder } from "react-audio-voice-recorder";
 import { ImPlay2 } from "react-icons/im";
 import Pause from "../svg/Pause";
 import "../styles/chatPageUser.css";
+import AudioPlayer from "./AudioPlayer";
 
 // lazy loade
 const ViewSelectedImage = lazy(() => import("../ViewSelectedImage"));
@@ -136,6 +137,7 @@ export default function ChatPageUser() {
   const [images, setImages] = useState([]);
   const [isAudioRecording, setIsAudioRecording] = useState(false);
   const [audioDetails, setAudioDetails] = useState(null);
+  const [audioDuration , setAudioDuration] = useState(0)
   const {
     startRecording,
     stopRecording,
@@ -152,6 +154,11 @@ export default function ChatPageUser() {
     const audioURL = URL.createObjectURL(recordingBlob);
     setAudioDetails(audioURL);
   }, [recordingBlob]);
+  
+
+  useEffect(() => {
+    if(recordingTime > 0) setAudioDuration(recordingTime)
+  }, [recordingTime])
 
   // is Emoji Picker Show
   const [isEmojiPickerShow, setIsEmojiPickerShow] = useState(false);
@@ -324,7 +331,6 @@ export default function ChatPageUser() {
     file
   ) => {
     try {
-      console.log(file);
       const uniqueChatId = uniqueChatid(currentUserId, selectedUserId);
       const currentUserColl = collection(db, "messages");
       const currentUserDoc = doc(currentUserColl, uniqueChatId);
@@ -360,7 +366,6 @@ export default function ChatPageUser() {
                   fullPath,
                 }
               : null,
-            // mediaFullPath: fullPath ? fullPath : null,
           };
           if (path) {
             path?.includes("image") &&
@@ -687,7 +692,6 @@ export default function ChatPageUser() {
       selectedUserId,
       "chat"
     );
-    console.log("fetch image in chat");
     const q = query(messageRef, where("media.type", "==", "image/jpeg"));
     getDocs(q).then((querySnapshot) => {
       const images = [];
@@ -1126,9 +1130,7 @@ export default function ChatPageUser() {
           <div className="audio-recording">
             <div className="first-row">
               {/* audio */}
-              {audioDetails && <audio controls>
-                <source src={audioDetails} type="audio/webm;codecs=opus" />
-              </audio>}
+              {audioDetails && <AudioPlayer audioSrc={audioDetails} duratione={audioDuration}/>}
             {/* timing */}
             {
               isRecording && <p className="record-time f-en">

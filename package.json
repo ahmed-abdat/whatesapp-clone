@@ -21,6 +21,7 @@
     "react-phone-number-input": "^3.2.19",
     "react-router-dom": "^6.10.0",
     "react-toastify": "^9.1.2",
+    "wavesurfer.js": "^6.6.3",
     "zustand": "^4.3.7"
   },
   "devDependencies": {
