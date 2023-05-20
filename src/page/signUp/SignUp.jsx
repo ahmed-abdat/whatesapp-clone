@@ -42,6 +42,7 @@ export default function SignUp() {
 
   // set isAnonymousUser
   const setIsAnonymousUser = useUser((state) => state.setIsAnonymousUser);
+  const getIsAnonymousUser = useUser((state) => state.getIsAnonymousUser);
 
   // get phoneUserVerified
   const getIsPhoneUserVerified = useUser(
@@ -201,8 +202,10 @@ export default function SignUp() {
 
 // clear the localsotrage
 useEffect(() => {
-  setCurrentUser(null)
-  localStorage.clear()
+  if(getIsAnonymousUser()){
+    setCurrentUser(null)
+    localStorage.clear()
+  }
 }, [])
 
   return (

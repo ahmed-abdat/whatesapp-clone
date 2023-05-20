@@ -437,7 +437,7 @@ export default function ChatPageUser() {
       from: currentUserId,
       to: selectedUserId,
       isReceived: false,
-      media: file ? file : null,
+      media: file ? URL.createObjectURL(file) : null,
     };
     setMessages((prev) => [...prev, messageData]);
     setAllMessages(messageData);
@@ -447,7 +447,7 @@ export default function ChatPageUser() {
     setIsArabic(true);
     // scroll to the last message
     setTimeout(() => {
-      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+      scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100);
   };
 
@@ -891,7 +891,6 @@ export default function ChatPageUser() {
           const fullPath = uploadTask.snapshot.ref.fullPath;
           const currentUserId = getCurrentUser().uid;
           const selectedUserId = getSelectedUser().uid;
-          console.log(blob);
           addMessageTODataBase(
             "",
             currentUserId,

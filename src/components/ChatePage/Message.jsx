@@ -5,6 +5,8 @@ import Check from "../svg/Check";
 import MessageReceiver from "../svg/MessageReceiver";
 import MessageSender from "../svg/MessageSender";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import AudioPlayer from "./AudioPlayer";
+import useSelectedUser from "../../store/useSelectedUser";
 
 export default function Message({
   content,
@@ -37,24 +39,30 @@ export default function Message({
   // find the emoji in the message and replace it with the emoji image
   const findEmoji = (message) => {
     const words = message.split(/\s+/);
-    const urlReg = /https:\/\/cdn\.jsdelivr\.net\/npm\/emoji-datasource-apple\/img\/apple\/64\/[^/]+\.png/gim;
+    const urlReg =
+      /https:\/\/cdn\.jsdelivr\.net\/npm\/emoji-datasource-apple\/img\/apple\/64\/[^/]+\.png/gim;
     const newArray = [];
-    
+
     for (const word of words) {
       const urlMatch = word.match(urlReg);
-  
+
       if (urlMatch) {
-        newArray.push(<img src={urlMatch[0]} alt={urlMatch[0]} className="emoji" />);
-      } else if (newArray.length > 0 && typeof newArray[newArray.length - 1] === 'string') {
-        newArray[newArray.length - 1] += ' ' + word;
+        newArray.push(
+          <img src={urlMatch[0]} alt={urlMatch[0]} className="emoji" />
+        );
+      } else if (
+        newArray.length > 0 &&
+        typeof newArray[newArray.length - 1] === "string"
+      ) {
+        newArray[newArray.length - 1] += " " + word;
       } else {
         newArray.push(word);
       }
     }
-    
-    return newArray
+
+    return newArray;
   };
-  
+
 
   // log the findEmoji function only if the content has emoji
   const newContent = findEmoji(content);
@@ -72,15 +80,20 @@ export default function Message({
 
   // get current user
   const getCurrentUser = useUser((state) => state.getCurrentUser);
+  const getSelectedUser = useSelectedUser(state => state.getSelectedUser)
 
   const isCurrentUserSender = isSender === getCurrentUser().uid;
 
-
-
+  const avatar = isCurrentUserSender ? getCurrentUser().photoURL : getSelectedUser().photoURL
 
 
   return (
-    <div className={`message ${isCurrentUserSender ? "sender" : "receiver"} ${media && !content ? 'sm-p' : ''}`}>
+    <div
+      className={`message ${isCurrentUserSender ? "sender" : "receiver"} ${
+        media && !content ? "sm-p" : ""
+      }`}
+    >
+      {/* image message */}
       {media ? (
         media?.name ? (
           <div className="img d-f">
@@ -93,7 +106,7 @@ export default function Message({
               effect="blur"
             />
           </div>
-        ) : media?.type?.includes('image') ? (
+        ) : media?.type?.includes("image") ? (
           <div className="img d-f">
             <LazyLoadImage
               onClick={onclike}
@@ -103,32 +116,45 @@ export default function Message({
               width={"100%"}
               effect="blur"
             />
-          </div> 
-        ) :  null
-      ) : null}
-
-      {media && media?.type?.includes('audio') ? (
-          <div className="img d-f">
-            <audio src={media.src} controls />
           </div>
+        ) : null
       ) : null}
 
-      
+      {/* audio message */}
+
+      {media && media?.type?.includes("audio") ? (
+        <div className="img">
+          <AudioPlayer audioSrc={media.src} isPreview={false} avatar={avatar}/>
+        </div>
+      ) : (
+        media && (
+          <div className="img ">
+            <AudioPlayer audioSrc={media} isPreview={false} avatar={avatar}/>
+          </div>
+        )
+      )}
+
       <div className={`after ${isCurrentUserSender ? "send" : "receive"}`}>
         {isCurrentUserSender ? <MessageSender /> : <MessageReceiver />}
       </div>
-      {
-        content && (
-          <div className="content">
-        <p className={`${isArabic ? "f-ar dr-ar" : "f-en dr-en"}`}>
-          {newContent.map((content, index) => (
-            <React.Fragment key={index}>{content} </React.Fragment>
-          ))}
-        </p>
-      </div>
-        )
-      }
-      <div className={`time ${media && !content ? "onlyImage" : ""}`}>
+      {content && (
+        <div className="content">
+          <p className={`${isArabic ? "f-ar dr-ar" : "f-en dr-en"}`}>
+            {newContent.map((content, index) => (
+              <React.Fragment key={index}>{content} </React.Fragment>
+            ))}
+          </p>
+        </div>
+      )}
+      <div
+        className={`time ${
+          (media?.type?.includes("image") || media?.name) && !content
+            ? "onlyImage"
+            : media?.type?.includes("audio")
+            ? "audio-time"
+            : ""
+        }`}
+      >
         <p>{`${HourAndMinitFormat} ${AmPm}`}</p>
         {isCurrentUserSender && (
           <div className={`${isRead ? "check" : "uncheck"} d-f`}>
@@ -136,10 +162,8 @@ export default function Message({
           </div>
         )}
       </div>
-      {media && !content && (
-        <div className="shadow">
-
-        </div>
+      {(media?.type?.includes("image") || media?.name) && !content && (
+        <div className="shadow"></div>
       )}
     </div>
   );

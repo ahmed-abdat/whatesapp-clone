@@ -374,7 +374,7 @@ export default function HomePageUser({
             </span>
             ) : (
               <span className="d-f onlyMedia f-ar dr-ar">
-              <Voice wh={23}/> مقطع صوتي
+              <span className={`${lastMessage?.isRead ? "check" : "uncheck"}`} ><Voice wh={23} /></span> مقطع صوتي
             </span>
             )
           ) : lastMessage?.content ? (

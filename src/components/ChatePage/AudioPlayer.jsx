@@ -1,66 +1,76 @@
 import { useState, useEffect, useRef } from "react";
 import Play from "../svg/Play";
 import WaveSurfer from "wavesurfer.js";
-import Pause from "../svg/Pause";
-import {IoIosPause} from 'react-icons/io'
+import defaultAvatar from "../../assets/img/default-avatar.svg";
+import { IoIosPause } from "react-icons/io";
 
 import "./styles/AudioPlayer.css";
 
-const AudioPlayer = ({ audioSrc }) => {
+const AudioPlayer = ({
+  audioSrc,
+  isPreview = true,
+  avatar = defaultAvatar,
+}) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [duratione, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [isAudioLoaded, setIsAudioLoaded] = useState(false);
 
-  const [isPlaying , setIsPlaying] = useState(false)
-  const [duratione , setDuration] = useState(0)
-  const [currentTime , setCurrentTime] = useState(0)
+  if (!audioSrc) {
+    console.log("no audio");
+    return null;
+  }
 
   const waveformRef = useRef();
   const wavesurfer = useRef(null);
 
   useEffect(() => {
-    if(waveformRef.current) {
-      wavesurfer.current =  WaveSurfer.create({
+    if (waveformRef.current) {
+      wavesurfer.current = WaveSurfer.create({
         container: waveformRef.current,
-        autoCenter: true,
-        waveColor : '#8da78f',
-        progressColor : '#6f8171',
-        hideScrollbar : true,
-        backgfloorColor : '#fff',
-        cursorColor : '#6f8171',
-        cursorWidth : 2,
-        scrollParent : false,
-        responsive : true,
-        height : 35,
-        maxCanvasWidth : 300,
+        autoCenter: false,
+        waveColor: "#8da78f",
+        progressColor: "#00a884",
+        hideScrollbar: true,
+        backgfloorColor: "#fff",
+        cursorColor: "#00a884",
+        cursorWidth: 2,
+        scrollParent: false,
+        responsive: true,
+        height: !isPreview ? 24 : 35,
+        maxCanvasWidth: 300,
+        pixelRatio: 1,
+        removeMediaElementOnDestroy: true,
+        autoCenterRate: 1,
         barWidth: 3,
-        barRadius: 3,
-        barMinHeight : 1
-        
+        fillParent: true,
+        barRadius: 2,
+        barMinHeight: 1,
       });
       wavesurfer.current.load(audioSrc);
-      
     }
-    wavesurfer.current.on("finish" , () => {
-      setIsPlaying(false)
-      wavesurfer.current.stop()
-    })
+    wavesurfer.current.on("finish", () => {
+      setIsPlaying(false);
+      wavesurfer.current.stop();
+    });
 
+    wavesurfer.current.on("ready", () => {
+      setIsAudioLoaded(true);
+      setDuration(wavesurfer.current.getDuration());
+    });
+    wavesurfer.current.on("error", () => {
+      setIsAudioLoaded(false);
+    });
 
-
-
-    wavesurfer.current.on("ready" , () => {
-      setDuration(wavesurfer.current.getDuration())
-    })
-    wavesurfer.current.on("audioprocess" , () => {
-      setCurrentTime(wavesurfer.current.getCurrentTime())
-    })
-
-
+    wavesurfer.current.on("audioprocess", () => {
+      setCurrentTime(wavesurfer.current.getCurrentTime());
+    });
   }, []);
-  
 
-const handelPausePlay = () => {
-  wavesurfer.current.playPause()
-  setIsPlaying(wavesurfer.current?.isPlaying())
-}
+  const handelPausePlay = () => {
+    wavesurfer.current.playPause();
+    setIsPlaying(wavesurfer.current?.isPlaying());
+  };
 
   const formatTimeAudioRecording = (sec) => {
     const minutes = Math.floor(sec / 60);
@@ -70,31 +80,63 @@ const handelPausePlay = () => {
   };
 
   const remainingTime = () => {
-    const finalTime = currentTime === 0 ? duratione : currentTime
-    return formatTimeAudioRecording(finalTime)
-  }
-
-
-
+    const finalTime = currentTime === 0 ? duratione : currentTime;
+    return formatTimeAudioRecording(finalTime);
+  };
 
   return (
-    <div className="audio-player">
-        {isPlaying ? (
-          <button onClick={handelPausePlay} aria-label="Pause" style={{ fontSize : '23px'}}>
-        <IoIosPause  />
-      </button>
-    ) : (
-      <button onClick={handelPausePlay} aria-label="Play">
-        <Play wh={18} />
-      </button>
-    )}
-    <div ref={waveformRef} className="wafe" style={{width : '100%'}}></div>
-     {
-      wavesurfer.current &&  <p>
-      {remainingTime()}
-    </p>
-     }
-    </div>
+    <>
+      {isPreview ? (
+        <div className="preview-audio">
+          {isPlaying && isAudioLoaded ? (
+            <button
+              onClick={handelPausePlay}
+              aria-label="Pause"
+              style={{ fontSize: "22px" }}
+            >
+              <IoIosPause />
+            </button>
+          ) : (
+            <button onClick={handelPausePlay} aria-label="Play">
+              <Play wh={16} />
+            </button>
+          )}
+          <div
+            ref={waveformRef}
+            className="wafe"
+            style={{ width: "100%" }}
+          ></div>
+          {wavesurfer.current && <p>{remainingTime()}</p>}
+        </div>
+      ) : (
+        <div className="audio-message">
+          <div className="avatar">
+            <img src={avatar} alt="avatar" className="avatar" />
+          </div>
+          <div className="controle">
+            {isPlaying && isAudioLoaded ? (
+              <button
+                onClick={handelPausePlay}
+                aria-label="Pause"
+                style={{ fontSize: "28px" }}
+                className="pause d-f"
+              >
+                <IoIosPause />
+              </button>
+            ) : (
+              <button onClick={handelPausePlay} aria-label="Play" className="play d-f">
+                <Play wh={20} />
+              </button>
+            )}
+          </div>
+          <div className="wave-time">
+            <div ref={waveformRef} className="wafe" style={{ width: "100%" , height: '100%' }}>
+              {wavesurfer.current && <p>{remainingTime()}</p>}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

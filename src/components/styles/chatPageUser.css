@@ -157,7 +157,6 @@
 
 .chat-page--container .chat-content .message--container .message .img {
   position: relative;
-  background: #fff;
   max-height: 322.667px;
   min-height: 55px;
   width: 100%;
@@ -292,6 +291,15 @@
   color: inherit;
 }
 
+.audio-time {
+  position: absolute;
+  right: 6px;
+  bottom: 0;
+}
+.audio-time p {
+  font-size: 12px;
+}
+
 .chat-page--container .chat-content .uncheck {
   color: inherit;
 }
@@ -351,7 +359,7 @@
   user-select: none !important;
 }
 
-.chat-page--container footer .audio-recording button {
+.chat-page--container footer .audio-recording button  {
   all: unset;
   cursor: pointer;
   display: flex;

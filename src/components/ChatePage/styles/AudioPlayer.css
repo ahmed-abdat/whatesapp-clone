@@ -1,15 +1,16 @@
 
-
-.audio-player {
+/* ? preview audi0 */
+.preview-audio {
     display: flex;
     justify-content: center;
     width: 100%;
-    max-width: 300px;
+    min-width: 250px;
+    max-width: 400px;
     margin: 0.5rem auto 0;
 
 }
 
-.audio-player .container {
+.preview-audio .container {
     display: flex;
     align-items: center;
     gap: 0 0.5rem;
@@ -19,25 +20,30 @@
     margin-top: 0.5rem;
 }
 
-.audio-player .container p {
+.preview-audio .container p {
     font-size: 1.25rem;
 }
 
-.audio-player .wafe {
+.preview-audio .wafe {
     max-height: 60px;
     overflow: hidden;
 }
 
-.wafe wave:not(:last-child) {
+.wafe {
+    width: 100%;
+    height: 100%;
+}
+.wafe wave:not(:last-of-type) {
     display: unset !important;
 }
 
-.audio-player .wafe wave {
-    max-width: 300px;
+.wafe wave:last-child {
+    max-width: 300px !important;
+    min-width: 200px !important;
 }
 
 
-.audio-player {
+.preview-audio {
     border: 1px solid #f7f8fa;
     background-color: #fff;
     align-items: center;
@@ -53,7 +59,49 @@
 
 
 
-.audio-player  p {
+.preview-audio  p {
     font-size: 1.25rem;
 }
 
+
+/* ? message audio */
+
+.audio-message {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    direction: initial;
+    gap: 0 0.5rem;
+    padding: 6px;
+}
+
+.audio-message .avatar img.avatar {
+    width: 55px !important;
+    height: 55px !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+}
+
+.wave-time {
+    width: 200px;
+    height: 24px;
+}
+.wave-time p {
+    position: absolute;
+    bottom: -5px;
+    font-size: 12px;
+}
+
+.audio-message .controle .play , .audio-message .controle .pause {
+    cursor: pointer;
+    all: unset;
+    display: flex;
+}
+.audio-message .controle .play svg , .audio-message .controle .pause svg {
+    cursor: pointer;
+    color: #6f8171;
+}
