@@ -6,6 +6,7 @@ import MessageReceiver from "../svg/MessageReceiver";
 import MessageSender from "../svg/MessageSender";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import AudioPlayer from "./AudioPlayer";
+import defaultAvatar from '../../assets/img/default-avatar.svg'
 import useSelectedUser from "../../store/useSelectedUser";
 
 export default function Message({
@@ -84,7 +85,7 @@ export default function Message({
 
   const isCurrentUserSender = isSender === getCurrentUser().uid;
 
-  const avatar = isCurrentUserSender ? getCurrentUser().photoURL : getSelectedUser().photoURL
+  const avatar = isCurrentUserSender ? getCurrentUser().photoURL : getSelectedUser().photoURL ? getSelectedUser().photoURL : defaultAvatar;
 
 
   return (

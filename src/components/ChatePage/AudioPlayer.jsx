@@ -9,7 +9,7 @@ import "./styles/AudioPlayer.css";
 const AudioPlayer = ({
   audioSrc,
   isPreview = true,
-  avatar = defaultAvatar,
+  avatar ,
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [duratione, setDuration] = useState(0);
@@ -111,7 +111,7 @@ const AudioPlayer = ({
       ) : (
         <div className="audio-message">
           <div className="avatar">
-            <img src={avatar} alt="avatar" className="avatar" />
+            <img src={avatar ? avatar : defaultAvatar} alt="avatar" className="avatar" />
           </div>
           <div className="controle">
             {isPlaying && isAudioLoaded ? (
