@@ -18,6 +18,8 @@ export default function ViewFullImage({ selectedImage, setIsImageSelected , imag
     setIsImageSelected(false);
   };
 
+  
+
 
   const selectedImageIndex = images.findIndex(
     (image) => image.src === selectedImage.src
@@ -89,7 +91,6 @@ export default function ViewFullImage({ selectedImage, setIsImageSelected , imag
     const imageName = imageURL.split('?')[0].split('/')[7];
     saveAs(imageURL, imageName);
   } 
- 
 
   // sort the images by the 
 
@@ -122,7 +123,7 @@ export default function ViewFullImage({ selectedImage, setIsImageSelected , imag
               width={"100%"}
               effect="blur"
             />
-            {/* carsor for next and prev image */}
+
             {(  isArrowShow)&& (
               <div className={`arrow--container next ${isLastIndex ? 'disabeled' : ''}`} onClick={handelNextImage}>
                 <div className="swiper--next d-f" >

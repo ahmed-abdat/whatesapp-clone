@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
 import useUser from "../../store/useUser";
 import GestIcon from '../../assets/img/anonymous-user.jpg'
+import GoogleIcon from '../../assets/img/google-logo.png'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './SignUp.css'
@@ -237,7 +238,7 @@ useEffect(() => {
       <div className={`signup-google dr-en ${isLoading ? 'disabel-no-opacity' : ''}`} onClick={signInWithGoogle}>
         <img
           className="google-icon"
-          src="https://img.icons8.com/color/24/000000/google-logo.png"
+          src={GoogleIcon}
         />
         <p className="btn google-btn dr-ar"> تسجيل الدخول عن طريق Google</p>
       </div>

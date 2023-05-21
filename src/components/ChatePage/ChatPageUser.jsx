@@ -363,14 +363,13 @@ export default function ChatPageUser() {
               ? {
                   type: file?.type ? file.type : null,
                   src: path,
+                  content : message,
                   fullPath,
                 }
               : null,
           };
-          if (path) {
-            path?.includes("image") &&
-              fetchImagesInChat(currentUserId, selectedUserId);
-          }
+          if (file?.type?.includes('image'))  fetchImagesInChat(currentUserId, selectedUserId);
+      
           addDoc(currentUserCollChat, messageData)
             .then((docRef) => {
               const id = docRef.id;
@@ -437,7 +436,7 @@ export default function ChatPageUser() {
       from: currentUserId,
       to: selectedUserId,
       isReceived: false,
-      media: file ? URL.createObjectURL(file) : null,
+      media: file ? file : null,
     };
     setMessages((prev) => [...prev, messageData]);
     setAllMessages(messageData);
@@ -448,7 +447,7 @@ export default function ChatPageUser() {
     // scroll to the last message
     setTimeout(() => {
       scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
+    }, 50);
   };
 
   // help upload image to database
@@ -566,6 +565,7 @@ export default function ChatPageUser() {
     if (!isLastDocUpdated) {
       scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }
+  
 
     const lasteMessage = lastMessage();
     if (
@@ -692,13 +692,25 @@ export default function ChatPageUser() {
       selectedUserId,
       "chat"
     );
-    const q = query(messageRef, where("media.type", "==", "image/jpeg"));
+     const imageFormats = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/bmp",
+      "image/tiff",
+      "image/webp",
+      "image/svg+xml",
+      "image/heic",
+      "image/raw",
+      "image/vnd.microsoft.icon"
+    ];
+    const q = query(messageRef, where("media.type", 'in', imageFormats) , limit(20));
     getDocs(q).then((querySnapshot) => {
       const images = [];
       querySnapshot.forEach((doc) => {
         images.push({
           src: doc.data().media.src,
-          alt: doc.data().media.type,
+          alt: doc.data().media.content,
           time: doc.data().createdAt?.seconds
             ? doc.data().createdAt.seconds
             : doc.data().createdAt,
@@ -838,6 +850,7 @@ export default function ChatPageUser() {
 
   // handel start recording
   const handelStartRecording = () => {
+    setIsEmojiPickerShow(false)
     setIsAudioRecording(true);
     startRecording();
     setAudioDetails(null);
@@ -903,6 +916,7 @@ export default function ChatPageUser() {
       }
     );
   };
+
 
   return (
     <div className={`chat-page--container ${!isSelectedUser ? "hide" : ""}`}>

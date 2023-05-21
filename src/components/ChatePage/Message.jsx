@@ -123,14 +123,14 @@ export default function Message({
 
       {/* audio message */}
 
-      {media && media?.type?.includes("audio") ? (
-        <div className="img">
+      {media && media?.fullPath?.includes("audio") ? (
+        <div className="voice">
           <AudioPlayer audioSrc={media.src} isPreview={false} avatar={avatar}/>
         </div>
-      ) : (
-        media && (
-          <div className="img ">
-            <AudioPlayer audioSrc={media} isPreview={false} avatar={avatar}/>
+      ) : 
+        ((media && media?.type?.includes("audio")) && (
+          <div className="voice ">
+            <AudioPlayer audioSrc={URL.createObjectURL(media)} isPreview={false} avatar={avatar}/>
           </div>
         )
       )}

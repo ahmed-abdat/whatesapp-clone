@@ -5,6 +5,7 @@ import defaultAvatar from "../../assets/img/default-avatar.svg";
 import { IoIosPause } from "react-icons/io";
 
 import "./styles/AudioPlayer.css";
+import SpinerLoader from "../SpinerLoader";
 
 const AudioPlayer = ({
   audioSrc,
@@ -16,10 +17,10 @@ const AudioPlayer = ({
   const [currentTime, setCurrentTime] = useState(0);
   const [isAudioLoaded, setIsAudioLoaded] = useState(false);
 
-  if (!audioSrc) {
-    console.log("no audio");
-    return null;
-  }
+
+
+  if (!audioSrc)  return null;
+
 
   const waveformRef = useRef();
   const wavesurfer = useRef(null);
@@ -28,24 +29,24 @@ const AudioPlayer = ({
     if (waveformRef.current) {
       wavesurfer.current = WaveSurfer.create({
         container: waveformRef.current,
-        autoCenter: false,
+        autoCenter: true,
         waveColor: "#8da78f",
         progressColor: "#00a884",
-        hideScrollbar: true,
-        backgfloorColor: "#fff",
         cursorColor: "#00a884",
+        hideScrollbar: true,
         cursorWidth: 2,
         scrollParent: false,
         responsive: true,
         height: !isPreview ? 24 : 35,
-        maxCanvasWidth: 300,
-        pixelRatio: 1,
+        maxCanvasWidth: 250,
+        barHeight : 3,
+        barGap : 1.5,
         removeMediaElementOnDestroy: true,
         autoCenterRate: 1,
-        barWidth: 3,
+        barWidth: 2.5,
         fillParent: true,
-        barRadius: 2,
-        barMinHeight: 1,
+        barRadius: 3,
+        barMinHeight: 1.5,
       });
       wavesurfer.current.load(audioSrc);
     }
@@ -123,11 +124,14 @@ const AudioPlayer = ({
               >
                 <IoIosPause />
               </button>
-            ) : (
+            ) : isAudioLoaded && (
               <button onClick={handelPausePlay} aria-label="Play" className="play d-f">
                 <Play wh={20} />
               </button>
             )}
+            {
+              !isAudioLoaded && <SpinerLoader />
+            }
           </div>
           <div className="wave-time">
             <div ref={waveformRef} className="wafe" style={{ width: "100%" , height: '100%' }}>
@@ -135,6 +139,7 @@ const AudioPlayer = ({
             </div>
           </div>
         </div>
+        
       )}
     </>
   );

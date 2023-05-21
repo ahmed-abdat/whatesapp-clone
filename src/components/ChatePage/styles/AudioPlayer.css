@@ -39,6 +39,7 @@
 
 .wafe wave:last-child {
     max-width: 300px !important;
+    width: 100%;
     min-width: 200px !important;
 }
 
