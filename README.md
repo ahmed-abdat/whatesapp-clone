@@ -3,6 +3,8 @@
 ## Overview
 The WhatsApp Clone project is a feature-rich messaging application that closely resembles the popular messaging app, WhatsApp. It allows users to sign up using their Google account, phone number, or as a guest. The project aims to provide a seamless and secure messaging experience for users, incorporating real-time updates and a beautiful UI/UX design.
 
+Check out the live demo of the WhatsApp Clone project [here](https://whatsape.vercel.app/).
+
 ## Key Features
 
 ### Sign-up Options
@@ -22,8 +24,5 @@ The WhatsApp Clone project is a feature-rich messaging application that closely 
 
 ## UI/UX Design
 The WhatsApp Clone project boasts a beautiful UI/UX design that closely resembles the original WhatsApp application. The design focuses on providing a user-friendly interface, intuitive navigation, and aesthetically pleasing visuals. It ensures a delightful user experience, making the messaging process seamless and enjoyable.
-
-## Project Demo
-Check out the live demo of the WhatsApp Clone project at [https://whatsape.vercel.app/](https://whatsape.vercel.app/).
 
 In conclusion, the WhatsApp Clone project offers a comprehensive set of features inspired by WhatsApp. With its sign-up options, real-time messaging capabilities, media sharing, profile management, and appealing UI/UX design, it provides users with a familiar and enjoyable messaging experience.
