@@ -38,7 +38,7 @@ const AudioPlayer = ({
         scrollParent: false,
         responsive: true,
         height: !isPreview ? 24 : 35,
-        maxCanvasWidth: !isPreview ? 200 : 250,
+        maxCanvasWidth: 200,
         barHeight : 3,
         barGap : 1.5,
         removeMediaElementOnDestroy: true,
