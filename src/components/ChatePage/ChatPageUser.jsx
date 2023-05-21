@@ -115,6 +115,7 @@ export default function ChatPageUser() {
   const [isArabic, setIsArabic] = useState(true);
 
   const scrollRef = useRef(null);
+  const chatRef = useRef(null)
 
   // message
   const [message, setMessage] = useState("");
@@ -920,6 +921,13 @@ export default function ChatPageUser() {
   };
 
 
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, []);
+
+
   return (
     <div className={`chat-page--container ${!isSelectedUser ? "hide" : ""}`}>
       {file && (
@@ -1058,8 +1066,8 @@ export default function ChatPageUser() {
           className="bgi"
           style={{ backgroundImage: `url(${ChatImg})` }}
         ></div>
-        <div className="message--container">
-          <div className="container">
+        <div className="message--container" ref={chatRef}>
+          <div className="container" >
             {/* see more messages */}
             {isLastDocExist && messages.length >= 20 && (
               <div className="d-f">
