@@ -14,6 +14,7 @@ import {
   query,
   getFirestore,
   where,
+  limit,
 } from "firebase/firestore/lite";
 import { app } from "../config/firebase";
 import SpinerLoader from "./SpinerLoader";
@@ -37,14 +38,25 @@ export default function SelectedUserProfile({ setisProfileShow }) {
       getSelectedUser().uid,
       "chat"
     );
-    const q = query(messageRef, where("media.type", "==", 'image/jpeg'));
+    const imageFormats = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/bmp",
+      "image/tiff",
+      "image/webp",
+      "image/svg+xml",
+      "image/heic",
+      "image/raw",
+    ];
+    const q = query(messageRef, where("media.type", 'in', imageFormats) , limit(20))
     setisImagesLoading(true);
     getDocs(q).then((querySnapshot) => {
       const images = [];
       querySnapshot.forEach((doc) => {
         images.push({
           src : doc.data().media.src,
-          alt: doc.data().media.type,
+          alt: doc.data().media.content,
           time: doc.data().createdAt?.seconds
             ? doc.data().createdAt.seconds
             : doc.data().createdAt,

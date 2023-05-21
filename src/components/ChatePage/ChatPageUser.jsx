@@ -612,11 +612,13 @@ export default function ChatPageUser() {
   }, []);
 
   // handel selected image
-  const selectedImage = (src, content) => {
-    if (src && content) {
+  const selectedImage = (media, content) => {
+    if (media && content) {
+      const {src} = media
       setImageAndContent({ src, content });
       setIsImageSelected(true);
-    } else if (src) {
+    } else if (media) {
+      const {src} = media
       setImageAndContent({ src });
       setIsImageSelected(true);
     }
