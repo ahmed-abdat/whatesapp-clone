@@ -713,8 +713,8 @@ export default function ChatPageUser() {
       querySnapshot.forEach((doc) => {
         images.push({
           src: doc.data().media.src,
-          alt: doc.data().media.content,
-          time: doc.data().createdAt?.seconds
+          alt: doc.data().content,
+          time: doc.data().createdAt?.seonds
             ? doc.data().createdAt.seconds
             : doc.data().createdAt,
         });

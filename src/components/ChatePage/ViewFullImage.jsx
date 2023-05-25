@@ -65,9 +65,10 @@ export default function ViewFullImage({ selectedImage, setIsImageSelected , imag
 
     // find the emoji in the message and replace it with the emoji image
     const findEmoji = (message) => {
-      const words = message.split(/\s+/);
+      const words = message?.split(/\s+/);
       const urlReg = /https:\/\/cdn\.jsdelivr\.net\/npm\/emoji-datasource-apple\/img\/apple\/64\/[^/]+\.png/gim;
       const newArray = [];
+      if(!words) return newArray;
       
       for (const word of words) {
         const urlMatch = word.match(urlReg);
@@ -88,11 +89,12 @@ export default function ViewFullImage({ selectedImage, setIsImageSelected , imag
   // handel download image
   const downloadImage = () => {
     const imageURL = images[imageIndex].src;
-    const imageName = imageURL.split('?')[0].split('/')[7];
+    const imageName = imageURL?.split('?')[0].split('/')[7];
     saveAs(imageURL, imageName);
   } 
 
   // sort the images by the 
+
 
 
   return (

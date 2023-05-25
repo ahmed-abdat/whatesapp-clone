@@ -56,7 +56,7 @@ export default function SelectedUserProfile({ setisProfileShow }) {
       querySnapshot.forEach((doc) => {
         images.push({
           src : doc.data().media.src,
-          alt: doc.data().media.content,
+          alt: doc.data().content,
           time: doc.data().createdAt?.seconds
             ? doc.data().createdAt.seconds
             : doc.data().createdAt,
