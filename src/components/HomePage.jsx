@@ -94,7 +94,7 @@ export default function HomePage() {
 
   // update how view the chat content
   const howIsView = (uid) => {
-    const currentUserId = getCurrentUser().uid;
+    const currentUserId = getCurrentUser()?.uid;
     const selectedUserId = uid;
     const uniqueChatId =
       currentUserId > selectedUserId
