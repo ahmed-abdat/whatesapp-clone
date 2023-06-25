@@ -80,7 +80,7 @@ export default function Otp({}) {
       confirmationResult
         .confirm(otp.join(""))
         .then((result) => {
-          getUserInfo(result.user.uid , result.user);
+          getUserInfo(result.user?.uid , result.user);
           setIsPhoneUserVerified(true);
           toast.success("تمت المصادقة");
           setTimeout(() => {
@@ -110,7 +110,7 @@ export default function Otp({}) {
     const docSnap = await getDoc(userRef);
     if (docSnap.exists()) {
       setUser(docSnap.data());
-      setCurrentUser(user);
+      setCurrentUser(docSnap.data());
     } else {
       console.log("No such document!");
       setUser(usere);
@@ -120,9 +120,9 @@ export default function Otp({}) {
 
   // set doc to the firebase
   const setUser = async (user) => {
-    const userRef = doc(firestore, "users", user.uid);
+    const userRef = doc(firestore, "users", user?.uid);
     await setDoc(userRef, {
-      uid: user.uid,
+      uid: user?.uid,
       phoneNumber: getPhone(),
       displayName: user.displayName,
       photoURL: user.photoURL,

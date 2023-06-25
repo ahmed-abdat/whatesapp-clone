@@ -86,3 +86,11 @@
 .no-frends .text span:not(:first-child) {
     padding-inline: 0.15rem;
 }
+
+/* ? media query  */
+
+@media screen and (min-width : 1439px) {
+    .no-frends {
+        height: calc(100vh - 170px);
+    }
+}

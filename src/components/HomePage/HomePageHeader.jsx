@@ -81,10 +81,10 @@ export default function HomePageHeader({ setIsAllUsersShow }) {
         // chcek if the current user is in the chat view whetever is it sender or receiver and update the chat view
         const docData = doc.data();
         if (
-          docData.sender === getCurrentUser().uid ||
-          docData.receiver === getSelectedUser().uid
+          docData.sender === getCurrentUser()?.uid ||
+          docData.receiver === getSelectedUser()?.uid
         ) {
-          const isSender = docData.sender === getCurrentUser().uid;
+          const isSender = docData.sender === getCurrentUser()?.uid;
           // if the user is the sender delete the field sender and if the user is the receiver delete the field receiver
           if (isSender) {
             updateDoc(doc.ref, {
@@ -203,7 +203,7 @@ export default function HomePageHeader({ setIsAllUsersShow }) {
 
   // handel delet account
   const handelDeletAccount = async () => {
-    const currentUserId = getCurrentUser().uid;
+    const currentUserId = getCurrentUser()?.uid;
     const docRef = doc(firestore, "users", currentUserId);
     try {
       setIsLogoutLoading(true);
@@ -238,7 +238,7 @@ export default function HomePageHeader({ setIsAllUsersShow }) {
   // delete the lastMessage collection of the user
   const deleteLastMessageCollection = async () => {
     try {
-      const currentUserId = getCurrentUser().uid;
+      const currentUserId = getCurrentUser()?.uid;
       const lastMessageCollection = collection(
         firestore,
         "users",

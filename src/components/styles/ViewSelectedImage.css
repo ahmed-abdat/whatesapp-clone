@@ -26,8 +26,9 @@
 }
 
 .viewImage--container main {
-    background: #e9edef;
+    background-color: #e9edef;
     flex-grow: 1;
+    max-height: 100%;
 }
 
 .viewImage--container main .img {
@@ -49,7 +50,7 @@
     object-fit: contain;
     width: 100%;
     max-height: 100%;
-    background-color: #fff;
+    /* background-color: #fff; */
     border-radius: 0.5rem;
     -webkit-border-radius: 0.5rem;
     -moz-border-radius: 0.5rem;
@@ -178,5 +179,11 @@
     }
     .viewImage--container {
         padding: 0;
+    }
+}
+
+@media screen and (min-width : 1440px) {
+    .viewImage--container {
+        height: 94vh;
     }
 }

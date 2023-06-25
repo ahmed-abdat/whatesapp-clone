@@ -31,7 +31,7 @@ export default function UserInfo() {
 
   // get isAnonymousUser
   const getIsAnonymousUser = useUser((state) => state.getIsAnonymousUser);
-  const setIsAnonymousUser = useUser((state) => state.setIsAnonymousUser);
+  // const setIsAnonymousUser = useUser((state) => state.setIsAnonymousUser);
   // state
   const [file, setFile] = useState(null);
 
