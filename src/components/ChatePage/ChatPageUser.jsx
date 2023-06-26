@@ -86,12 +86,11 @@ export default function ChatPageUser() {
 
   // function to check if the last seen is today or yesterday
   const currentDate = () => {
+     const AmPm = `${lastSeenMoment.format("a") === "am" ? "ص" : "م"}`
     if (lastSeenMoment.isSame(now, "day")) {
-      return ` آخر ظهور اليوم عند الساعة ${HourAndMinitFormat} ${
-        lastSeenMoment.format("a") === "am" ? "ص" : "م"
-      }`;
+      return ` آخر ظهور اليوم عند الساعة ${HourAndMinitFormat} ${AmPm}`;
     } else if (lastSeenMoment.isSame(now.clone().subtract(1, "day"), "day")) {
-      return `آخر ظهور أمس عند الساعة ${HourAndMinitFormat}`;
+      return `آخر ظهور أمس عند الساعة ${HourAndMinitFormat} ${AmPm}`;
     } else {
       return `آخر ظهور بتاريخ ${dateFormat}`;
     }
@@ -209,7 +208,7 @@ export default function ChatPageUser() {
   };
 
   // handel back
-  const handelBack = () => {
+  const handelBack =  () => {
     setIsAllUsersShowe(false);
     setAudioDetails(null);
     stopRecording();
@@ -219,20 +218,27 @@ export default function ChatPageUser() {
     const chatRef = doc(db, "messages", uniqueChatId);
     getDoc(chatRef).then((doc) => {
       const document = doc.data();
-      if (curretnUserId === document.sender) {
-        updateDoc(chatRef, {
-          sender: deleteField(),
-        }).catch((error) => {
-          // The document probably doesn't exist.
-          console.error("Error updating document: ", error);
+      // if the document content only one user delet the doc 
+      if(Object.keys(document).length === 1) {
+        deleteDoc(chatRef).catch((error) => {
+          console.error("Error removing document: ", error);
         });
-      } else {
-        updateDoc(chatRef, {
-          receiver: deleteField(),
-        }).catch((error) => {
-          // The document probably doesn't exist.
-          console.error("Error updating document: ", error);
-        });
+      }else {
+        if (curretnUserId === document.sender) {
+          updateDoc(chatRef, {
+            sender: deleteField(),
+          }).catch((error) => {
+            // The document probably doesn't exist.
+            console.error("Error updating document: ", error);
+          });
+        } else {
+          updateDoc(chatRef, {
+            receiver: deleteField(),
+          }).catch((error) => {
+            // The document probably doesn't exist.
+            console.error("Error updating document: ", error);
+          });
+        }
       }
     });
     setIsSelectedUser(false);

@@ -91,6 +91,13 @@ export default function HomePageUser({
     setIsSelectedUser(true);
   };
 
+  // unique chat id
+  const uniqueChateId = (currentUserId, selectedUserId) => {
+    return currentUserId > selectedUserId
+      ? `${currentUserId + selectedUserId}`
+      : `${selectedUserId + currentUserId}`;
+  }
+
   // make a query to get all unread message from the selected user
   const getUnreadMessage = async (uid) => {
     const curretnUserId = getCurrentUser().uid;
@@ -163,10 +170,7 @@ export default function HomePageUser({
   const howIsView = (uid) => {
     const currentUserId = getCurrentUser().uid;
     const selectedUserId = uid;
-    const uniqueChatId =
-      currentUserId > selectedUserId
-        ? `${currentUserId + selectedUserId}`
-        : `${selectedUserId + currentUserId}`;
+    const uniqueChatId = uniqueChateId(currentUserId, selectedUserId);
     const chatRef = doc(db, "messages", uniqueChatId);
     getDoc(chatRef).then((doc) => {
       if (doc.exists() && doc.data().hasOwnProperty("sender")) {
