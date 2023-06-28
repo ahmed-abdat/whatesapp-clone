@@ -351,7 +351,7 @@ export default function UserInfo() {
             />
           </div>
         )}
-        {!getIsAnonymousUser() && (
+        {getIsAnonymousUser() || !getIsEmailUser() && (
           <div className="input phone">
             <label htmlFor="phoneNumber"> رقم الهاتف</label>
             <input
@@ -361,7 +361,7 @@ export default function UserInfo() {
               name="phoneNumber"
               onChange={handelPhone}
               value={phoneNumber}
-              disabled={getIsEmailUser() || getIsAnonymousUser() ? false : true}
+              disabled={getIsAnonymousUser() ? false : true}
             />
           </div>
         )}
