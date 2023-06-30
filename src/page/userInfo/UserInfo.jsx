@@ -292,7 +292,7 @@ export default function UserInfo() {
         {/* upload image file */}
         <div className="d-f">
           <label htmlFor="file-input">
-            <div className="img d-f">
+            <div className={`img d-f ${isLoading || (precentage !== null && precentage <= 99) ? "disabel" : ""}`}>
               <img
                 src={
                   file
