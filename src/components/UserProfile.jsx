@@ -258,6 +258,7 @@ export default function UserProfile() {
 
   // handel delete user img
   const handelDeleteUserImg = async () => {
+    setIsImageLoading(true);
     if (!getCurrentUser().photoPath) {
       updateProfile({ photoPath: null, photoURL: null });
       setFile(null);
@@ -266,6 +267,7 @@ export default function UserProfile() {
         photoPath: null,
         photoURL: null,
       });
+      setIsImageLoading(false);
       return;
     }
     const oldRef = ref(storage, getCurrentUser().photoPath);
