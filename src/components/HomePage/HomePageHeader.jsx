@@ -146,21 +146,26 @@ export default function HomePageHeader({ setIsAllUsersShow }) {
   };
 
   // delete user image
+  // Delete old profile image
   const deleteImagProfile = async () => {
+    // Check if the user has a profile image
     if (!getCurrentUser()?.photoPath) return;
+    // Get the reference to the old image
     const oldRef = ref(storage, getCurrentUser().photoPath);
+    // Try to delete the old image
     try {
       await deleteObject(oldRef);
-      console.log("fill deleted successfully");
     } catch (error) {
       console.error("Error updating document: ", error);
     }
   };
 
-  // update the user isOnline property to true
+  // updates the user's isOnline status to false
   const updateIsOnline = async () => {
     try {
+      // Get the user's document reference
       const docRef = doc(firestore, "users", getCurrentUser().uid);
+      // Update the document with the user's new status
       await updateDoc(docRef, {
         isOnline: false,
         lastSeen: serverTimestamp(),
@@ -182,22 +187,23 @@ export default function HomePageHeader({ setIsAllUsersShow }) {
   };
 
   // delet all Messages collection
-  const deleteAllChatMessages = async (id) => {
-    const currentUserId = getCurrentUser().uid;
+  const deleteAllChatMessages = async (chatId) => {
+    const currentUser = getCurrentUser();
+    const currentUserId = currentUser.uid;
     const lastMessageCollection = collection(
       firestore,
       "users",
       currentUserId,
       "messages",
-      id,
+      chatId,
       "chat"
     );
-    getDocs(lastMessageCollection).then((snapshot) => {
-      snapshot.forEach(async (doc) => {
-        await deleteDoc(doc.ref)
-          .then(() => console.log("document delte with succes"))
-          .catch((e) => console.log(e.message));
-      });
+    
+    const snapshot = await getDocs(lastMessageCollection);
+    snapshot.forEach(async (doc) => {
+      await deleteDoc(doc.ref)
+        .then(() => console.log("document delte with succes"))
+        .catch((e) => console.log(e.message));
     });
   };
 
