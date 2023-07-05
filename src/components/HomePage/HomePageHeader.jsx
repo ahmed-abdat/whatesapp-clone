@@ -268,6 +268,12 @@ export default function HomePageHeader({ setIsAllUsersShow }) {
   const handelCloseModule = () => {
     setIsModuleShow(false);
   };
+  
+  // handel redirect
+  const handelRedirect = () => {
+    window.open("https://wa.me/42049074?text=%D8%AA%D8%B7%D8%A8%D9%8A%D9%82%20%D8%B1%D8%A7%D8%A6%D8%B9%20%D9%85%D9%86%20%D8%A3%D9%81%D8%B6%D9%84%20%D8%A7%D9%84%D8%A3%D8%B9%D9%85%D8%A7%D9%84%20%D8%A7%D9%84%D8%AA%D9%8A%20%D8%B1%D8%A3%D9%8A%D8%AA%D9%87%D8%A7%20%D9%85%D8%A4%D8%AE%D8%B1%D8%A7%20%2C%20%D8%A3%D8%AA%D9%85%D9%86%D9%89%20%D9%84%D9%83%20%D8%A7%D9%84%D8%AA%D9%88%D9%81%D9%8A%D9%82") 
+    setIsPopupShow(false) 
+  };
 
   return (
     <header>
@@ -289,7 +295,7 @@ export default function HomePageHeader({ setIsAllUsersShow }) {
         <div className="popup--container" ref={popupContainerRef}>
           <ul className="popup--item f-ar">
             <li onClick={handelGoToProfile}> الملف الشخصي </li>
-            <li><a href="https://wa.me/42049074?text=%D8%AA%D8%B7%D8%A8%D9%8A%D9%82%20%D8%B1%D8%A7%D8%A6%D8%B9%20%D9%85%D9%86%20%D8%A3%D9%81%D8%B6%D9%84%20%D8%A7%D9%84%D8%A3%D8%B9%D9%85%D8%A7%D9%84%20%D8%A7%D9%84%D8%AA%D9%8A%20%D8%B1%D8%A3%D9%8A%D8%AA%D9%87%D8%A7%20%D9%85%D8%A4%D8%AE%D8%B1%D8%A7%20%2C%20%D8%A3%D8%AA%D9%85%D9%86%D9%89%20%D9%84%D9%83%20%D8%A7%D9%84%D8%AA%D9%88%D9%81%D9%8A%D9%82"> تواصل مع المطور </a></li>
+            <li onClick={handelRedirect}> تواصل مع المطور </li>
             <li
               onClick={getIsAnonymousUser() ? handelShowModel : handelSignout}
             >
