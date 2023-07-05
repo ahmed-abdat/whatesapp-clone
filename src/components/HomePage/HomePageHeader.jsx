@@ -1,4 +1,5 @@
 import { BsFillChatRightTextFill } from "react-icons/bs";
+import {BiSupport} from 'react-icons/bi'
 import { HiDotsVertical } from "react-icons/hi";
 import useUsers from "../../store/useUsers";
 import useUser from "../../store/useUser";
@@ -288,6 +289,9 @@ export default function HomePageHeader({ setIsAllUsersShow }) {
           <img src={getCurrentUser()?.photoURL || defaultAvatar} alt="avatar" />
         </div>
         <div className="header--icons" ref={headerIconsRef}>
+          <div className="d-f">
+          <BiSupport onClick={handelRedirect} />
+          </div>
           <BsFillChatRightTextFill onClick={handelShowAllTheUsers} />
           <div className="d-f">
             <HiDotsVertical
