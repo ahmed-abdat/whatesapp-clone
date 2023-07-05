@@ -35,6 +35,10 @@
   font-size: 0.95rem;
 }
 
+.popup--container ul li a {
+  all : unset
+}
+
 .popup--container ul li:hover {
     background: #f0f2f5;
 }
