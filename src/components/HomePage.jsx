@@ -164,7 +164,7 @@ export default function HomePage() {
     const usersQuery = query(
       usersRef,
       where("uid", "!=", currentUser.uid),
-      limit(20)
+      limit(50)
     );
     const usersSnapshot = onSnapshot(usersQuery, (querySnapshot) => {
       const users = [];
@@ -269,7 +269,7 @@ export default function HomePage() {
   const filetrSearch = (users) => {
     return users.filter((user) => {
       return (
-        user.displayName.toLowerCase().includes(search.toLowerCase()) ||
+        user.displayName?.toLowerCase().includes(search.toLowerCase()) ||
         user?.email?.toLowerCase().includes(search.toLowerCase()) ||
         user?.phoneNumber?.includes(search)
       );
