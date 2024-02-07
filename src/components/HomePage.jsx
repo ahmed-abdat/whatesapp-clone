@@ -27,8 +27,6 @@ import { HiChatBubbleBottomCenterText } from "react-icons/hi2";
 import ViewAllUsersHeader from "./HomePage/ViewAllUsersHeader";
 import useSelectedUser from "../store/useSelectedUser";
 import NoSearchFound from "./HomePage/NoSearchFound";
-import { useRef } from "react";
-
 // lazy loade
 const UserProfile = lazy(() => import("./UserProfile"));
 const NoFreinds = lazy(() => import("./HomePage/NoFreinds"));

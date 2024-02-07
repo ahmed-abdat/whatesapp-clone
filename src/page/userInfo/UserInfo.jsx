@@ -19,6 +19,7 @@ import {
 import { storage } from "../../config/firebase";
 import "react-toastify/dist/ReactToastify.css";
 import Camera from "../../components/svg/Camera";
+import Avatar from '../../assets/img/anonymous-user.jpg'
 import { getAuth, updateProfile } from "firebase/auth";
 
 export default function UserInfo() {
@@ -297,9 +298,7 @@ export default function UserInfo() {
                 src={
                   file
                     ? URL.createObjectURL(file)
-                    : user?.photoURL
-                    ? user.photoURL
-                    : `https://avatars.dicebear.com/api/avataaars/${avatarName}.svg`
+                    : user?.photoURL || Avatar
                 }
                 alt="a user image"
               />
