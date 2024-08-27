@@ -25,6 +25,7 @@ import {
   collection,
   query,
   deleteField,
+  writeBatch,
 } from "firebase/firestore/lite";
 import { useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
@@ -351,16 +352,51 @@ export default function UserProfile() {
   // delete anyonymous user account
   const delteUsere = async () => {
     const currentUserId = getCurrentUser().uid;
-    const docRef = doc(firestore, "users", currentUserId);
+    const userDocRef = doc(firestore, "users", currentUserId);
+    
     try {
-      await deleteDoc(docRef);
-      await deleteUser(auth.currentUser);
-      deleteImagProfile();
-      console.log("delte user succes");
+      const deleteOperations = [
+        // Delete 'lastMessage' collection if it exists
+        deleteCollectionIfExists(userDocRef, 'lastMessage'),
+        
+        // Delete 'messages' collection if it exists
+        deleteCollectionIfExists(userDocRef, 'messages'),
+        
+        // Delete user document
+        deleteDoc(userDocRef),
+        
+        // Delete user authentication
+        deleteUser(auth.currentUser),
+        
+        // Delete profile image
+        deleteImagProfile()
+      ];
+  
+      // Execute all delete operations concurrently
+      await Promise.all(deleteOperations);
+  
+      console.log("User deleted successfully");
     } catch (error) {
-      console.log(error.message);
+      console.error("Error deleting user:", error.message);
+      // Handle the error appropriately (e.g., show an error message to the user)
     }
   };
+
+  const deleteCollectionIfExists = async (docRef, collectionName) => {
+    console.log(collectionName);
+    const collectionRef = collection(docRef, collectionName);
+    const snapshot = await getDocs(collectionRef);
+    
+    if (snapshot.empty) return;
+
+    // delete all the documents in the collection
+    snapshot.forEach(async (doc) => {
+      await deleteDoc(doc.ref);
+    });
+
+
+  };
+
 
   // delete user image
   const deleteImagProfile = async () => {

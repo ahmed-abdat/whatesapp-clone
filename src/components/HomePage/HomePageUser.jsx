@@ -3,7 +3,7 @@ import React from "react";
 import "moment/locale/ar-sa";
 import { useState, useEffect } from "react";
 import useSelectedUser from "../../store/useSelectedUser";
-import defaultAvatar from "../../assets/img/default-avatar.svg";
+import defaultAvatar from "../../assets/img/anonymous-user.jpg";
 import {
   collection,
   doc,
@@ -326,12 +326,11 @@ export default function HomePageUser({
 
   const newContent = findEmoji(lastMessage.content);
 
-
   return (
     <div className="user--profile" onClick={handelSelectedUser}>
       <div className="user--profile--img">
         <img
-          src={photoURL || defaultAvatar}
+          src={photoURL ? photoURL : defaultAvatar}
           alt="user profile"
           loading="lazy"
           width={"60"}

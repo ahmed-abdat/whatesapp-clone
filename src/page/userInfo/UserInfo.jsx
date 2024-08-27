@@ -118,7 +118,7 @@ export default function UserInfo() {
         ? downloadURL
         : user?.photoURL
         ? user.photoURL
-        : defaultAvatar,
+        : null,
       imageFullPath: fullPath ? fullPath : null,
     };
     const required =
