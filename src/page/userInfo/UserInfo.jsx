@@ -21,6 +21,8 @@ import "react-toastify/dist/ReactToastify.css";
 import Camera from "../../components/svg/Camera";
 import Avatar from '../../assets/img/anonymous-user.jpg'
 import { getAuth, updateProfile } from "firebase/auth";
+import defaultAvatar from '../../assets/img/default-avatar.svg'
+
 
 export default function UserInfo() {
   // get current user
@@ -116,7 +118,7 @@ export default function UserInfo() {
         ? downloadURL
         : user?.photoURL
         ? user.photoURL
-        : getAvatarURL(avatarName),
+        : defaultAvatar,
       imageFullPath: fullPath ? fullPath : null,
     };
     const required =
@@ -194,6 +196,8 @@ export default function UserInfo() {
 
   // update user google profile
   const updateGoogleProfile = async (currentUsere, displayName, photoURL) => {
+
+    console.log(currentUsere, displayName, photoURL);
     try {
       await updateProfile(currentUsere, {
         displayName: displayName,
@@ -278,10 +282,6 @@ export default function UserInfo() {
     setAvatarName(value);
   };
 
-  // handel set avatar name
-  const getAvatarURL = (name) => {
-    return `https://avatars.dicebear.com/api/avataaars/${name}.svg`;
-  };
 
   return (
     <div className="userInfo dr-ar">

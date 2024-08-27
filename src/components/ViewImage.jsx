@@ -5,7 +5,7 @@ import { MdDelete } from "react-icons/md";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./styles/viewImage.css";
-
+import defaultAvatar from "../assets/img/default-avatar.svg";
 export default function ViewImage({
   isImageLoading,
   handelDeleteUserImg,
@@ -71,7 +71,7 @@ export default function ViewImage({
       )}
       <div className="view-image d-f">
         <div className="view-image--img">
-          <img src={image || getCurrentUser()?.photoURL} alt="" />
+          <img src={ image || defaultAvatar} alt="" />
         </div>
       </div>
     </div>
