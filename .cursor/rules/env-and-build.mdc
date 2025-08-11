@@ -1,0 +1,28 @@
+---
+alwaysApply: true
+---
+
+## Environment and build
+
+- Build tool: Vite with React plugin in [vite.config.js](mdc:vite.config.js).
+- Commands: `npm run dev`, `npm run build`, `npm run preview`.
+
+## Vite env variables (required)
+
+Define the following in a `.env` file at project root (Vite reads `VITE_*`):
+
+```
+VITE_FIREBASE_API_KEY=...
+VITE_FIREBASE_AUTH_DOMAIN=...
+VITE_FIREBASE_PROJECT_ID=...
+VITE_FIREBASE_STORAGE_BUCKET=...
+VITE_FIREBASE_MESSAGING_SENDER_ID=...
+VITE_FIREBASE_APP_ID=...
+VITE_FIREBASE_MEASUREMENT_ID=...
+```
+
+Restart dev server after changes. All Firebase initialization reads from these keys in [src/config/firebase.jsx](mdc:src/config/firebase.jsx).
+
+## Assets
+
+- Place static images under `src/assets/img` and audio under `src/assets/sounds`. Vite will bundle and hash as needed.

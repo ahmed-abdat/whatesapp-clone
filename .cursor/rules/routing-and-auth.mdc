@@ -1,0 +1,29 @@
+---
+description: routing map and auth guard behavior
+---
+
+## Routes
+
+- Defined in [src/App.jsx](mdc:src/App.jsx) using React Router v6 with lazy imports and Suspense fallback.
+- Map:
+  - `/` → `Home` (guarded by `RequireAuth`)
+  - `/welcoome` → `Welcoome`
+  - `/signUp` → `SignUp`
+  - `/otp` → `Otp`
+  - `/userInfo` → `UserInfo`
+  - `*` → `NotFound`
+
+## Auth guard `RequireAuth`
+
+- Access allowed if any of the following is true:
+  - Logged in user AND phone verified (`getIsPhoneUserVerified()`)
+  - Logged in user AND email user (`getIsEmailUser()`)
+  - Logged in user AND anonymous user (`getIsAnonymousUser()`)
+- Otherwise redirect to `/welcoome`.
+
+## Auth sources
+
+- Phone with OTP via Firebase Auth + Recaptcha.
+- Google OAuth via popup.
+- Anonymous sign-in.
+- After auth, user profile is completed at `/userInfo` and stored in Firestore.

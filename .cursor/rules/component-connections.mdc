@@ -1,0 +1,28 @@
+---
+description: how components, hooks, and stores wire together
+globs: src/components/**/*.jsx,src/page/**/*.jsx
+---
+
+## Component connections
+
+- `Home` shell decides layout (mobile vs desktop) and whether to render `ChatPageUser`.
+- `HomePage` orchestrates:
+  - Firestore subscriptions to `users` and `lastMessage`
+  - Presence updates (`isOnline`, `lastSeen`)
+  - View state in `useUsers` (profile panel, all-users list)
+  - Selection via `useSelectedUser`
+- `ChatPageUser` consumes `useChat`:
+  - Streams, pagination, send text/image/audio, read receipts
+  - Controls emoji picker and file input
+  - Opens `ViewSelectedImage` (preview) and `ViewFullImage` (gallery)
+- `Message` renders a single message:
+  - Chooses sender/receiver style by comparing `isSender` to `useUser().getCurrentUser().uid`
+  - Renders `AudioPlayer` when `media.type` contains `audio`
+  - Image preview triggers `ViewFullImage` via parent callback
+
+## Stores usage
+
+- `useUser` is the source of truth for current user and auth flags; it persists to `localStorage` for session continuity.
+- `useSelectedUser` holds the active chat peer.
+- `useMessages` buffers the current chat; use its `setAllMessages` to append or replace.
+- `useUsers` toggles list/profile visibility and stores unread counts set from Firestore queries.

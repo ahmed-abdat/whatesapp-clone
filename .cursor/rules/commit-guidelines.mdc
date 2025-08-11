@@ -1,0 +1,15 @@
+---
+alwaysApply: true
+---
+
+## Git commit rules
+
+- Format: `<type>: <summary>` in lowercase. Keep first line under 20 characters.
+- Types: `fix:`, `feat:`, `perf:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`.
+- Add a detailed description for complex changes and reference issues like `#123` when relevant.
+
+Examples:
+
+- `feat: add audio messages`
+- `fix: unread badge update #45`
+- `refactor: extract chat hook`

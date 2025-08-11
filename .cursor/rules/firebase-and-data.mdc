@@ -1,0 +1,43 @@
+---
+description: firebase init, collections, message shape, and chat id rules
+---
+
+## Firebase initialization
+
+- initializeApp in [src/config/firebase.jsx](mdc:src/config/firebase.jsx). Exported singletons: `db`, `auth`, `storage`.
+- Requires Vite env variables at build/runtime (see env rule).
+
+## Collections and documents
+
+- Users: `users/{uid}` with fields like `displayName`, `photoURL`, `phoneNumber|email`, `isOnline`, `lastSeen`, `userStatus`, `lastMessage`, `photoPath`.
+- Per-user chat: `users/{currentUserId}/messages/{peerId}/chat/{messageId}`. Each message contains:
+  - `content: string`
+  - `from: uid`
+  - `to: uid`
+  - `createdAt: serverTimestamp()`
+  - `isRead: boolean`
+  - `isReceived: boolean`
+  - `media: { type, src, content?, fullPath? } | null`
+- Last message mirror for list ordering: `users/{uid}/lastMessage/{peerId}` with the latest message object.
+- Chat presence view: `messages/{uniqueChatId}` tracks `{ sender?: uid, receiver?: uid }` to identify who is viewing.
+
+## Chat id rule
+
+- `uniqueChatId = currentUserId > selectedUserId ? currentUserId + selectedUserId : selectedUserId + currentUserId`.
+
+## Reads and pagination
+
+- Stream latest 20 messages ordered by `createdAt desc` and reverse in UI to chronological order. Use cursor with `startAfter(lastDoc)` to fetch older pages.
+
+## Read receipts
+
+- On entering chat, mark unread `isRead: true` where `to === currentUserId` in the per-user chat, and update both users' `lastMessage` docs to `isRead: true`.
+
+## Media
+
+- Images go to `storage: photo/{currentUserId}/{timestampedFilename}`. Audio to `audio/{currentUserId}/{timestampedFilename}`.
+- After upload, resolve `{ downloadURL, fullPath }` and include in `media` field. For audio preview, set `fullPath` including "audio" and consume in UI.
+
+## Presence and lastSeen
+
+- Update `users/{uid}` with `isOnline` and `lastSeen` on visibility changes and mount/unmount in `HomePage`.

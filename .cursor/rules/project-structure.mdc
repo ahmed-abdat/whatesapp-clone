@@ -1,0 +1,36 @@
+---
+alwaysApply: true
+---
+
+## Project structure and entry points
+
+- Main entry mounts React at `#root` in [index.html](mdc:index.html) via [src/main.jsx](mdc:src/main.jsx), which renders the app from [src/App.jsx](mdc:src/App.jsx).
+- Routing is defined and lazy-loaded in [src/App.jsx](mdc:src/App.jsx) with a local `RequireAuth` guard.
+- Firebase is initialized in [src/config/firebase.jsx](mdc:src/config/firebase.jsx) using `import.meta.env` keys (see env rule). Firestore, Auth, and Storage singletons are exported from there.
+- Global state uses Zustand stores under [src/store/](mdc:src/store):
+  - [src/store/useUser.jsx](mdc:src/store/useUser.jsx): current user, auth flags, and localStorage persistence
+  - [src/store/useUsers.jsx](mdc:src/store/useUsers.jsx): UI toggles, unread metadata
+  - [src/store/useMessages.jsx](mdc:src/store/useMessages.jsx): in-memory chat buffer and helpers
+  - [src/store/useSelectedUser.jsx](mdc:src/store/useSelectedUser.jsx): current chat peer
+  - [src/store/useSignUp.jsx](mdc:src/store/useSignUp.jsx): phone-based signup flow state
+- Hooks:
+  - [src/hooks/useChat.js](mdc:src/hooks/useChat.js): chat data flow, pagination, send, read-receipts, images, emoji, view-state
+  - [src/hooks/useAudio.js](mdc:src/hooks/useAudio.js): audio recording and upload
+- Constants live in [src/constants/chatConstants.js](mdc:src/constants/chatConstants.js).
+- Pages and shells:
+  - [src/page/Home/Home.jsx](mdc:src/page/Home/Home.jsx) is the main shell; shows left list and right chat panel
+  - [src/components/ChatPage.jsx](mdc:src/components/ChatPage.jsx) is the default right-side panel when no user is selected
+  - Auth/flow pages: [src/page/signUp/SignUp.jsx](mdc:src/page/signUp/SignUp.jsx), [src/page/otp/Otp.jsx](mdc:src/page/otp/Otp.jsx), [src/page/userInfo/UserInfo.jsx](mdc:src/page/userInfo/UserInfo.jsx), [src/page/welcome/Welcoome.jsx](mdc:src/page/welcome/Welcoome.jsx)
+  - Chat UI lives under [src/components/ChatePage/](mdc:src/components/ChatePage): `ChatPageUser`, `Message`, `ViewFullImage`, `AudioPlayer`
+- Assets are under [src/assets/img](mdc:src/assets/img) and [src/assets/sounds](mdc:src/assets/sounds).
+- Build tooling: [vite.config.js](mdc:vite.config.js) with React plugin; scripts in [package.json](mdc:package.json).
+
+## Running locally
+
+- Install dependencies and start dev server: `npm install` then `npm run dev`.
+- Provide the required Vite Firebase env vars (see env setup rule). Restart after env changes.
+
+## High-level data flow
+
+- Left panel (friends/search) in [src/components/HomePage.jsx](mdc:src/components/HomePage.jsx) reads Firestore `users` and per-user `lastMessage` to render list and unread state.
+- Right panel chat in [src/components/ChatePage/ChatPageUser.jsx](mdc:src/components/ChatePage/ChatPageUser.jsx) uses [src/hooks/useChat.js](mdc:src/hooks/useChat.js) to stream messages, paginate, send text/media/audio, and update read-receipts.

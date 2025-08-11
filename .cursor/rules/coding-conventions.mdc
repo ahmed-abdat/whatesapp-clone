@@ -1,0 +1,32 @@
+---
+globs: *.jsx,*.js
+---
+
+## Coding conventions
+
+- Prefer small, focused components and hooks (<200 LOC when reasonable). Extract logic into hooks under `src/hooks/` when reusable.
+- Use Zustand for global state. Create stores in `src/store/` and expose: setX/getX patterns; persist to `localStorage` only when needed. Keep selectors pure functions.
+- Use early returns and flat control-flow. Avoid deep nesting and complex ternaries.
+- Name things descriptively: functions as verbs, variables as nouns. Avoid abbreviations except well-known ones.
+- Keep JSX readable: split long expressions into variables above the return; memoize derived UI with `useMemo` if it reduces re-renders.
+- Side effects in `useEffect` must clean up listeners (Firestore `onSnapshot`, window events, audio, timers). Return an unsubscribe/cleanup.
+- Prefer `async/await` and wrap Firestore/Storage ops with try/catch; log `error.message` and fail gracefully in UI.
+- For date/time, `moment` is already used; keep formatting centralized for consistency where practical.
+- For icons and images, keep imports at top-level; lazy-load heavy components.
+- Do not introduce commented-out code blocks. If code is obsolete, remove it.
+
+## UI/UX
+
+- Text direction: Arabic content should use classes `f-ar`/`dr-ar`, English uses `f-en`/`dr-en`. Reuse existing utility classes.
+- Use lazy loading for secondary panels/modals (`React.lazy` + `Suspense`). Keep Suspense fallbacks lightweight.
+- For media messages:
+  - Images use `react-lazy-load-image-component` with `effect="blur"`.
+  - Audio uses `wavesurfer.js`; ensure `removeMediaElementOnDestroy: true` and cleanup wavesurfer instances on unmount if added.
+
+## Testing and verification
+
+- After meaningful changes, verify:
+  - Sign-in flows (phone OTP, Google, anonymous) route correctly and set `useUser` flags.
+  - Message send/receive, pagination, and read-receipts.
+  - Image open/close and download from `ViewFullImage`.
+  - Audio record/upload/playback.

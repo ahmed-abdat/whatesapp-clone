@@ -1,0 +1,53 @@
+---
+description: zustand stores api and persistence notes
+globs: src/store/**/*.jsx
+---
+
+## Zustand stores
+
+General guidance:
+
+- Define stores with clear setters/getters. Avoid side effects inside getters.
+- Persist only necessary fields to `localStorage`. Avoid storing the string "undefined"; always guard reads.
+- Use selector functions in components to minimize re-renders.
+
+### useUser
+
+File: [src/store/useUser.jsx](mdc:src/store/useUser.jsx)
+
+- State: `currentUser`, `isEmailUser`, `isPhoneUserVerified`, `isLogoutLoading`, `isAnonymousUser`.
+- Setters: `setCurrentUser(user)`, `setIsEmailUser(bool)`, `setIsPhoneUserVerified(bool)`, `setIsLogoutLoading(bool)`, `setIsAnonymousUser(bool)`, `updateProfile(partialUser)`.
+- Getters: `getCurrentUser()`, `getIsEmailUser()`, `getIsPhoneUserVerified()`, `getIsAnonymousUser()`.
+- Persistence: writes to `localStorage` for user and flags. When reading, check for null and invalid JSON before `JSON.parse`.
+
+### useUsers (list/profile UI)
+
+File: [src/store/useUsers.jsx](mdc:src/store/useUsers.jsx)
+
+- State: `allUsers`, `unreadMessages`, `isProfileShow`, `isAllUsersShow`.
+- Setters: `setAllUsers(users)`, `setIsProfileShow(bool)`, `setUnreadMessages(obj)`, `setIsAllUsersShow(bool)`.
+- Getter: `getUnreadMessages()`; persists to `localStorage`.
+
+### useMessages (in-memory chat)
+
+File: [src/store/useMessages.jsx](mdc:src/store/useMessages.jsx)
+
+- State: `allMessages`.
+- Methods: `setAllMessages(messagesOrOne, isUpdated)` appends or replaces; `getlastMessage()` returns tail.
+- Do not persist bulk message arrays to `localStorage`.
+
+### useSelectedUser
+
+File: [src/store/useSelectedUser.jsx](mdc:src/store/useSelectedUser.jsx)
+
+- State: `selectedUser`, `isSelectedUser`.
+- Methods: `setSelectedUser(user|null)`, `setIsSelectedUser(bool)`, `getSelectedUser()`.
+- Keep transient; do not persist selection by default.
+
+### useSignUp
+
+File: [src/store/useSignUp.jsx](mdc:src/store/useSignUp.jsx)
+
+- State: `phone`, `confirmationResult`.
+- Methods: `setPhones(phone)`, `getPhone()`, `setconfirmationResult(conf)`.
+- Persistence: phone and confirmation saved to `localStorage` to survive navigation.
