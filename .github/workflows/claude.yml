@@ -52,9 +52,13 @@ jobs:
   claude-code-action:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
     
     steps:
       - name: Claude Code Action Official
         uses: anthropics/claude-code-action@beta
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
