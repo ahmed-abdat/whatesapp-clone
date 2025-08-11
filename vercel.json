@@ -1,10 +1,5 @@
 {
-    "rewrites" : [{ "source": "/(.*)" , "destination" : "/"}],
-    "functions": {
-        "app/api/**/*.js": {
-            "runtime": "nodejs22.x"
-        }
-    },
+    "rewrites": [{ "source": "/(.*)", "destination": "/" }],
     "build": {
         "env": {
             "NODE_VERSION": "22"
