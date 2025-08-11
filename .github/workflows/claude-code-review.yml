@@ -1,0 +1,106 @@
+name: WhatsApp Clone - Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    # Focus on key source files for WhatsApp clone
+    paths:
+      - "src/**/*.jsx"
+      - "src/**/*.js"
+      - "src/**/*.css"
+      - "src/**/*.json"
+      - "tailwind.config.js"
+      - "package.json"
+      - "vite.config.js"
+      - "components.json"
+
+jobs:
+  claude-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+      id-token: write
+      actions: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Get full history for better context
+
+      - name: WhatsApp Clone Code Review
+        id: claude-review
+        uses: anthropics/claude-code-action@beta
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          
+          # Use Claude Sonnet 4 for optimal React/JavaScript analysis
+          model: "claude-sonnet-4-20250514"
+          
+          # Comprehensive review prompt tailored for WhatsApp clone
+          direct_prompt: |
+            Please review this WhatsApp clone pull request with focus on:
+            
+            ## 🎯 **Core Review Areas:**
+            - **React Best Practices**: Component structure, hooks usage, state management
+            - **Firebase Integration**: Authentication, Firestore queries, real-time listeners
+            - **UI/UX Quality**: Responsive design, accessibility, Arabic RTL support
+            - **Performance**: Bundle size, lazy loading, optimization opportunities
+            - **Security**: Authentication flows, data validation, sensitive data handling
+            - **Code Quality**: Consistency, maintainability, error handling
+            
+            ## 📱 **WhatsApp-Specific Checks:**
+            - **Real-time Features**: Message synchronization, presence indicators
+            - **Media Handling**: Image/audio upload, optimization, storage patterns  
+            - **Mobile Responsiveness**: Touch interactions, screen sizes, gestures
+            - **Arabic Support**: RTL layout, font rendering, text direction
+            - **Zustand State**: Store structure, data flow, persistence
+            - **Firebase Security**: Rules, authentication, data access patterns
+            
+            ## 🔧 **Technical Stack Focus:**
+            - **React 18**: Modern patterns, concurrent features, hooks
+            - **Vite**: Build optimization, bundle analysis, performance
+            - **Tailwind CSS v3**: Class usage, custom colors, responsive design
+            - **Shadcn UI**: Component integration, theming, accessibility
+            - **Firebase 10**: Best practices, error handling, offline support
+            
+            ## ✅ **What to Highlight:**
+            - Excellent patterns that follow WhatsApp UI conventions
+            - Performance optimizations for real-time messaging
+            - Accessibility improvements for inclusive design
+            - Security best practices for chat applications
+            - Code reusability and component composition
+            
+            ## ⚠️ **What to Flag:**
+            - Potential memory leaks in Firebase listeners
+            - Missing error boundaries or error handling
+            - Accessibility violations (missing ARIA, keyboard nav)
+            - Bundle size increases or performance regressions
+            - Security vulnerabilities in data handling
+            - Breaking changes to Arabic RTL support
+            
+            Be constructive, specific, and provide code examples when suggesting improvements.
+            
+          # Enable sticky comments for cleaner PR experience
+          use_sticky_comment: true
+          
+          # Allow Claude to run project-specific commands
+          allowed_tools: |
+            Bash(npm run build)
+            Bash(npm run lint --if-present)
+            Bash(npm run typecheck --if-present)
+            Bash(ls -la dist/assets/ | head -10)
+            
+          # Additional permissions for reading CI results
+          additional_permissions: |
+            actions: read
+            
+          # Custom instructions for WhatsApp clone context
+          custom_instructions: |
+            You are reviewing code for a WhatsApp clone built with React, Firebase, and Tailwind CSS.
+            The app supports Arabic RTL, real-time messaging, voice messages, and responsive design.
+            Focus on chat application best practices, real-time performance, and user experience.
+            Consider the Firebase backend, Zustand state management, and modern React patterns.
+            Pay special attention to accessibility, security, and mobile-first design principles.
