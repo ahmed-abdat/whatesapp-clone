@@ -54,6 +54,7 @@ export default {
         // WhatsApp brand colors for consistency
         whatsapp: {
           primary: "hsl(var(--whatsapp-primary))",
+          "primary-100": "hsl(var(--whatsapp-primary-100))",
           "primary-dark": "hsl(var(--whatsapp-primary-dark))",
           "primary-darker": "hsl(var(--whatsapp-primary-darker))",
           bg: "hsl(var(--whatsapp-bg))",

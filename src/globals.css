@@ -36,6 +36,7 @@
 
     /* WhatsApp Theme Colors */
     --whatsapp-primary: 142 70% 49%;
+    --whatsapp-primary-100: 142 70% 85%;
     --whatsapp-primary-dark: 142 64% 40%;  
     --whatsapp-primary-darker: 142 72% 29%;
     --whatsapp-bg: 210 11% 94%;
@@ -144,7 +145,7 @@
 }
 
 /* Arabic/RTL Support */
-.f-ar {
+.f-ar, .font-arabic {
   font-family: "Vazirmatn", 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 

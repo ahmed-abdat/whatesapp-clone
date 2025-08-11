@@ -6,6 +6,9 @@ import { IoIosPause } from "react-icons/io";
 
 import "./styles/AudioPlayer.css";
 import SpinerLoader from "../SpinerLoader";
+import { Button } from "../ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { cn } from "../../lib/utils";
 
 const AudioPlayer = ({
   audioSrc,
@@ -30,9 +33,9 @@ const AudioPlayer = ({
       wavesurfer.current = WaveSurfer.create({
         container: waveformRef.current,
         autoCenter: true,
-        waveColor: "#8da78f",
-        progressColor: "#00a884",
-        cursorColor: "#00a884",
+        waveColor: "hsl(var(--muted-foreground))",
+        progressColor: "hsl(var(--whatsapp-primary))",
+        cursorColor: "hsl(var(--whatsapp-primary))",
         hideScrollbar: true,
         cursorWidth: 2,
         scrollParent: false,
@@ -88,58 +91,79 @@ const AudioPlayer = ({
   return (
     <>
       {isPreview ? (
-        <div className="preview-audio">
-          {isPlaying && isAudioLoaded ? (
-            <button
-              onClick={handelPausePlay}
-              aria-label="Pause"
-              style={{ fontSize: "22px" }}
-            >
-              <IoIosPause />
-            </button>
-          ) : (
-            <button onClick={handelPausePlay} aria-label="Play">
+        <div className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
+          <Button
+            onClick={handelPausePlay}
+            size="icon"
+            variant="ghost"
+            className="w-8 h-8 flex-shrink-0"
+            aria-label={isPlaying && isAudioLoaded ? "Pause" : "Play"}
+          >
+            {isPlaying && isAudioLoaded ? (
+              <IoIosPause className="w-4 h-4" />
+            ) : (
               <Play wh={16} />
-            </button>
-          )}
+            )}
+          </Button>
           <div
             ref={waveformRef}
-            className="wafe"
+            className="flex-1 min-w-0"
             style={{ width: "100%" }}
           ></div>
-          {wavesurfer.current && <p>{remainingTime()}</p>}
+          {wavesurfer.current && (
+            <span className="text-xs text-gray-600 font-mono min-w-fit">
+              {remainingTime()}
+            </span>
+          )}
         </div>
       ) : (
-        <div className="audio-message">
-          <div className="avatar">
-            <img src={avatar ? avatar : defaultAvatar} alt="avatar" className="avatar" />
-          </div>
-          <div className="controle">
+        <div className="flex items-center gap-3 bg-white p-3 rounded-xl max-w-sm">
+          <Avatar className="w-10 h-10 flex-shrink-0">
+            <AvatarImage src={avatar || defaultAvatar} alt="User avatar" />
+            <AvatarFallback>U</AvatarFallback>
+          </Avatar>
+          
+          <div className="flex items-center justify-center w-12 h-12 flex-shrink-0">
             {isPlaying && isAudioLoaded ? (
-              <button
+              <Button
                 onClick={handelPausePlay}
+                size="icon"
+                variant="ghost"
+                className="w-10 h-10 rounded-full bg-whatsapp-primary hover:bg-whatsapp-primary-dark text-white"
                 aria-label="Pause"
-                style={{ fontSize: "28px" }}
-                className="pause d-f"
               >
-                <IoIosPause />
-              </button>
-            ) : isAudioLoaded && (
-              <button onClick={handelPausePlay} aria-label="Play" className="play d-f">
+                <IoIosPause className="w-6 h-6" />
+              </Button>
+            ) : isAudioLoaded ? (
+              <Button 
+                onClick={handelPausePlay} 
+                size="icon"
+                variant="ghost"
+                className="w-10 h-10 rounded-full bg-whatsapp-primary hover:bg-whatsapp-primary-dark text-white"
+                aria-label="Play"
+              >
                 <Play wh={20} />
-              </button>
+              </Button>
+            ) : (
+              <div className="w-10 h-10 flex items-center justify-center">
+                <SpinerLoader />
+              </div>
             )}
-            {
-              !isAudioLoaded && <SpinerLoader />
-            }
           </div>
-          <div className="wave-time">
-            <div ref={waveformRef} className="wafe" style={{ width: "100%" , height: '100%' }}>
-              {wavesurfer.current && <p>{remainingTime()}</p>}
-            </div>
+          
+          <div className="flex-1 min-w-0 relative">
+            <div 
+              ref={waveformRef} 
+              className="w-full" 
+              style={{ width: "100%", height: "24px" }}
+            />
+            {wavesurfer.current && (
+              <div className="absolute top-6 right-0 text-xs text-gray-500 font-mono">
+                {remainingTime()}
+              </div>
+            )}
           </div>
         </div>
-        
       )}
     </>
   );

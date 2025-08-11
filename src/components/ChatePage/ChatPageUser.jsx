@@ -49,6 +49,9 @@ import { ImPlay2 } from "react-icons/im";
 import Pause from "../svg/Pause";
 import "../styles/chatPageUser.css";
 import AudioPlayer from "./AudioPlayer";
+import { Textarea } from "../ui/textarea";
+import { Button } from "../ui/button";
+import { cn } from "../../lib/utils";
 
 // lazy loade
 const ViewSelectedImage = lazy(() => import("../ViewSelectedImage"));
@@ -1156,98 +1159,141 @@ export default function ChatPageUser() {
           </div>
         )}
         {isAudioRecording ? (
-          <div className="audio-recording">
-            <div className="first-row">
+          <div className="flex flex-col gap-3 p-4 bg-white border-t border-gray-200">
+            <div className="flex items-center justify-center gap-4">
               {/* audio */}
               {audioDetails && <AudioPlayer audioSrc={audioDetails} duratione={audioDuration}/>}
-            {/* timing */}
-            {
-              isRecording && <p className="record-time f-en">
-              {formatTimeAudioRecording(recordingTime)}
-            </p>
-            }
+              {/* timing */}
+              {isRecording && (
+                <p className="text-red-500 font-mono text-sm">
+                  {formatTimeAudioRecording(recordingTime)}
+                </p>
+              )}
             </div>
-         <div className="second-row">
-             {/* send */}
-             <button
-              className={`send ${isRecording ? "disabeled" : ""}`}
-              onClick={handelSendAudio}
-            >
-              <Send wh={18} />
-            </button>
-            {/* pause and resume */}
-            {isRecording && (
-              <button
-                className="pause-resume"
-                onClick={() => togglePauseResume()}
+            <div className="flex items-center justify-center gap-3">
+              {/* send */}
+              <Button
+                disabled={isRecording}
+                onClick={handelSendAudio}
+                size="icon"
+                className="bg-whatsapp-primary hover:bg-whatsapp-primary-dark rounded-full w-12 h-12 disabled:opacity-50"
               >
-                {isPaused ? <ImPlay2 /> : <Pause wh={30} />}
-              </button>
-            )}
-            {/* stop and recorde */}
-            {isRecording ? (
-              <button className="stop" onClick={() => stopRecording()}>
-                <HiStop />
-              </button>
-            ) : (
-              <button
-                className="record"
-                onClick={() => {
-                  setAudioDetails(null);
-                  startRecording();
-                }}
+                <Send className="w-5 h-5" />
+              </Button>
+              {/* pause and resume */}
+              {isRecording && (
+                <Button
+                  onClick={() => togglePauseResume()}
+                  size="icon"
+                  variant="outline"
+                  className="rounded-full w-12 h-12"
+                >
+                  {isPaused ? <ImPlay2 className="w-5 h-5" /> : <Pause className="w-5 h-5" />}
+                </Button>
+              )}
+              {/* stop and record */}
+              {isRecording ? (
+                <Button 
+                  onClick={() => stopRecording()}
+                  size="icon"
+                  variant="destructive"
+                  className="rounded-full w-12 h-12"
+                >
+                  <HiStop className="w-5 h-5" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => {
+                    setAudioDetails(null);
+                    startRecording();
+                  }}
+                  size="icon"
+                  variant="outline"
+                  className="rounded-full w-12 h-12"
+                >
+                  <Voice className="w-5 h-5" />
+                </Button>
+              )}
+              <Button 
+                onClick={handelStopRecording}
+                size="icon"
+                variant="ghost"
+                className="rounded-full w-12 h-12 text-red-500 hover:bg-red-50"
               >
-                <Voice wh={30} />
-              </button>
-            )}
-           
-            <button className="trash" onClick={handelStopRecording}>
-              <FaTrash />
-            </button>
-         </div>
+                <FaTrash className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
         ) : (
-          <div className="forme d-f">
-            <div className="icons">
-              <div className="icon d-f" onClick={handelShowEmojiPicker}>
-                {isEmojiPickerShow ? <FaKeyboard /> : <SmileFace />}
-              </div>
-              <label htmlFor="file-input" className={`icon d-f`}>
-                <BsImageFill />
-              </label>
+          <div className="flex items-end gap-3 p-4 bg-white border-t border-gray-200">
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                onClick={handelShowEmojiPicker}
+                className="rounded-full w-10 h-10 hover:bg-gray-100"
+              >
+                {isEmojiPickerShow ? <FaKeyboard className="w-5 h-5" /> : <SmileFace className="w-5 h-5" />}
+              </Button>
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                asChild
+                className="rounded-full w-10 h-10 hover:bg-gray-100"
+              >
+                <label htmlFor="file-input" className="cursor-pointer">
+                  <BsImageFill className="w-5 h-5" />
+                </label>
+              </Button>
               <input
                 onChange={handelFile}
                 id="file-input"
                 type="file"
                 name="file"
-                style={{ display: "none" }}
+                className="hidden"
               />
             </div>
-            <form onSubmit={handelSendMessage}>
-              <div className="input">
-                <input
-                  type="text"
+            <form onSubmit={handelSendMessage} className="flex items-end gap-2 w-full">
+              <div className="flex-1">
+                <Textarea
                   placeholder="اكتب رسالة"
                   ref={messageInputRef}
                   onFocus={handelInputFocus}
                   onChange={handelMessage}
                   onKeyDown={(e) => {
-                    e.key === "Enter" && handelSendMessage();
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handelSendMessage();
+                    }
                   }}
                   value={message}
-                  className={isArabic ? "f-ar" : "f-en dr-en"}
+                  className={cn(
+                    "min-h-[40px] max-h-24 resize-none bg-white border-gray-300 focus:border-whatsapp-primary focus:ring-whatsapp-primary rounded-3xl px-4 py-2",
+                    isArabic ? "font-arabic text-right" : "text-left"
+                  )}
+                  rows={1}
                 />
               </div>
               {message.length > 0 ? (
-                <div className="icon">
-                  <button style={{ all: "unset" }}>
-                    <Send />
-                  </button>
-                </div>
+                <Button 
+                  type="submit"
+                  size="icon"
+                  className="bg-whatsapp-primary hover:bg-whatsapp-primary-dark rounded-full w-10 h-10 flex-shrink-0"
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
               ) : (
-                <div className="icon" onClick={handelStartRecording}>
-                  <Voice />
-                </div>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  onClick={handelStartRecording}
+                  className="rounded-full w-10 h-10 flex-shrink-0 hover:bg-gray-100"
+                >
+                  <Voice className="w-5 h-5" />
+                </Button>
               )}
             </form>
           </div>

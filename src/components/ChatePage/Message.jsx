@@ -8,6 +8,8 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import AudioPlayer from "./AudioPlayer";
 import defaultAvatar from '../../assets/img/default-avatar.svg'
 import useSelectedUser from "../../store/useSelectedUser";
+import { Card, CardContent } from "../ui/card";
+import { cn } from "../../lib/utils";
 
 export default function Message({
   content,
@@ -89,83 +91,109 @@ export default function Message({
 
 
   return (
-    <div
-      className={`message ${isCurrentUserSender ? "sender" : "receiver"} ${
-        media && !content ? "sm-p" : ""
-      }`}
-    >
-      {/* image message */}
-      {media ? (
-        media?.name ? (
-          <div className="img d-f">
-            <LazyLoadImage
-              alt="image"
-              height={"322.667px"}
-              src={URL.createObjectURL(media)}
-              onClick={onclike}
-              width={"322px"}
-              effect="blur"
-            />
-          </div>
-        ) : media?.type?.includes("image") ? (
-          <div className="img d-f">
-            <LazyLoadImage
-              onClick={onclike}
-              alt="image"
-              height={"322.667px"}
-              src={media.src}
-              width={"100%"}
-              effect="blur"
-            />
-          </div>
-        ) : null
-      ) : null}
+    <div className={cn(
+      "flex",
+      isCurrentUserSender ? "justify-end" : "justify-start",
+      "mb-3 px-4"
+    )}>
+      <Card className={cn(
+        "max-w-xs md:max-w-md relative",
+        isCurrentUserSender 
+          ? "bg-whatsapp-primary text-white ml-auto" 
+          : "bg-white text-gray-900",
+        media && !content && "p-1"
+      )}>
+        <CardContent className="p-3">
+          {/* image message */}
+          {media ? (
+            media?.name ? (
+              <div className="flex justify-center">
+                <LazyLoadImage
+                  alt="image"
+                  height={"322px"}
+                  src={URL.createObjectURL(media)}
+                  onClick={onclike}
+                  width={"322px"}
+                  effect="blur"
+                  className="rounded-lg cursor-pointer object-cover"
+                />
+              </div>
+            ) : media?.type?.includes("image") ? (
+              <div className="flex justify-center">
+                <LazyLoadImage
+                  onClick={onclike}
+                  alt="image"
+                  height={"322px"}
+                  src={media.src}
+                  width={"100%"}
+                  effect="blur"
+                  className="rounded-lg cursor-pointer object-cover max-w-full"
+                />
+              </div>
+            ) : null
+          ) : null}
 
-      {/* audio message */}
+          {/* audio message */}
+          {media && media?.fullPath?.includes("audio") ? (
+            <div className="voice-message">
+              <AudioPlayer audioSrc={media.src} isPreview={false} avatar={avatar}/>
+            </div>
+          ) : 
+            ((media && media?.type?.includes("audio")) && (
+              <div className="voice-message">
+                <AudioPlayer audioSrc={URL.createObjectURL(media)} isPreview={false} avatar={avatar}/>
+              </div>
+            )
+          )}
 
-      {media && media?.fullPath?.includes("audio") ? (
-        <div className="voice">
-          <AudioPlayer audioSrc={media.src} isPreview={false} avatar={avatar}/>
-        </div>
-      ) : 
-        ((media && media?.type?.includes("audio")) && (
-          <div className="voice ">
-            <AudioPlayer audioSrc={URL.createObjectURL(media)} isPreview={false} avatar={avatar}/>
+          {/* Message tail */}
+          <div className={cn(
+            "absolute top-0 w-3 h-3",
+            isCurrentUserSender 
+              ? "right-[-6px] transform rotate-45 bg-whatsapp-primary" 
+              : "left-[-6px] transform rotate-45 bg-white"
+          )}>
+            {isCurrentUserSender ? <MessageSender /> : <MessageReceiver />}
           </div>
-        )
-      )}
-
-      <div className={`after ${isCurrentUserSender ? "send" : "receive"}`}>
-        {isCurrentUserSender ? <MessageSender /> : <MessageReceiver />}
-      </div>
-      {content && (
-        <div className="content">
-          <p className={`${isArabic ? "f-ar dr-ar" : "f-en dr-en"}`}>
-            {newContent.map((content, index) => (
-              <React.Fragment key={index}>{content} </React.Fragment>
-            ))}
-          </p>
-        </div>
-      )}
-      <div
-        className={`time ${
-          (media?.type?.includes("image") || media?.name) && !content
-            ? "onlyImage"
-            : media?.type?.includes("audio")
-            ? "audio-time"
-            : ""
-        }`}
-      >
-        <p>{`${HourAndMinitFormat} ${AmPm}`}</p>
-        {isCurrentUserSender && (
-          <div className={`${isRead ? "check" : "uncheck"} d-f`}>
-            <Check />
+          
+          {/* Message content */}
+          {content && (
+            <div className="message-content">
+              <p className={cn(
+                "leading-relaxed",
+                isArabic ? "text-right font-arabic" : "text-left"
+              )}>
+                {newContent.map((content, index) => (
+                  <React.Fragment key={index}>{content} </React.Fragment>
+                ))}
+              </p>
+            </div>
+          )}
+          {/* Message timestamp and status */}
+          <div className={cn(
+            "flex items-center justify-end mt-2 gap-1",
+            (media?.type?.includes("image") || media?.name) && !content && "absolute bottom-2 right-2 bg-black bg-opacity-50 rounded px-2 py-1",
+            media?.type?.includes("audio") && "mt-1"
+          )}>
+            <span className={cn(
+              "text-xs",
+              isCurrentUserSender 
+                ? ((media?.type?.includes("image") || media?.name) && !content ? "text-white" : "text-whatsapp-primary-100")
+                : "text-gray-500"
+            )}>
+              {`${HourAndMinitFormat} ${AmPm}`}
+            </span>
+            {isCurrentUserSender && (
+              <div className={cn(
+                "flex items-center",
+                isRead ? "text-blue-400" : "text-gray-400"
+              )}>
+                <Check />
+              </div>
+            )}
           </div>
-        )}
-      </div>
-      {(media?.type?.includes("image") || media?.name) && !content && (
-        <div className="shadow"></div>
-      )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
