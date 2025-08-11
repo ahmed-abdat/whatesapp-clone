@@ -1,0 +1,189 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+
+    --primary: 142 70% 49%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+
+    --radius: 0.5rem;
+
+    /* WhatsApp Theme Colors */
+    --whatsapp-primary: 142 70% 49%;
+    --whatsapp-primary-dark: 142 64% 40%;  
+    --whatsapp-primary-darker: 142 72% 29%;
+    --whatsapp-bg: 210 11% 94%;
+    --whatsapp-chat-bg: 38 15% 89%;
+    --whatsapp-chat-bg-deeper: 194 16% 82%;
+    
+    /* Color mappings */
+    --color-gray: 200 12% 75%;
+    --white-color-light: 242 100% 97%;
+    --icon-color: 200 14% 37%;
+    --icon-color-light: 200 12% 75%;
+    --main-bgc: 210 11% 94%;
+    --text-color: 200 41% 32%;
+    --text-color-light: 200 14% 29%;
+    --app-background: 38 15% 89%;
+    --app-background-deeper: 194 16% 82%;
+
+    /* Transitions */
+    --tran-02: all 0.2s ease;
+    --tran-03: all 0.3s ease;
+    --tran-04: all 0.4s ease;
+    --tran-05: all 0.5s ease;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 142 70% 49%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, 'Lucida Grande', Arial, Ubuntu, Cantarell, 'Fira Sans', sans-serif, 'Amiri';
+  }
+}
+
+/* WhatsApp Clone Specific Styles */
+.light-icon {
+  color: hsl(var(--icon-color-light));
+}
+
+/* Utility Classes */
+.d-f {
+  @apply flex items-center justify-center;
+}
+
+.btn {
+  @apply transition-all duration-300 ease-in-out cursor-pointer outline-none border-none;
+}
+
+.r-180 {
+  @apply rotate-180;
+}
+
+.hide {
+  @apply hidden;
+}
+
+.invisible {
+  @apply opacity-0;
+}
+
+.visible {
+  @apply opacity-100;
+}
+
+.m-b-sm {
+  @apply mb-2;
+}
+
+.disabel {
+  @apply opacity-50 pointer-events-none cursor-not-allowed;
+}
+
+.disabel-no-opacity {
+  @apply pointer-events-none cursor-not-allowed;
+}
+
+/* Arabic/RTL Support */
+.f-ar {
+  font-family: "Vazirmatn", 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.f-en {
+  font-family: "Roboto", 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.dr-en {
+  direction: ltr;
+}
+
+.dr-ar {
+  direction: rtl;
+}
+
+.d-init {
+  direction: initial;
+}
+
+/* Selection and Scrollbar Styling */
+::selection {
+  background-color: hsl(var(--whatsapp-primary));
+  color: hsl(var(--white-color-light));
+}
+
+::-webkit-scrollbar {
+  @apply w-1.5 h-1.5;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-black/20 rounded;
+}
+
+/* Button Disabled States */
+.btn[disabled], 
+button[disabled] {
+  @apply opacity-50 pointer-events-none cursor-not-allowed;
+}
