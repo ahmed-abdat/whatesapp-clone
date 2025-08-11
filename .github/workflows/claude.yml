@@ -1,4 +1,4 @@
-name: WhatsApp Clone CI/CD
+name: WhatsApp Clone CI/CD with Claude
 
 on:
   push:
@@ -48,3 +48,13 @@ jobs:
           echo "Build completed successfully!"
           echo "Bundle analysis:"
           ls -la dist/assets/ | head -20
+
+  claude-code-action:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Claude Code Action Official
+        uses: anthropics/claude-code-action@beta
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
