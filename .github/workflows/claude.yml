@@ -1,14 +1,19 @@
-name: WhatsApp Clone CI/CD with Claude
+name: WhatsApp Clone - Claude Assistant
 
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
   workflow_dispatch:
 
 jobs:
   build-and-test:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     
     steps:
@@ -49,16 +54,64 @@ jobs:
           echo "Bundle analysis:"
           ls -la dist/assets/ | head -20
 
-  claude-code-action:
+  claude-assistant:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
     permissions:
       contents: read
       pull-requests: write
+      issues: write
       id-token: write
+      actions: read
     
     steps:
-      - name: Claude Code Action Official
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: WhatsApp Clone Assistant
+        id: claude-assistant
         uses: anthropics/claude-code-action@beta
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          
+          # Use Claude Sonnet 4 for best WhatsApp clone assistance
+          model: "claude-sonnet-4-20250514"
+          
+          # Enable all relevant tools for WhatsApp clone development
+          allowed_tools: |
+            Bash(npm install)
+            Bash(npm run build)
+            Bash(npm run dev)
+            Bash(npm run test)
+            Bash(npm run lint)
+            Bash(npm run typecheck)
+            Bash(npx shadcn@latest add *)
+            
+          # Additional permissions for comprehensive assistance
+          additional_permissions: |
+            actions: read
+            
+          # WhatsApp clone specific instructions
+          custom_instructions: |
+            You are assisting with a WhatsApp clone project built with:
+            - React 18.3.1 + Vite 5.4.18 + Node.js 22
+            - Firebase 10.13.2 (Auth, Firestore, Storage)
+            - Tailwind CSS 3.4.17 + Shadcn UI + Radix UI
+            - Zustand 4.5.7 for state management
+            - Arabic RTL support + responsive design
+            - Real-time messaging, voice messages, image sharing
+            
+            When helping:
+            - Follow existing code patterns and conventions
+            - Maintain Arabic RTL support and accessibility
+            - Consider real-time performance for messaging features
+            - Use project's WhatsApp brand colors and design system
+            - Ensure mobile-first responsive design
+            - Follow Firebase security best practices
+            - Maintain compatibility with existing component structure
