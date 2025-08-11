@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "serena": {
+      "command": "npx",
+      "args": ["@anysphere/serena"],
+      "env": {
+        "PYTHONPATH": "/usr/local/lib/python3.11/site-packages"
+      }
+    }
+  }
+}
