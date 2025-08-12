@@ -27,6 +27,9 @@ import { HiChatBubbleBottomCenterText } from "react-icons/hi2";
 import ViewAllUsersHeader from "./HomePage/ViewAllUsersHeader";
 import useSelectedUser from "../store/useSelectedUser";
 import NoSearchFound from "./HomePage/NoSearchFound";
+import { ScrollArea } from "./ui/scroll-area";
+import { Button } from "./ui/button";
+import { cn } from "../lib/utils";
 // lazy loade
 const UserProfile = lazy(() => import("./UserProfile"));
 const NoFreinds = lazy(() => import("./HomePage/NoFreinds"));
@@ -286,9 +289,11 @@ export default function HomePage() {
 
 
   return (
-    <div className="home-page">
+    <div className="flex flex-col h-full bg-white">
       {isLogoutLoading ? (
-        <SpinerLoader />
+        <div className="flex items-center justify-center h-full">
+          <SpinerLoader size="lg" />
+        </div>
       ) : (
         <>
           {/* profile */}
@@ -297,29 +302,34 @@ export default function HomePage() {
               <UserProfile />
             </Suspense>
           )}
-          {/* home page header */}
-          {isAllUsersShowe ? (
-            <ViewAllUsersHeader
-              setIsAllUsersShow={setIsAllUsersShowe}
-              usersLength={allUsers.length}
-            />
-          ) : (
-            <HomePageHeader setIsAllUsersShow={setIsAllUsersShowe}/>
-          )}
-          {/* home page search */}
-          <HomepageSearch
-            isUnreadMessageShow={!isAllUsersShowe}
-            isUnreadMessage={isUnreadMessage}
-            setIsUnreadMessage={setIsUnreadMessage}
-            search={search}
-            setSearch={setSearch}
-          />
+          {/* Header Section */}
+          <div className="flex-shrink-0">
+            {isAllUsersShowe ? (
+              <ViewAllUsersHeader
+                setIsAllUsersShow={setIsAllUsersShowe}
+                usersLength={allUsers.length}
+              />
+            ) : (
+              <HomePageHeader setIsAllUsersShow={setIsAllUsersShowe}/>
+            )}
+            
+            {/* Search Bar */}
+            <div className="px-3 py-2 border-b">
+              <HomepageSearch
+                isUnreadMessageShow={!isAllUsersShowe}
+                isUnreadMessage={isUnreadMessage}
+                setIsUnreadMessage={setIsUnreadMessage}
+                search={search}
+                setSearch={setSearch}
+              />
+            </div>
+          </div>
 
-          {/* home page user profile */}
-
-          {isAllUsersShowe ? (
-            <div className="user-profile--container">
-              {!isLoading ? (
+          {/* User List with ScrollArea */}
+          <ScrollArea className="flex-1">
+            {isAllUsersShowe ? (
+              <div className="divide-y divide-gray-100">
+                {!isLoading ? (
                 search.length > 0 ? (
                   filetrSearch(allUsers).length > 0 ? (
                     filetrSearch(allUsers).map((user) => {
@@ -334,30 +344,33 @@ export default function HomePage() {
                   })
                 )
               ) : (
-                <SpinerLoader />
+                <div className="flex justify-center py-8">
+                  <SpinerLoader />
+                </div>
               )}
-            </div>
+              </div>
           ) : (
             <>
-              <div
-                className={`button ${
-                  isBtnTextShow && freindsList.length < 1 ? "with-text" : ""
-                }`}
-                onClick={() => setIsAllUsersShowe(true)}
-              >
-                <button
-                  className={`${
-                    isBtnTextShow && freindsList.length < 1 ? "with-text" : ""
-                  }`}
-                >
-                  <p className="d-f f-ar">
-                    <HiChatBubbleBottomCenterText />
-                    {isBtnTextShow && freindsList.length < 1 && "إرسال رسالة"}
-                  </p>
-                </button>
-              </div>
-              <div className="user-profile--container">
-                {!isLoading ? (
+              {/* Floating Action Button */}
+              {freindsList.length < 1 && (
+                <div className="fixed bottom-6 right-6 z-10">
+                  <Button
+                    onClick={() => setIsAllUsersShowe(true)}
+                    className={cn(
+                      "rounded-full shadow-lg bg-whatsapp-primary hover:bg-whatsapp-primary-dark",
+                      isBtnTextShow && freindsList.length < 1 ? "px-6" : "w-14 h-14 p-0"
+                    )}
+                  >
+                    <HiChatBubbleBottomCenterText className="w-6 h-6" />
+                    {isBtnTextShow && freindsList.length < 1 && (
+                      <span className="ml-2 font-arabic">إرسال رسالة</span>
+                    )}
+                  </Button>
+                </div>
+              )}
+                {/* Friends List */}
+                <div className="divide-y divide-gray-100">
+                  {!isLoading ? (
                   freindsList.length > 0 ? (
                     search.length < 1 && isUnreadMessage ? (
                       filterFreinds.map((user) => {
@@ -389,12 +402,15 @@ export default function HomePage() {
                       <NoFreinds allUser={allUsers} />
                     </Suspense>
                   )
-                ) : (
-                  <SpinerLoader />
-                )}
-              </div>
-            </>
-          )}
+                  ) : (
+                    <div className="flex justify-center py-8">
+                      <SpinerLoader />
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </ScrollArea>
         </>
       )}
     </div>

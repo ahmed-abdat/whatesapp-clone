@@ -23,8 +23,7 @@ import useSignUp from "../../store/useSignUp";
 import useUser from "../../store/useUser";
 import GestIcon from '../../assets/img/anonymous-user.jpg'
 import GoogleIcon from '../../assets/img/google-logo.png'
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'sonner';
 import './SignUp.css'
 
 
@@ -249,19 +248,6 @@ useEffect(() => {
         />
         <p className="btn google-btn dr-ar"> تسجيل الدخول كضيف  </p>
       </div>
-      <ToastContainer
-        position="top-center"
-        autoClose={2000}
-        limit={2}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={true}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
     </div>
   );
 }

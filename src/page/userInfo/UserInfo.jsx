@@ -9,7 +9,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore/lite";
 import { app } from "../../config/firebase";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "sonner";
 import {
   deleteObject,
   getDownloadURL,
@@ -17,11 +17,18 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { storage } from "../../config/firebase";
-import "react-toastify/dist/ReactToastify.css";
 import Camera from "../../components/svg/Camera";
 import Avatar from '../../assets/img/anonymous-user.jpg'
 import { getAuth, updateProfile } from "firebase/auth";
 import defaultAvatar from '../../assets/img/default-avatar.svg'
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Button } from "../../components/ui/button";
+import { Progress } from "../../components/ui/progress";
+import { Avatar as ShadcnAvatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
+import { cn } from "../../lib/utils";
+import { FiCamera, FiUser } from "react-icons/fi";
 
 
 export default function UserInfo() {
@@ -284,109 +291,147 @@ export default function UserInfo() {
 
 
   return (
-    <div className="userInfo dr-ar">
-      <form onSubmit={handelSubmit}>
-        <div className="header">
-          <h2> المعلومات الشخصية </h2>
-          <p>الرجاء إدخال معلوماتك و تحديد صورتك الشخصية - الإسم إلزامي</p>
-        </div>
-        {/* upload image file */}
-        <div className="d-f">
-          <label htmlFor="file-input">
-            <div className={`img d-f ${isLoading || (precentage !== null && precentage <= 99) ? "disabel" : ""}`}>
-              <img
-                src={
-                  file
-                    ? URL.createObjectURL(file)
-                    : user?.photoURL || Avatar
-                }
-                alt="a user image"
+    <div className="userInfo dr-ar min-h-screen bg-gradient-to-br from-whatsapp-primary/10 to-whatsapp-secondary/10 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md mx-auto shadow-2xl">
+        <CardHeader className="text-center space-y-2">
+          <CardTitle className="font-arabic text-2xl font-bold text-gray-900">
+            المعلومات الشخصية
+          </CardTitle>
+          <CardDescription className="font-arabic text-gray-600 leading-relaxed">
+            الرجاء إدخال معلوماتك و تحديد صورتك الشخصية - الإسم إلزامي
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          <form onSubmit={handelSubmit} className="space-y-6">
+            {/* Profile image upload */}
+            <div className="flex flex-col items-center space-y-4">
+              <div className="relative">
+                <ShadcnAvatar className="w-24 h-24 ring-4 ring-whatsapp-primary/20">
+                  <AvatarImage
+                    src={file ? URL.createObjectURL(file) : user?.photoURL || Avatar}
+                    alt="صورة المستخدم"
+                    className="object-cover"
+                  />
+                  <AvatarFallback className="bg-gradient-to-br from-whatsapp-primary to-whatsapp-secondary text-white text-xl font-bold">
+                    <FiUser className="w-8 h-8" />
+                  </AvatarFallback>
+                </ShadcnAvatar>
+
+                {/* Camera button overlay */}
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  className={cn(
+                    "absolute bottom-0 right-0 h-8 w-8 rounded-full bg-white shadow-lg border-2 border-white hover:bg-gray-50",
+                    (isLoading || (precentage !== null && precentage <= 99)) && "opacity-50 pointer-events-none"
+                  )}
+                  disabled={isLoading || (precentage !== null && precentage <= 99)}
+                >
+                  <label
+                    htmlFor="file-input"
+                    className="cursor-pointer flex items-center justify-center w-full h-full"
+                  >
+                    <FiCamera className="w-4 h-4 text-gray-700" />
+                  </label>
+                </Button>
+
+                <input
+                  onChange={handleFile}
+                  id="file-input"
+                  type="file"
+                  name="file"
+                  accept="image/*"
+                  className="hidden"
+                />
+              </div>
+
+              {/* Upload progress */}
+              {isLoading && precentage !== null && (
+                <div className="w-full space-y-2">
+                  <Progress value={precentage} className="h-2" />
+                  <p className="text-sm text-center text-gray-500 font-arabic">
+                    جاري تحميل الصورة... {Math.round(precentage)}%
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* User name input */}
+            <div className="space-y-2">
+              <Label htmlFor="name" className="font-arabic text-right">
+                إسم المستخدم *
+              </Label>
+              <Input
+                type="text"
+                placeholder="أدخل إسمك هنا"
+                onBlur={handelBlur}
+                id="name"
+                name="displayName"
+                onChange={handelDisplayName}
+                value={displayName}
+                className={cn(
+                  "h-12",
+                  isArabic ? "font-arabic text-right" : "text-left"
+                )}
+                required
               />
             </div>
-            <label
-              htmlFor="file-input"
-              className={`camera d-f ${
-                isLoading || (precentage !== null && precentage <= 99)
-                  ? "disabel"
-                  : ""
-              }`}
+
+            {/* Email input for email users */}
+            {getIsEmailUser() && (
+              <div className="space-y-2">
+                <Label htmlFor="email" className="font-arabic text-right">
+                  البريد الإلكتروني
+                </Label>
+                <Input
+                  disabled={getIsEmailUser()}
+                  name="email"
+                  type="email"
+                  placeholder="أدخل بريدك الإلكتروني هنا"
+                  id="email"
+                  onChange={handelChangeData}
+                  value={formData.email}
+                  className="h-12 font-arabic text-right bg-gray-50"
+                />
+              </div>
+            )}
+
+            {/* Phone number input */}
+            {(getIsAnonymousUser() || !getIsEmailUser()) && (
+              <div className="space-y-2">
+                <Label htmlFor="phoneNumber" className="font-arabic text-right">
+                  رقم الهاتف
+                </Label>
+                <Input
+                  type="text"
+                  placeholder="أدخل رقم هاتفك هنا"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  onChange={handelPhone}
+                  value={phoneNumber}
+                  disabled={!getIsAnonymousUser() && !getIsEmailUser()}
+                  className={cn(
+                    "h-12 font-arabic text-right",
+                    (!getIsAnonymousUser() && !getIsEmailUser()) && "bg-gray-50"
+                  )}
+                />
+              </div>
+            )}
+
+            {/* Submit button */}
+            <Button
+              type="submit"
+              className="w-full h-12 bg-whatsapp-primary hover:bg-whatsapp-primary-dark font-arabic text-lg"
+              disabled={isLoading || (precentage !== null && precentage <= 99)}
             >
-              <Camera />
-            </label>
-            <input
-              onChange={handleFile}
-              id="file-input"
-              type="file"
-              name="file"
-              style={{ display: "none" }}
-            />
-          </label>
-        </div>
+              {isLoading ? "جاري الحفظ..." : "التالي"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
 
-        <div className="input name">
-          <label htmlFor="name"> إسم المستخدم </label>
-          <input
-            type="text"
-            placeholder="أدخل إسمك هنا"
-            onBlur={handelBlur}
-            id="name"
-            name="displayName"
-            onChange={handelDisplayName}
-            value={displayName}
-            className={isArabic ? "f-ar" : "f-en"}
-          />
-        </div>
-        {getIsEmailUser() && (
-          <div className="input phone">
-            <label htmlFor="email"> البريد الإلكتروني </label>
-            <input
-              disabled={getIsEmailUser() ? true : false}
-              name="email"
-              type="email"
-              placeholder="أدخل بريدك الإلكتروني هنا"
-              id="email"
-              onChange={handelChangeData}
-              value={formData.email}
-            />
-          </div>
-        )}
-        {getIsAnonymousUser() || !getIsEmailUser() && (
-          <div className="input phone">
-            <label htmlFor="phoneNumber"> رقم الهاتف</label>
-            <input
-              type="text"
-              placeholder="أدخل رقم هاتفك هنا"
-              id="phoneNumber"
-              name="phoneNumber"
-              onChange={handelPhone}
-              value={phoneNumber}
-              disabled={getIsAnonymousUser() ? false : true}
-            />
-          </div>
-        )}
-
-        <ToastContainer
-          position="top-center"
-          autoClose={2000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          rtl={true}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-          limit={2}
-        />
-        <div className="btnes">
-          <button
-            className="send btn-p"
-            disabled={isLoading || (precentage !== null && precentage <= 99)}
-          >
-            التالي
-          </button>
-        </div>
-      </form>
     </div>
   );
 }

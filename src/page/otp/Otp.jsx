@@ -1,12 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import "./Opt.css";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";
 import useUser from "../../store/useUser";
 import { doc, getDoc, setDoc , getFirestore } from "firebase/firestore/lite";
 import { app } from "../../config/firebase";
+import {
+  InputOTP,
+  InputOTPGroup, 
+  InputOTPSlot,
+} from "../../components/ui/input-otp";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { BsWhatsapp } from "react-icons/bs";
+import { MdEdit, MdSms } from "react-icons/md";
 
 export default function Otp({}) {
   const confirmationResult = useSignUp((state) => state.confirmationResult);
@@ -14,8 +22,7 @@ export default function Otp({}) {
 
   const getPhone = useSignUp((state) => state.getPhone);
 
-  const [otp, setOtp] = useState(new Array(6).fill(""));
-  const [isOtpVerifie, setIsotpVerifie] = useState(false);
+  const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -25,49 +32,9 @@ export default function Otp({}) {
     (state) => state.setIsPhoneUserVerified
   );
 
-  // first input ref
-  const firstInputRef = useRef(null);
-
-  const handleOtpChange = (element, index) => {
-    // If the entered value is not a number, don't update the state
-    if (isNaN(element.value) || element.value === "") return false;
-    // always start from the first input
-    if (index !== 0 && otp[index - 1] === "") {
-      // blur the current input and focus to the first input
-      element.blur();
-      firstInputRef.current.focus();
-      return;
-    }
-    // Update the state with the new entered value
-    setOtp([...otp.map((d, idx) => (idx === index ? element.value : d))]);
-    // If the last input is filled, blur and disable the input
-    if (index === otp.length - 1) {
-      element.blur();
-      setIsotpVerifie(true);
-      return;
-    }
-    // Otherwise focus the next input
-    if (element.nextSibling) {
-      element.nextSibling.focus();
-    }
-  };
-
-  // handel delte input value
-  const handelDeleteInput = (e, index) => {
-    // if the user click backspace or delete key and the input is empty then focus to the previous input and clear it
-    if (e.key === "Backspace" && otp[index] === "") {
-      if (index !== 0) {
-        otp[index - 1] = "";
-        setOtp([...otp]);
-        e.target.previousSibling.focus();
-      }
-    }
-  };
-
   // clear OTP
   const clearOtp = () => {
-    setOtp(new Array(6).fill(""));
-    setIsotpVerifie(false);
+    setOtp("");
   };
 
   // firestore for lite firebase
@@ -78,7 +45,7 @@ export default function Otp({}) {
     setIsLoading(true);
     try {
       confirmationResult
-        .confirm(otp.join(""))
+        .confirm(otp)
         .then((result) => {
           getUserInfo(result.user?.uid , result.user);
           setIsPhoneUserVerified(true);
@@ -144,66 +111,87 @@ export default function Otp({}) {
   }, []);
 
   return (
-    <div className="signup--container dr-en">
-      <div className="otp">
-        <h1>التحقق من رقمك</h1>
-        <p className="d-f">
-          <span>{getPhone()}</span>
-          تم إرسال رمز التحقق إلى الرقم
-        </p>
-        <form onSubmit={handelSubmit}>
-          <div className="otp-inputs">
-            {otp.map((data, index) => {
-              return (
-                <input
-                  ref={index === 0 ? firstInputRef : null}
-                  itemType="number"
-                  typeof="number"
-                  type="tel"
-                  pattern="\d*"
-                  key={index}
-                  value={data}
-                  onChange={(e) => handleOtpChange(e.target, index)}
-                  onKeyDown={(e) => handelDeleteInput(e, index)}
-                  onFocus={(e) => e.target.select()}
-                />
-              );
-            })}
+    <div className="min-h-screen bg-gradient-to-br from-whatsapp-primary/10 to-whatsapp-secondary/5 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md mx-auto shadow-2xl">
+        <CardHeader className="text-center space-y-4">
+          {/* WhatsApp Logo */}
+          <div className="flex justify-center">
+            <div className="w-16 h-16 bg-whatsapp-primary rounded-full flex items-center justify-center shadow-lg">
+              <BsWhatsapp className="w-8 h-8 text-white" />
+            </div>
           </div>
-          {/* didnt get otp */}
-          <p className="resend-otp">
-            ليس رقمي ؟ <Link to="/signup"> تغيير رقمك </Link>
-          </p>
-          <div className="btns">
-            <button
-              className="btn otp-confiramtion"
-              disabled={!isOtpVerifie || isLoading}
-            >
-              تأكيد
-            </button>
-            <button
-              className="btn otp-clear"
-              onClick={clearOtp}
-              disabled={!isOtpVerifie || isLoading}
-            >
-              مسح
-            </button>
+          
+          <CardTitle className="font-arabic text-2xl font-bold text-gray-900">
+            التحقق من رقمك
+          </CardTitle>
+          
+          <CardDescription className="font-arabic text-gray-600 leading-relaxed">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <MdSms className="w-4 h-4 text-whatsapp-primary" />
+              <span>تم إرسال رمز التحقق إلى الرقم</span>
+            </div>
+            <div className="font-medium text-whatsapp-primary">
+              {getPhone()}
+            </div>
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          <form onSubmit={handelSubmit} className="space-y-6">
+            {/* Modern OTP Input */}
+            <div className="flex justify-center">
+              <InputOTP
+                maxLength={6}
+                value={otp}
+                onChange={(value) => setOtp(value)}
+                disabled={isLoading}
+              >
+                <InputOTPGroup>
+                  <InputOTPSlot index={0} />
+                  <InputOTPSlot index={1} />
+                  <InputOTPSlot index={2} />
+                  <InputOTPSlot index={3} />
+                  <InputOTPSlot index={4} />
+                  <InputOTPSlot index={5} />
+                </InputOTPGroup>
+              </InputOTP>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={clearOtp}
+                disabled={!otp || isLoading}
+                className="font-arabic"
+              >
+                مسح
+              </Button>
+              <Button
+                type="submit"
+                disabled={otp.length !== 6 || isLoading}
+                className="bg-whatsapp-primary hover:bg-whatsapp-primary-dark font-arabic"
+              >
+                {isLoading ? "جاري التحقق..." : "تأكيد"}
+              </Button>
+            </div>
+          </form>
+
+          {/* Change number option */}
+          <div className="text-center">
+            <p className="text-sm text-gray-600 font-arabic">
+              ليس رقمي؟{" "}
+              <Button asChild variant="link" className="p-0 h-auto font-arabic text-whatsapp-primary">
+                <Link to="/signup">
+                  <MdEdit className="w-4 h-4 mr-1" />
+                  تغيير رقمك
+                </Link>
+              </Button>
+            </p>
           </div>
-        </form>
-        <ToastContainer
-          position="top-center"
-          autoClose={2000}
-          limit={2}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={true}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

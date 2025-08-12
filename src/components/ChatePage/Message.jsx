@@ -146,12 +146,12 @@ export default function Message({
             )
           )}
 
-          {/* Message tail */}
+          {/* Message tail SVG */}
           <div className={cn(
-            "absolute top-0 w-3 h-3",
+            "absolute top-0",
             isCurrentUserSender 
-              ? "right-[-6px] transform rotate-45 bg-whatsapp-primary" 
-              : "left-[-6px] transform rotate-45 bg-white"
+              ? "right-[-6px] text-whatsapp-primary" 
+              : "left-[-6px] text-white"
           )}>
             {isCurrentUserSender ? <MessageSender /> : <MessageReceiver />}
           </div>

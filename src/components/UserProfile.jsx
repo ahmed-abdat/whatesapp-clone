@@ -7,6 +7,11 @@ import { HiPencil } from "react-icons/hi";
 import useUsers from "../store/useUsers";
 import useUser from "../store/useUser";
 import Camera from "./svg/Camera";
+import { Card, CardContent, CardHeader } from "./ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { cn } from "../lib/utils";
 import {
   deleteObject,
   getDownloadURL,
@@ -28,11 +33,10 @@ import {
   writeBatch,
 } from "firebase/firestore/lite";
 import { useRef, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "sonner";
 import defaultAvatar from "../assets/img/default-avatar.svg";
 import ViewImage from "./ViewImage";
 import DeleteModule from "./DeleteModule";
-import "react-toastify/dist/ReactToastify.css";
 import "./styles/userProfile.css";
 import {
   GoogleAuthProvider,
@@ -526,31 +530,47 @@ export default function UserProfile() {
   };
 
   return (
-    <div className={`user-profile`}>
+    <div className="user-profile">
       {!isImageView ? (
         <>
           <header className="user-profile--header">
             <div className="header--text">
-              <BiArrowBack onClick={handelBack} className="r-180" />
+              <Button 
+                onClick={handelBack}
+                variant="ghost" 
+                size="icon"
+                className="text-white hover:bg-white/10 p-2"
+              >
+                <BiArrowBack className="rotate-180" />
+              </Button>
               <h4>الملف الشخصي</h4>
             </div>
           </header>
-          {/* profile imagae */}
+          
+          {/* Profile Image - Using shadcn Avatar but maintaining original layout */}
           <div className="profile--image d-f">
             <div className="img">
-              <img
+              <Avatar 
+                className={cn(
+                  "w-[150px] h-[150px] cursor-pointer",
+                  isImageLoading && "disabel"
+                )}
                 onClick={handelViewImage}
-                className={`${isImageLoading ? "disabel" : ""}`}
-                src={
-                  file
-                    ? URL.createObjectURL(file)
-                    : getCurrentUser()?.photoURL
-                    ? getCurrentUser().photoURL
-                    : defaultAvatar
-                }
-                alt="avatar"
-              />
-              {/* upload file */}
+              >
+                <AvatarImage
+                  src={
+                    file
+                      ? URL.createObjectURL(file)
+                      : getCurrentUser()?.photoURL || defaultAvatar
+                  }
+                  alt="avatar"
+                />
+                <AvatarFallback>
+                  {getCurrentUser()?.displayName?.charAt(0) || 'U'}
+                </AvatarFallback>
+              </Avatar>
+              
+              {/* Camera Upload Button - preserving original styling */}
               <label
                 htmlFor="file-input"
                 className={`icon d-f ${isImageLoading ? "disabel" : ""}`}
@@ -574,18 +594,6 @@ export default function UserProfile() {
               )}
             </div>
           </div>
-          <ToastContainer
-            position="top-center"
-            autoClose={3500}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={true}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-          />
 
           {/* profile info */}
           <div className="profile--info">
@@ -597,12 +605,16 @@ export default function UserProfile() {
               <div className="display">
                 <h3>الإسم</h3>
                 <div className="input m-b-sm">
-                  <input
+                  <Input
                     type="text"
                     value={profile.displayName}
                     name="displayName"
                     onChange={handelProfileChange}
-                    className={isNameArabic ? "f-ar dr-ar" : "f-en dr-en"}
+                    className={cn(
+                      "border-0 border-b border-[#00a884] rounded-none px-0 py-1 bg-transparent focus:border-[#00a884] focus:ring-0 text-[#3b4a54]",
+                      isNameArabic ? "f-ar dr-ar" : "f-en dr-en",
+                      !isDisplayNameEdit && "border-0"
+                    )}
                     disabled={!isDisplayNameEdit}
                     ref={displayNameRef}
                     onKeyDown={(e) =>
@@ -620,13 +632,18 @@ export default function UserProfile() {
                       {maxDisplayNameLength - profile.displayName.length}
                     </span>
                   )}
-                  <div className="edit" onClick={handelDisplayNameEdit}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="edit hover:bg-transparent"
+                    onClick={handelDisplayNameEdit}
+                  >
                     {isDisplayNameEdit ? (
                       <BiCheck className="check" />
                     ) : (
                       <HiPencil />
                     )}
-                  </div>
+                  </Button>
                 </div>
               </div>
               <div></div>
@@ -643,14 +660,18 @@ export default function UserProfile() {
               <div className="display">
                 <h3>الحالة</h3>
                 <div className="input">
-                  <input
+                  <Input
                     disabled={!isUserStatusEdit}
                     ref={userStatusRef}
                     type="text"
                     name="userStatus"
                     value={profile.userStatus}
                     onChange={handelProfileChange}
-                    className={isStatusArabic ? "f-ar dr-ar" : "f-en dr-en"}
+                    className={cn(
+                      "border-0 border-b border-[#00a884] rounded-none px-0 py-1 bg-transparent focus:border-[#00a884] focus:ring-0 text-[#3b4a54]",
+                      isStatusArabic ? "f-ar dr-ar" : "f-en dr-en",
+                      !isUserStatusEdit && "border-0"
+                    )}
                     onKeyDown={(e) =>
                       e.key === "Enter" && handelUserStatusEdit()
                     }
@@ -666,13 +687,18 @@ export default function UserProfile() {
                       {maxUserStatusLength - profile.userStatus.length}
                     </span>
                   )}
-                  <div className="edit d-f" onClick={handelUserStatusEdit}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="edit d-f hover:bg-transparent"
+                    onClick={handelUserStatusEdit}
+                  >
                     {isUserStatusEdit ? (
                       <BiCheck className="check" />
                     ) : (
                       <HiPencil />
                     )}
-                  </div>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -703,13 +729,13 @@ export default function UserProfile() {
           </div>
           <div className="btnse">
             {isAnonymousUsere && (
-              <div className="link-account" onClick={linkToGoogle}>
-                <button className="btne btn google-btn">
+                <div className="link-account" onClick={linkToGoogle}>
+                <Button className="btne btn google-btn" variant="outline">
                   <div className="icon">
                     <FcGoogle />
                   </div>
                   <h4 className="cur-pnter dr-en f-ar">Google ربط حسابك ب </h4>
-                </button>
+                </Button>
               </div>
             )}
             {/* logout button */}
@@ -717,12 +743,12 @@ export default function UserProfile() {
               className="profile--logout"
               onClick={getIsAnonymousUser() ? handelShowModel : handelSignout}
             >
-              <button className="btne btn logout-btn">
+              <Button className="btne btn logout-btn" variant="destructive">
                 <div className="icon">
                   <FiLogOut />
                 </div>
                 <h4 className="dr-ar cur-pnter f-ar">تسجيل الخروج</h4>
-              </button>
+              </Button>
             </div>
           </div>
           {isModuleshow && (

@@ -20,6 +20,9 @@ import Check from "../svg/Check";
 import receiveMessageSound from "../../assets/sounds/receiveMessage.mp3";
 import { BsImageFill } from "react-icons/bs";
 import Voice from "../svg/Voice";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Badge } from "../ui/badge";
+import { cn } from "../../lib/utils";
 
 export default function HomePageUser({
   displayName,
@@ -327,86 +330,124 @@ export default function HomePageUser({
   const newContent = findEmoji(lastMessage.content);
 
   return (
-    <div className="user--profile" onClick={handelSelectedUser}>
-      <div className="user--profile--img">
-        <img
-          src={photoURL ? photoURL : defaultAvatar}
-          alt="user profile"
-          loading="lazy"
-          width={"60"}
-          height={"60"}
+    <div 
+      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors duration-200 border-b border-gray-100"
+      onClick={handelSelectedUser}
+    >
+      {/* Modern Avatar with shadcn/ui */}
+      <Avatar className="h-12 w-12 flex-shrink-0">
+        <AvatarImage 
+          src={photoURL || defaultAvatar} 
+          alt={displayName || "User avatar"}
+          className="object-cover"
         />
-      </div>
-      <div className="user--profile--info">
-        <div className="info">
+        <AvatarFallback className="bg-gray-200 text-gray-600">
+          {displayName?.[0]?.toUpperCase() || "U"}
+        </AvatarFallback>
+      </Avatar>
+
+      {/* User Info Section */}
+      <div className="flex-1 min-w-0">
+        {/* Name and Time Row */}
+        <div className="flex items-center justify-between mb-1">
           <h3
-            className={`${
-              isArabic(displayName) ? "f-ar dr-ar" : "f-en dr-en"
-            } ${(isMessageNotRead && UnreadMessages > 0) ? "unread-name" : ""}`}
+            className={cn(
+              "font-medium text-gray-900 truncate",
+              isArabic(displayName) ? "font-arabic text-right" : "text-left",
+              isMessageNotRead && UnreadMessages > 0 && "font-bold text-gray-900"
+            )}
           >
             {displayName || "Ahmed Abdat"}
           </h3>
           {lastMessage?.createdAt && (
-            <p
-              className={`dr-ar f-ar ${(isMessageNotRead && UnreadMessages > 0) ? "unread-color" : ""}`}
-            >{`${timeAgo} ${
-              lastSeanMessage.format("a") === "am" ? "ص" : "م"
-            }`}</p>
+            <span
+              className={cn(
+                "text-xs flex-shrink-0 ml-2",
+                isMessageNotRead && UnreadMessages > 0 
+                  ? "text-whatsapp-primary font-medium" 
+                  : "text-gray-500"
+              )}
+            >
+              {`${timeAgo} ${lastSeanMessage.format("a") === "am" ? "ص" : "م"}`}
+            </span>
           )}
         </div>
-        <div className="last-message">
-          {lastMessage?.content && lastMessage?.media ? (
-            <>
-              <span>
-                <BsImageFill />
-              <p
-                className={`${contentClass()} ${
-                  (isMessageNotRead && UnreadMessages > 0) ? "unread-message-content" : ""
-                }`}
-                >
-              {newContent.map((content, index) => (
-                <React.Fragment key={index}>{content} </React.Fragment>
-              ))}
-              </p>
+
+        {/* Message Content and Badge Row */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1 flex-1 min-w-0">
+            {/* Read Status Check Mark */}
+            {getCurrentUser()?.uid && lastMessage?.from === getCurrentUser()?.uid && (
+              <div className={cn(
+                "flex-shrink-0",
+                lastMessage?.isRead ? "text-blue-500" : "text-gray-400"
+              )}>
+                <Check />
+              </div>
+            )}
+
+            {/* Message Content */}
+            <div className="truncate flex-1">
+              {lastMessage?.content && lastMessage?.media ? (
+                <span className="flex items-center gap-1">
+                  <BsImageFill className="text-gray-400 w-4 h-4 flex-shrink-0" />
+                  <span
+                    className={cn(
+                      "truncate",
+                      contentClass(),
+                      isMessageNotRead && UnreadMessages > 0 
+                        ? "text-gray-900 font-medium" 
+                        : "text-gray-600"
+                    )}
+                  >
+                    {newContent.map((content, index) => (
+                      <React.Fragment key={index}>{content} </React.Fragment>
+                    ))}
+                  </span>
                 </span>
-            </>
-          ) : lastMessage?.media ? (
-            lastMessage.media?.type.includes('image') ? (
-              <span className="d-f onlyMedia f-ar dr-ar">
-              <BsImageFill  /> صورة
-            </span>
-            ) : (
-              <span className="d-f onlyMedia f-ar dr-ar">
-              <span className={`${lastMessage?.isRead ? "check" : "uncheck"}`} ><Voice wh={23} /></span> مقطع صوتي
-            </span>
-            )
-          ) : lastMessage?.content ? (
-            <p
-              className={`${contentClass()} ${
-                (isMessageNotRead && UnreadMessages > 0) ? "unread-message-content" : ""
-              }`}
-            >
-              {newContent.map((content, index) => (
-                <React.Fragment key={index}>{content} </React.Fragment>
-              ))}
-            </p>
-          ) : (
-            <p className={`${useStatusClass()}`}>
-             {userStatus}
-            </p>
-          )}
-          {isMessageNotRead && UnreadMessages > 0 && (
-            <div className="unread">{UnreadMessages}</div>
-          )}
-          {getCurrentUser()?.uid
-            ? lastMessage?.from === getCurrentUser()?.uid && (
-                <div
-                  className={`${lastMessage?.isRead ? "check" : "uncheck"} d-f`}
+              ) : lastMessage?.media ? (
+                lastMessage.media?.type?.includes('image') ? (
+                  <span className="flex items-center gap-1 text-gray-600">
+                    <BsImageFill className="text-gray-400 w-4 h-4" />
+                    <span className="font-arabic">صورة</span>
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 text-gray-600">
+                    <Voice wh={20} />
+                    <span className="font-arabic">مقطع صوتي</span>
+                  </span>
+                )
+              ) : lastMessage?.content ? (
+                <p
+                  className={cn(
+                    "truncate",
+                    contentClass(),
+                    isMessageNotRead && UnreadMessages > 0 
+                      ? "text-gray-900 font-medium" 
+                      : "text-gray-600"
+                  )}
                 >
-                  <Check />
-                </div>
-              )
-            : null}
+                  {newContent.map((content, index) => (
+                    <React.Fragment key={index}>{content} </React.Fragment>
+                  ))}
+                </p>
+              ) : (
+                <p className={cn("text-gray-500 italic truncate", useStatusClass())}>
+                  {userStatus}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Unread Badge */}
+          {isMessageNotRead && UnreadMessages > 0 && (
+            <Badge 
+              className="bg-whatsapp-primary text-white hover:bg-whatsapp-primary ml-2 min-w-[20px] h-5 flex items-center justify-center"
+              variant="default"
+            >
+              {UnreadMessages}
+            </Badge>
+          )}
         </div>
       </div>
     </div>
