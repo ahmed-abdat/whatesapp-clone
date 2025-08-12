@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import "./styles/Swiper.css";
+// import "./styles/Swiper.css"; // Removed - using Tailwind CSS only
 import {FiDownload} from "react-icons/fi"
 import { storage } from "../config/firebase";
 import { saveAs } from 'file-saver'

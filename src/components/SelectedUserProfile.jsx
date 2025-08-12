@@ -4,7 +4,7 @@ import defaultAvatar from "../assets/img/default-avatar.svg";
 import ViewImage from "./ViewImage";
 import ViewFullImage from "./ChatePage/ViewFullImage";
 import GraitherThen from "./svg/GratherThenIcon";
-import "./styles/SelectedUserProfile.css";
+// import "./styles/SelectedUserProfile.css"; // Removed - using Tailwind CSS only
 import { useState } from "react";
 import { useEffect } from "react";
 import useUser from "../store/useUser";

@@ -37,7 +37,7 @@ import { toast } from "sonner";
 import defaultAvatar from "../assets/img/default-avatar.svg";
 import ViewImage from "./ViewImage";
 import DeleteModule from "./DeleteModule";
-import "./styles/userProfile.css";
+// import "./styles/userProfile.css"; // Removed - using Tailwind CSS only
 import {
   GoogleAuthProvider,
   deleteUser,

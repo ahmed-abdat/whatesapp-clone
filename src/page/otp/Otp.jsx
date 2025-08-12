@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import "./Opt.css";
+// import "./Opt.css"; // Removed - using Tailwind CSS only
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import useSignUp from "../../store/useSignUp";

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import '../styles/NoFreinds.css';
+// import '../styles/NoFreinds.css'; // Removed - using Tailwind CSS only
 
 const arabicRegex = /[\u0600-\u06FF]/;
 
@@ -34,8 +34,14 @@ export default function NoFreinds({ allUser }) {
   const userImages = useMemo(
     () =>
       filteredUsers.map(user => (
-        <div className="img" key={user.uid}>
-          <img referrerPolicy="no-referrer" src={user.photoURL} alt={`img-${user.uid}`} loading="lazy" />
+        <div className="relative" key={user.uid}>
+          <img 
+            referrerPolicy="no-referrer" 
+            src={user.photoURL} 
+            alt={`img-${user.uid}`} 
+            loading="lazy" 
+            className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+          />
         </div>
       )),
     [filteredUsers]
@@ -46,9 +52,9 @@ export default function NoFreinds({ allUser }) {
   const leftUsers = useMemo(() => allUser.length - 3, [allUser]);
 
   return (
-    <section className="no-frends">
-      <div className="images d-f d-init">{userImages}</div>
-      <p className="text f-ar">
+    <section className="flex flex-col items-center py-16 px-4">
+      <div className="flex items-center justify-center space-x-2 mb-6">{userImages}</div>
+      <p className="text-center text-sm text-gray-600 font-arabic max-w-xs leading-relaxed">
         {userNames}
         {` ${leftUsers} جهة إتصال أخرى `}
         يستخدمون واتساب

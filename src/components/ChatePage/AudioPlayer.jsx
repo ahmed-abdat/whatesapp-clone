@@ -4,7 +4,7 @@ import WaveSurfer from "wavesurfer.js";
 import defaultAvatar from "../../assets/img/default-avatar.svg";
 import { IoIosPause } from "react-icons/io";
 
-import "./styles/AudioPlayer.css";
+// import "./styles/AudioPlayer.css"; // Removed - using Tailwind CSS only
 import SpinerLoader from "../SpinerLoader";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";

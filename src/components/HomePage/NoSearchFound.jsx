@@ -1,9 +1,11 @@
-import './styles/NoSearchFound.css'
+// import './styles/NoSearchFound.css' // Removed - using Tailwind CSS only
 
 export default function NoSearchFound() {
   return (
-    <section className="no-search-found">
-            <p className="f-ar dr-ar">لم يتم العثور على نتائج</p>
+    <section className="flex items-center justify-center py-16 px-4">
+      <p className="font-arabic text-gray-500 text-center text-sm">
+        لم يتم العثور على نتائج
+      </p>
     </section>
   )
 }

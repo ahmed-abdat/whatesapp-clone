@@ -1,6 +1,6 @@
 import { MdClose } from "react-icons/md";
 import Send from "./svg/Send";
-import "./styles/ViewSelectedImage.css";
+// import "./styles/ViewSelectedImage.css"; // Removed - using Tailwind CSS only
 import { useRef, useState } from "react";
 import { FaKeyboard } from "react-icons/fa";
 import SmileFace from "./svg/SmileFace";

@@ -1,5 +1,5 @@
 import { BiArrowBack } from "react-icons/bi";
-import '../styles/ViewAllUserHeader.css'
+// import '../styles/ViewAllUserHeader.css' // Removed - using Tailwind CSS only
 import { HiDotsVertical } from "react-icons/hi";
 export default function ViewAllUsersHeader({setIsAllUsersShow , usersLength}) {
   return (

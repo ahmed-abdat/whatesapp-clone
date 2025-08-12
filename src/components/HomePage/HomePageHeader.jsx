@@ -21,7 +21,7 @@ import {
 import useSelectedUser from "../../store/useSelectedUser";
 import defaultAvatar from "../../assets/img/default-avatar.svg";
 import DeleteModule from "../DeleteModule";
-import "../styles/HeaderPopup.css";
+// import "../styles/HeaderPopup.css"; // Removed - using Tailwind CSS only
 import { deleteObject, ref } from "firebase/storage";
 
 export default function HomePageHeader({ setIsAllUsersShow }) {

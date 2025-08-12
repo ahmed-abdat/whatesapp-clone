@@ -47,7 +47,7 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { useAudioRecorder } from "react-audio-voice-recorder";
 import { ImPlay2 } from "react-icons/im";
 import Pause from "../svg/Pause";
-import "../styles/chatPageUser.css";
+// import "../styles/chatPageUser.css"; // Removed - using Tailwind CSS only
 import AudioPlayer from "./AudioPlayer";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
@@ -938,7 +938,7 @@ export default function ChatPageUser() {
 
 
   return (
-    <div className={`chat-page--container ${!isSelectedUser ? "hide" : ""}`}>
+    <div className={`flex flex-col h-full bg-white relative ${!isSelectedUser ? "hidden" : ""}`}>
       {file && (
         <Suspense fallback={<SpinerLoader />}>
           <ViewSelectedImage

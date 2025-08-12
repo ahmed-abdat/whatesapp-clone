@@ -19,10 +19,10 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-whatsapp-bg">
       {/* WhatsApp green header bar for large screens */}
-      <div className="hidden lg:block fixed top-0 left-0 w-full h-32 bg-whatsapp-primary z-0"></div>
+      <div className="hidden md:block fixed top-0 left-0 w-full h-32 bg-whatsapp-primary z-0"></div>
       
       {/* Main container with Tailwind Grid */}
-      <div className="relative z-10 lg:p-5 h-screen">
+      <div className="relative z-10 md:p-5 h-screen">
         <div className="h-full bg-white lg:rounded-lg lg:shadow-xl overflow-hidden
                         grid grid-cols-1 md:grid-cols-[minmax(350px,450px)_1fr]">
           

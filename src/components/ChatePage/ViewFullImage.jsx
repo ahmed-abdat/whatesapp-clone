@@ -13,8 +13,8 @@ import {
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { cn } from "../../lib/utils";
-import "./styles/ViewFullImage.css";
-import "../styles/Swiper.css";
+// import "./styles/ViewFullImage.css"; // Removed - using Tailwind CSS only
+// import "../styles/Swiper.css"; // Removed - using Tailwind CSS only
 
 
 export default function ViewFullImage({ 

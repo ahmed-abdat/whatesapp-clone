@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import PhoneInput from "react-phone-number-input";
-import "react-phone-number-input/style.css";
+// import "react-phone-number-input/style.css"; // Removed - using Tailwind CSS only
 import ar from "react-phone-number-input/locale/ar.json";
 import { app, auth } from "../../config/firebase";
 import {
@@ -24,7 +24,7 @@ import useUser from "../../store/useUser";
 import GestIcon from '../../assets/img/anonymous-user.jpg'
 import GoogleIcon from '../../assets/img/google-logo.png'
 import { toast } from 'sonner';
-import './SignUp.css'
+// import './SignUp.css' // Removed - using Tailwind CSS only
 
 
 export default function SignUp() {

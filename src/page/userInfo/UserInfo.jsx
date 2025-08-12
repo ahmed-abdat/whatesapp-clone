@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import "./userInfo.css";
+// import "./userInfo.css"; // Removed - using Tailwind CSS only
 import useUser from "../../store/useUser";
 import { useState } from "react";
 import {
