@@ -3,16 +3,16 @@ import WhatsppwebImg from '../assets/img/whatsapp-web.png'
 
 export default function ChatPage() {
   return (
-    <div className="flex flex-col items-center justify-center h-full bg-white relative">
+    <div className="flex flex-col items-center justify-center h-full bg-white relative w-full">
       {/* Green bottom border */}
       <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-whatsapp-primary"></div>
       
       {/* Main content */}
-      <div className="flex flex-col items-center text-center max-w-md px-6">
+      <div className="flex flex-col items-center text-center max-w-md px-4 sm:px-6 w-full">
         <img 
           src={WhatsppwebImg} 
           alt="WhatsApp Web" 
-          className="w-80 mb-10"
+          className="w-64 sm:w-80 mb-8 sm:mb-10 max-w-full"
         />
         
         <h3 className="text-3xl font-light text-gray-700 mb-4 font-arabic">

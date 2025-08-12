@@ -10,9 +10,19 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: {
+        DEFAULT: '1rem',
+        sm: '2rem',
+        lg: '4rem',
+        xl: '5rem',
+        '2xl': '6rem',
+      },
       screens: {
-        "2xl": "1400px",
+        sm: '640px',
+        md: '768px', 
+        lg: '1024px',
+        xl: '1280px',
+        '2xl': '1400px',
       },
     },
     extend: {
@@ -60,6 +70,8 @@ export default {
           bg: "hsl(var(--whatsapp-bg))",
           "chat-bg": "hsl(var(--whatsapp-chat-bg))",
           "chat-bg-deeper": "hsl(var(--whatsapp-chat-bg-deeper))",
+          "message-out": "hsl(var(--whatsapp-message-out))",
+          "message-in": "hsl(var(--whatsapp-message-in))",
         },
         // Custom color mappings for existing components
         "color-gray": "hsl(var(--color-gray))",
@@ -71,6 +83,9 @@ export default {
         "text-color-light": "hsl(var(--text-color-light))",
         "app-background": "hsl(var(--app-background))",
         "app-background-deeper": "hsl(var(--app-background-deeper))",
+      },
+      backgroundImage: {
+        'image-overlay': 'linear-gradient(rgba(0,0,0,0) 70%, rgba(0,0,0,0.6) 100%)',
       },
       borderRadius: {
         lg: "var(--radius)",

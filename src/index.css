@@ -20,9 +20,10 @@
   --white-color-light : #f8f8f8;
   --text-color : #325871;
   --text-color-light : #3b4a54;
-  --whatsapp-color-light : #25d366;
-  --whatsapp-color : #179652;
-  --whatsapp-color-dark : #077139;
+  /* Map legacy variables to updated brand greens */
+  --whatsapp-color-light : #25d366; /* unchanged */
+  --whatsapp-color : #00a884;       /* primary brand */
+  --whatsapp-color-dark : #008069;  /* darker brand */
   --app-background : #eae6df;
   --app-background-deeper : #d1d7db;
 

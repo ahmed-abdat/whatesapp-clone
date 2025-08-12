@@ -24,7 +24,7 @@
   right: -5px;
   bottom: 0.5rem;
   padding: 0.5rem;
-  background: #00a884;
+  background: var(--whatsapp-color);
   text-align: center;
   border-radius: 50%;
   width: 35px;

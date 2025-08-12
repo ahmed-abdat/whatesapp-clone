@@ -42,7 +42,6 @@ export default function HomePage() {
   const [isBtnTextShow, setIsBtnTextShow] = useState(false);
   const [search, setSearch] = useState("");
 
-
   // isAllUsersShow
   const isAllUsersShowe = useUsers((state) => state.isAllUsersShow);
   // set isAllUsersShow
@@ -287,34 +286,36 @@ export default function HomePage() {
     }
   }, []);
 
-
   return (
     <div className="flex flex-col h-full bg-white">
       {isLogoutLoading ? (
         <div className="flex items-center justify-center h-full">
           <SpinerLoader size="lg" />
         </div>
+      ) : isProfileShow ? (
+        /* profile */
+        <Suspense fallback={<SpinerLoader />}>
+          <UserProfile />
+        </Suspense>
       ) : (
         <>
-          {/* profile */}
-          {isProfileShow && (
-            <Suspense fallback={<SpinerLoader />}>
-              <UserProfile />
-            </Suspense>
-          )}
           {/* Header Section */}
           <div className="flex-shrink-0">
-            {isAllUsersShowe ? (
-              <ViewAllUsersHeader
-                setIsAllUsersShow={setIsAllUsersShowe}
-                usersLength={allUsers.length}
-              />
-            ) : (
-              <HomePageHeader setIsAllUsersShow={setIsAllUsersShowe}/>
-            )}
-            
+            <header className="relative bg-gray-100 w-full">
+              <div className="h-full w-full flex justify-between items-center">
+                {isAllUsersShowe ? (
+                  <ViewAllUsersHeader
+                    setIsAllUsersShow={setIsAllUsersShowe}
+                    usersLength={allUsers.length}
+                  />
+                ) : (
+                  <HomePageHeader setIsAllUsersShow={setIsAllUsersShowe} />
+                )}
+              </div>
+            </header>
+
             {/* Search Bar */}
-            <div className="px-3 py-2 border-b">
+            <div className="shadow-[0_2px_3px_rgba(11,20,26,0.08)] px-3 py-2 bg-white border-b border-gray-100">
               <HomepageSearch
                 isUnreadMessageShow={!isAllUsersShowe}
                 isUnreadMessage={isUnreadMessage}
@@ -325,91 +326,94 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* User List with ScrollArea */}
-          <ScrollArea className="flex-1">
-            {isAllUsersShowe ? (
-              <div className="divide-y divide-gray-100">
-                {!isLoading ? (
-                search.length > 0 ? (
-                  filetrSearch(allUsers).length > 0 ? (
-                    filetrSearch(allUsers).map((user) => {
-                      return <HomePageUser key={user.uid} {...user} />;
-                    })
-                  ) : (
-                    <NoSearchFound />
-                  )
-                ) : (
-                  allUsers.map((user) => {
-                    return <HomePageUser key={user.uid} {...user} />;
-                  })
-                )
-              ) : (
-                <div className="flex justify-center py-8">
-                  <SpinerLoader />
-                </div>
-              )}
-              </div>
-          ) : (
-            <>
-              {/* Floating Action Button */}
-              {freindsList.length < 1 && (
-                <div className="fixed bottom-6 right-6 z-10">
-                  <Button
-                    onClick={() => setIsAllUsersShowe(true)}
-                    className={cn(
-                      "rounded-full shadow-lg bg-whatsapp-primary hover:bg-whatsapp-primary-dark",
-                      isBtnTextShow && freindsList.length < 1 ? "px-6" : "w-14 h-14 p-0"
-                    )}
-                  >
-                    <HiChatBubbleBottomCenterText className="w-6 h-6" />
-                    {isBtnTextShow && freindsList.length < 1 && (
-                      <span className="ml-2 font-arabic">إرسال رسالة</span>
-                    )}
-                  </Button>
-                </div>
-              )}
-                {/* Friends List */}
-                <div className="divide-y divide-gray-100">
+          {/* User List with proper scrolling - set RTL direction for better Arabic layout */}
+          <ScrollArea className="flex-1" dir="rtl">
+            <div className="min-h-0">
+              {isAllUsersShowe ? (
+                <>
                   {!isLoading ? (
-                  freindsList.length > 0 ? (
-                    search.length < 1 && isUnreadMessage ? (
-                      filterFreinds.map((user) => {
-                        return <HomePageUser key={user.id} {...user} />;
-                      })
-                    ) : search.length > 0 && isUnreadMessage ? (
-                      filetrSearch(filterFreinds).length > 0 ? (
-                        filetrSearch(filterFreinds).map((user) => {
-                          return <HomePageUser key={user.id} {...user} />;
-                        })
-                      ) : (
-                        <NoSearchFound />
-                      )
-                    ) : search.length > 0 && !isUnreadMessage ? (
-                      filetrSearch(freindsList).length > 0 ? (
-                        filetrSearch(freindsList).map((user) => {
-                          return <HomePageUser key={user.id} {...user} />;
+                    search.length > 0 ? (
+                      filetrSearch(allUsers).length > 0 ? (
+                        filetrSearch(allUsers).map((user) => {
+                          return <HomePageUser key={user.uid} {...user} />;
                         })
                       ) : (
                         <NoSearchFound />
                       )
                     ) : (
-                      freindsList.map((user) => {
-                        return <HomePageUser key={user.id} {...user} />;
+                      allUsers.map((user) => {
+                        return <HomePageUser key={user.uid} {...user} />;
                       })
                     )
-                  ) : (
-                    <Suspense fallback={<SpinerLoader />}>
-                      <NoFreinds allUser={allUsers} />
-                    </Suspense>
-                  )
                   ) : (
                     <div className="flex justify-center py-8">
                       <SpinerLoader />
                     </div>
                   )}
-                </div>
-              </>
-            )}
+                </>
+              ) : (
+                <>
+                  {/* Floating Action Button */}
+                  {freindsList.length < 1 && (
+                    <div className="fixed bottom-6 right-6 z-10">
+                      <Button
+                        onClick={() => setIsAllUsersShowe(true)}
+                        className={cn(
+                          "rounded-full shadow-lg bg-whatsapp-primary hover:bg-whatsapp-primary-dark transition-all duration-300",
+                          isBtnTextShow && freindsList.length < 1
+                            ? "px-6 gap-2"
+                            : "w-14 h-14 p-0"
+                        )}
+                      >
+                        <HiChatBubbleBottomCenterText className="w-6 h-6" />
+                        {isBtnTextShow && freindsList.length < 1 && (
+                          <span className="font-arabic">إرسال رسالة</span>
+                        )}
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Friends List */}
+                  {!isLoading ? (
+                    freindsList.length > 0 ? (
+                      search.length < 1 && isUnreadMessage ? (
+                        filterFreinds.map((user) => {
+                          return <HomePageUser key={user.id} {...user} />;
+                        })
+                      ) : search.length > 0 && isUnreadMessage ? (
+                        filetrSearch(filterFreinds).length > 0 ? (
+                          filetrSearch(filterFreinds).map((user) => {
+                            return <HomePageUser key={user.id} {...user} />;
+                          })
+                        ) : (
+                          <NoSearchFound />
+                        )
+                      ) : search.length > 0 && !isUnreadMessage ? (
+                        filetrSearch(freindsList).length > 0 ? (
+                          filetrSearch(freindsList).map((user) => {
+                            return <HomePageUser key={user.id} {...user} />;
+                          })
+                        ) : (
+                          <NoSearchFound />
+                        )
+                      ) : (
+                        freindsList.map((user) => {
+                          return <HomePageUser key={user.id} {...user} />;
+                        })
+                      )
+                    ) : (
+                      <Suspense fallback={<SpinerLoader />}>
+                        <NoFreinds allUser={allUsers} />
+                      </Suspense>
+                    )
+                  ) : (
+                    <div className="flex justify-center py-8">
+                      <SpinerLoader />
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </ScrollArea>
         </>
       )}

@@ -1,16 +1,20 @@
-import { BiArrowBack, BiCheck } from "react-icons/bi";
-import { CgProfile } from "react-icons/cg";
-import { RiInformationLine } from "react-icons/ri";
-import { FiLogOut } from "react-icons/fi";
-import { MdDelete, MdOutlineEmail, MdOutlineLocalPhone } from "react-icons/md";
-import { HiPencil } from "react-icons/hi";
+import {
+  ArrowRight,
+  Check,
+  UserRound,
+  Info,
+  LogOut,
+  Trash2,
+  Mail,
+  Phone,
+  Pencil,
+} from "lucide-react";
 import useUsers from "../store/useUsers";
 import useUser from "../store/useUser";
 import Camera from "./svg/Camera";
-import { Card, CardContent, CardHeader } from "./ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@ui/avatar";
+import { Button } from "@ui/button";
+import { Input } from "@ui/input";
 import { cn } from "../lib/utils";
 import {
   deleteObject,
@@ -357,28 +361,28 @@ export default function UserProfile() {
   const delteUsere = async () => {
     const currentUserId = getCurrentUser().uid;
     const userDocRef = doc(firestore, "users", currentUserId);
-    
+
     try {
       const deleteOperations = [
         // Delete 'lastMessage' collection if it exists
-        deleteCollectionIfExists(userDocRef, 'lastMessage'),
-        
+        deleteCollectionIfExists(userDocRef, "lastMessage"),
+
         // Delete 'messages' collection if it exists
-        deleteCollectionIfExists(userDocRef, 'messages'),
-        
+        deleteCollectionIfExists(userDocRef, "messages"),
+
         // Delete user document
         deleteDoc(userDocRef),
-        
+
         // Delete user authentication
         deleteUser(auth.currentUser),
-        
+
         // Delete profile image
-        deleteImagProfile()
+        deleteImagProfile(),
       ];
-  
+
       // Execute all delete operations concurrently
       await Promise.all(deleteOperations);
-  
+
       console.log("User deleted successfully");
     } catch (error) {
       console.error("Error deleting user:", error.message);
@@ -390,17 +394,14 @@ export default function UserProfile() {
     console.log(collectionName);
     const collectionRef = collection(docRef, collectionName);
     const snapshot = await getDocs(collectionRef);
-    
+
     if (snapshot.empty) return;
 
     // delete all the documents in the collection
     snapshot.forEach(async (doc) => {
       await deleteDoc(doc.ref);
     });
-
-
   };
-
 
   // delete user image
   const deleteImagProfile = async () => {
@@ -530,225 +531,249 @@ export default function UserProfile() {
   };
 
   return (
-    <div className="user-profile">
+    // Profile overlay contained inside the left sidebar (not full-screen)
+    <div
+      className="absolute inset-0 w-full h-full bg-white z-[200] flex flex-col gap-7 font-arabic"
+      dir="rtl"
+      aria-label="الملف الشخصي"
+    >
       {!isImageView ? (
         <>
-          <header className="user-profile--header">
-            <div className="header--text">
-              <Button 
+          {/* Header - WhatsApp green with back button */}
+          <header className="text-white bg-whatsapp-primary-dark h-[65px] flex items-center px-4 flex-shrink-0">
+            <div className="flex items-center gap-4 w-full">
+              <Button
                 onClick={handelBack}
-                variant="ghost" 
+                variant="ghost"
                 size="icon"
-                className="text-white hover:bg-white/10 p-2"
+                className="text-white hover:bg-white/90 p-2"
               >
-                <BiArrowBack className="rotate-180" />
+                <ArrowRight className="w-5 h-5" />
               </Button>
               <h4>الملف الشخصي</h4>
             </div>
           </header>
-          
-          {/* Profile Image - Using shadcn Avatar but maintaining original layout */}
-          <div className="profile--image d-f">
-            <div className="img">
-              <Avatar 
-                className={cn(
-                  "w-[150px] h-[150px] cursor-pointer",
-                  isImageLoading && "disabel"
-                )}
-                onClick={handelViewImage}
-              >
-                <AvatarImage
-                  src={
-                    file
-                      ? URL.createObjectURL(file)
-                      : getCurrentUser()?.photoURL || defaultAvatar
-                  }
-                  alt="avatar"
-                />
-                <AvatarFallback>
-                  {getCurrentUser()?.displayName?.charAt(0) || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              
-              {/* Camera Upload Button - preserving original styling */}
-              <label
-                htmlFor="file-input"
-                className={`icon d-f ${isImageLoading ? "disabel" : ""}`}
-              >
-                <Camera />
-              </label>
-              <input
-                onChange={handleFile}
-                id="file-input"
-                type="file"
-                name="file"
-                style={{ display: "none" }}
-              />
-              {getCurrentUser()?.photoURL && (
-                <div
-                  className={`deleteImg ${isImageLoading ? "disabel" : ""}`}
-                  onClick={handelDeleteUserImg}
+
+          {/* Scrollable content area */}
+          <div className="flex-1 overflow-y-auto">
+            {/* Profile Image - centered with camera and delete controls */}
+            <div className="flex items-center justify-center mt-4">
+              <div className="relative">
+                <Avatar
+                  className={cn(
+                    "w-[150px] h-[150px] cursor-pointer",
+                    isImageLoading && "disabel"
+                  )}
+                  onClick={handelViewImage}
                 >
-                  <MdDelete />
+                  <AvatarImage
+                    src={
+                      file
+                        ? URL.createObjectURL(file)
+                        : getCurrentUser()?.photoURL || defaultAvatar
+                    }
+                    alt="avatar"
+                  />
+                  <AvatarFallback>
+                    {getCurrentUser()?.displayName?.charAt(0) || "U"}
+                  </AvatarFallback>
+                </Avatar>
+
+                {/* Camera Upload Button */}
+                <label
+                  htmlFor="file-input"
+                  className={cn(
+                    "absolute left-0 bottom-4 p-2 bg-whatsapp-primary rounded-full w-10 h-10 flex items-center justify-center",
+                    isImageLoading &&
+                      "opacity-50 pointer-events-none cursor-not-allowed"
+                  )}
+                >
+                  <Camera />
+                </label>
+                <input
+                  onChange={handleFile}
+                  id="file-input"
+                  type="file"
+                  name="file"
+                  style={{ display: "none" }}
+                />
+                {getCurrentUser()?.photoURL && (
+                  <div
+                    className={cn(
+                      "absolute right-0 bottom-4 bg-[#e74c3c] rounded-full w-10 h-10 flex items-center justify-center text-white cursor-pointer",
+                      isImageLoading &&
+                        "opacity-50 pointer-events-none cursor-not-allowed"
+                    )}
+                    onClick={handelDeleteUserImg}
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Profile info rows */}
+            <div>
+              {/* profile name */}
+              <div className="px-4 py-2.5 border-b border-[#eae6df] grid grid-cols-[50px_1fr] items-center">
+                <div className="text-gray-600">
+                  <UserRound className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-[1.1rem] font-normal text-gray-800">
+                    الإسم
+                  </h3>
+                  <div className="relative flex items-center gap-2 mb-2">
+                    <Input
+                      type="text"
+                      value={profile.displayName}
+                      name="displayName"
+                      onChange={handelProfileChange}
+                      className={cn(
+                        "border-0 border-b border-whatsapp-primary rounded-none px-0 py-1 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-whatsapp-primary text-gray-800",
+                        isNameArabic ? "f-ar dr-ar" : "f-en dr-en",
+                        !isDisplayNameEdit && "border-0"
+                      )}
+                      disabled={!isDisplayNameEdit}
+                      ref={displayNameRef}
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handelDisplayNameEdit()
+                      }
+                    />
+                    {isDisplayNameEdit && (
+                      <span
+                        className={cn(
+                          "text-xs text-gray-500",
+                          displayNameRef.current?.value?.length > 0
+                            ? "visible"
+                            : "invisible"
+                        )}
+                      >
+                        {maxDisplayNameLength - profile.displayName.length}
+                      </span>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hover:bg-transparent"
+                      onClick={handelDisplayNameEdit}
+                    >
+                      {isDisplayNameEdit ? (
+                        <Check className="w-5 h-5" />
+                      ) : (
+                        <Pencil className="w-5 h-5" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+                <div></div>
+                <p className="text-sm text-gray-700">
+                  هذا الاسم ليس كلمة مرور ولا رقم تعريف. إنما يكون هذا الاسم
+                  ظاهراً لجهات اتصالك في واتساب.
+                </p>
+              </div>
+              {/* profile status */}
+              <div className="px-4 py-2.5 border-b border-[#eae6df] grid grid-cols-[50px_1fr] items-center">
+                <div className="text-gray-600">
+                  <Info className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-[1.1rem] font-normal text-gray-800">
+                    الحالة
+                  </h3>
+                  <div className="relative flex items-center gap-2">
+                    <Input
+                      disabled={!isUserStatusEdit}
+                      ref={userStatusRef}
+                      type="text"
+                      name="userStatus"
+                      value={profile.userStatus}
+                      onChange={handelProfileChange}
+                      className={cn(
+                        "border-0 border-b border-whatsapp-primary rounded-none px-0 py-1 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-whatsapp-primary text-gray-800",
+                        isStatusArabic ? "f-ar dr-ar" : "f-en dr-en",
+                        !isUserStatusEdit && "border-0"
+                      )}
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handelUserStatusEdit()
+                      }
+                    />
+                    {isUserStatusEdit && (
+                      <span
+                        className={cn(
+                          "text-xs text-gray-500",
+                          displayNameRef.current?.value?.length > 0
+                            ? "visible"
+                            : "invisible"
+                        )}
+                      >
+                        {maxUserStatusLength - profile.userStatus.length}
+                      </span>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hover:bg-transparent"
+                      onClick={handelUserStatusEdit}
+                    >
+                      {isUserStatusEdit ? (
+                        <Check className="w-5 h-5" />
+                      ) : (
+                        <Pencil className="w-5 h-5" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              {/* profile phone number */}
+              {user?.phoneNumber && (
+                <div className="px-4 py-2.5 border-b border-[#eae6df] grid grid-cols-[50px_1fr] items-center">
+                  <div className="text-gray-600">
+                    <Phone className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-[1.1rem] font-normal text-gray-800">
+                      رقم الهاتف
+                    </h3>
+                    <h4 className="dr-en text-gray-800">{user?.phoneNumber}</h4>
+                  </div>
+                </div>
+              )}
+              {/* profile email */}
+              {getCurrentUser()?.email && (
+                <div className="px-4 py-2.5 border-b border-[#eae6df] grid grid-cols-[50px_1fr] items-center">
+                  <div className="text-gray-600">
+                    <Mail className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-[1.1rem] font-normal text-gray-800">
+                      البريد الإلكتروني
+                    </h3>
+                    <h4 className="dr-en text-gray-800">{user?.email}</h4>
+                  </div>
                 </div>
               )}
             </div>
-          </div>
-
-          {/* profile info */}
-          <div className="profile--info">
-            {/* profile name */}
-            <div className="profile--name">
-              <div className="icon">
-                <CgProfile />
-              </div>
-              <div className="display">
-                <h3>الإسم</h3>
-                <div className="input m-b-sm">
-                  <Input
-                    type="text"
-                    value={profile.displayName}
-                    name="displayName"
-                    onChange={handelProfileChange}
-                    className={cn(
-                      "border-0 border-b border-[#00a884] rounded-none px-0 py-1 bg-transparent focus:border-[#00a884] focus:ring-0 text-[#3b4a54]",
-                      isNameArabic ? "f-ar dr-ar" : "f-en dr-en",
-                      !isDisplayNameEdit && "border-0"
-                    )}
-                    disabled={!isDisplayNameEdit}
-                    ref={displayNameRef}
-                    onKeyDown={(e) =>
-                      e.key === "Enter" && handelDisplayNameEdit()
-                    }
-                  />
-                  {isDisplayNameEdit && (
-                    <span
-                      className={`length ${
-                        displayNameRef.current?.value?.length > 0
-                          ? "visible"
-                          : "invisible"
-                      }`}
-                    >
-                      {maxDisplayNameLength - profile.displayName.length}
-                    </span>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="edit hover:bg-transparent"
-                    onClick={handelDisplayNameEdit}
-                  >
-                    {isDisplayNameEdit ? (
-                      <BiCheck className="check" />
-                    ) : (
-                      <HiPencil />
-                    )}
+            <div className="px-4 py-4 flex flex-col gap-3">
+              {isAnonymousUsere && (
+                <div onClick={linkToGoogle}>
+                  <Button className="w-full" variant="outline">
+                    <div className="text-xl">
+                      <FcGoogle />
+                    </div>
+                    <h4 className="dr-en f-ar">Google ربط حسابك ب </h4>
                   </Button>
                 </div>
-              </div>
-              <div></div>
-              <p className="info">
-                هذا الاسم ليس كلمة مرور ولا رقم تعريف. إنما يكون هذا الاسم
-                ظاهراً لجهات اتصالك في واتساب.
-              </p>
-            </div>
-            {/* profile status */}
-            <div className="profile--status">
-              <div className="icon">
-                <RiInformationLine />
-              </div>
-              <div className="display">
-                <h3>الحالة</h3>
-                <div className="input">
-                  <Input
-                    disabled={!isUserStatusEdit}
-                    ref={userStatusRef}
-                    type="text"
-                    name="userStatus"
-                    value={profile.userStatus}
-                    onChange={handelProfileChange}
-                    className={cn(
-                      "border-0 border-b border-[#00a884] rounded-none px-0 py-1 bg-transparent focus:border-[#00a884] focus:ring-0 text-[#3b4a54]",
-                      isStatusArabic ? "f-ar dr-ar" : "f-en dr-en",
-                      !isUserStatusEdit && "border-0"
-                    )}
-                    onKeyDown={(e) =>
-                      e.key === "Enter" && handelUserStatusEdit()
-                    }
-                  />
-                  {isUserStatusEdit && (
-                    <span
-                      className={`length ${
-                        displayNameRef.current?.value?.length > 0
-                          ? "visible"
-                          : "invisible"
-                      }`}
-                    >
-                      {maxUserStatusLength - profile.userStatus.length}
-                    </span>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="edit d-f hover:bg-transparent"
-                    onClick={handelUserStatusEdit}
-                  >
-                    {isUserStatusEdit ? (
-                      <BiCheck className="check" />
-                    ) : (
-                      <HiPencil />
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </div>
-            {/* profile phone number */}
-            {user?.phoneNumber && (
-              <div className="profile--phone-number">
-                <div className="icon">
-                  <MdOutlineLocalPhone />
-                </div>
-                <div className="display">
-                  <h3>رقم الهاتف</h3>
-                  <h4 className="dr-en">{user?.phoneNumber}</h4>
-                </div>
-              </div>
-            )}
-            {/* profile email */}
-            {getCurrentUser()?.email && (
-              <div className="profile--phone-number">
-                <div className="icon">
-                  <MdOutlineEmail />
-                </div>
-                <div className="display">
-                  <h3>البريد الإلكتروني</h3>
-                  <h4 className="dr-en">{user?.email}</h4>
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="btnse">
-            {isAnonymousUsere && (
-                <div className="link-account" onClick={linkToGoogle}>
-                <Button className="btne btn google-btn" variant="outline">
-                  <div className="icon">
-                    <FcGoogle />
-                  </div>
-                  <h4 className="cur-pnter dr-en f-ar">Google ربط حسابك ب </h4>
+              )}
+              {/* logout button */}
+              <div
+                onClick={getIsAnonymousUser() ? handelShowModel : handelSignout}
+              >
+                <Button className="w-full" variant="destructive">
+                  <LogOut className="w-5 h-5" />
+                  <h4 className="dr-ar f-ar">تسجيل الخروج</h4>
                 </Button>
               </div>
-            )}
-            {/* logout button */}
-            <div
-              className="profile--logout"
-              onClick={getIsAnonymousUser() ? handelShowModel : handelSignout}
-            >
-              <Button className="btne btn logout-btn" variant="destructive">
-                <div className="icon">
-                  <FiLogOut />
-                </div>
-                <h4 className="dr-ar cur-pnter f-ar">تسجيل الخروج</h4>
-              </Button>
             </div>
           </div>
           {isModuleshow && (

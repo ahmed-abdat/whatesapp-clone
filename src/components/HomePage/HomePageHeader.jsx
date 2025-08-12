@@ -1,6 +1,4 @@
-import { BsFillChatRightTextFill } from "react-icons/bs";
-import {BiSupport} from 'react-icons/bi'
-import { HiDotsVertical } from "react-icons/hi";
+import { LifeBuoy, MessageSquareText, MoreVertical } from "lucide-react";
 import useUsers from "../../store/useUsers";
 import useUser from "../../store/useUser";
 import { useEffect, useRef, useState } from "react";
@@ -21,7 +19,7 @@ import {
 import useSelectedUser from "../../store/useSelectedUser";
 import defaultAvatar from "../../assets/img/default-avatar.svg";
 import DeleteModule from "../DeleteModule";
-// import "../styles/HeaderPopup.css"; // Removed - using Tailwind CSS only
+// HeaderPopup.css styles converted to Tailwind CSS
 import { deleteObject, ref } from "firebase/storage";
 
 export default function HomePageHeader({ setIsAllUsersShow }) {
@@ -199,7 +197,7 @@ export default function HomePageHeader({ setIsAllUsersShow }) {
       chatId,
       "chat"
     );
-    
+
     const snapshot = await getDocs(lastMessageCollection);
     snapshot.forEach(async (doc) => {
       await deleteDoc(doc.ref)
@@ -275,44 +273,87 @@ export default function HomePageHeader({ setIsAllUsersShow }) {
   const handelCloseModule = () => {
     setIsModuleShow(false);
   };
-  
+
   // handel redirect
   const handelRedirect = () => {
-    window.open("https://wa.me/42049074?text=%D8%AA%D8%B7%D8%A8%D9%8A%D9%82%20%D8%B1%D8%A7%D8%A6%D8%B9%20%D9%85%D9%86%20%D8%A3%D9%81%D8%B6%D9%84%20%D8%A7%D9%84%D8%A3%D8%B9%D9%85%D8%A7%D9%84%20%D8%A7%D9%84%D8%AA%D9%8A%20%D8%B1%D8%A3%D9%8A%D8%AA%D9%87%D8%A7%20%D9%85%D8%A4%D8%AE%D8%B1%D8%A7%20%2C%20%D8%A3%D8%AA%D9%85%D9%86%D9%89%20%D9%84%D9%83%20%D8%A7%D9%84%D8%AA%D9%88%D9%81%D9%8A%D9%82") 
-    setIsPopupShow(false) 
+    window.open(
+      "https://wa.me/42049074?text=%D8%AA%D8%B7%D8%A8%D9%8A%D9%82%20%D8%B1%D8%A7%D8%A6%D8%B9%20%D9%85%D9%86%20%D8%A3%D9%81%D8%B6%D9%84%20%D8%A7%D9%84%D8%A3%D8%B9%D9%85%D8%A7%D9%84%20%D8%A7%D9%84%D8%AA%D9%8A%20%D8%B1%D8%A3%D9%8A%D8%AA%D9%87%D8%A7%20%D9%85%D8%A4%D8%AE%D8%B1%D8%A7%20%2C%20%D8%A3%D8%AA%D9%85%D9%86%D9%89%20%D9%84%D9%83%20%D8%A7%D9%84%D8%AA%D9%88%D9%81%D9%8A%D9%82"
+    );
+    setIsPopupShow(false);
   };
 
   return (
-    <header>
-      <div className="header--container">
-        <div className="header--logo" onClick={() => setIsProfileShow(true)}>
-          <img src={getCurrentUser()?.photoURL || defaultAvatar} alt="avatar" />
+    <header className="relative bg-whatsapp-bg w-full">
+      <div className="h-full w-full flex justify-between items-center py-2.5 px-4">
+        <div
+          className="cursor-pointer flex"
+          onClick={() => setIsProfileShow(true)}
+        >
+          <img
+            src={getCurrentUser()?.photoURL || defaultAvatar}
+            alt="avatar"
+            className="w-11 h-11 object-cover rounded-full"
+          />
         </div>
-        <div className="header--icons" ref={headerIconsRef}>
-          <div className="d-f">
-          <BiSupport onClick={handelRedirect} />
-          </div>
-          <BsFillChatRightTextFill onClick={handelShowAllTheUsers} />
-          <div className="d-f">
-            <HiDotsVertical
-              onClick={() => setIsPopupShow((prev) => !prev)}
-              className={isPopupShow ? "bg--hover" : ""}
+        <div
+          className="text-gray-600 flex items-center gap-6"
+          ref={headerIconsRef}
+        >
+          <div className="flex items-center justify-center">
+            <LifeBuoy
+              onClick={handelRedirect}
+              className="h-5 w-5 cursor-pointer"
             />
+          </div>
+          <MessageSquareText
+            onClick={handelShowAllTheUsers}
+            className="h-5 w-5 cursor-pointer"
+          />
+          <div className="flex items-center justify-center">
+            <div
+              aria-label="More options"
+              role="button"
+              onClick={() => setIsPopupShow((prev) => !prev)}
+              className={`cursor-pointer rounded-full p-1.5 hover:bg-black/10 ${
+                isPopupShow ? "bg-black/10" : ""
+              }`}
+            >
+              <MoreVertical className="h-5 w-5" strokeWidth={2.25} />
+            </div>
           </div>
         </div>
       </div>
       {isPopupShow && (
-        <div className="popup--container" ref={popupContainerRef}>
-          <ul className="popup--item f-ar">
-            <li onClick={handelGoToProfile}> الملف الشخصي </li>
-            <li onClick={handelRedirect}> تواصل مع المطور </li>
+        <div
+          className="absolute z-[300] bg-white rounded-md shadow-lg max-w-52 text-gray-700 w-2/5 py-2.5 top-14 left-5"
+          ref={popupContainerRef}
+        >
+          <ul className="list-none flex flex-col font-arabic">
+            <li
+              onClick={handelGoToProfile}
+              className="cursor-pointer py-3 px-4 w-full text-gray-600 text-sm hover:bg-gray-100"
+            >
+              الملف الشخصي
+            </li>
+            <li
+              onClick={handelRedirect}
+              className="cursor-pointer py-3 px-4 w-full text-gray-600 text-sm hover:bg-gray-100"
+            >
+              تواصل مع المطور
+            </li>
             <li
               onClick={getIsAnonymousUser() ? handelShowModel : handelSignout}
+              className="cursor-pointer py-3 px-4 w-full text-gray-600 text-sm hover:bg-gray-100"
             >
               تسجيل الخروج
             </li>
             {!getIsAnonymousUser() && (
-              <li onClick={handelShowModel}> حذف حسابك </li>
+              <li
+                onClick={handelShowModel}
+                className="cursor-pointer py-3 px-4 w-full text-gray-600 text-sm hover:bg-gray-100"
+              >
+                حذف حسابك
+              </li>
             )}
           </ul>
         </div>

@@ -19,12 +19,12 @@ import {
 import { app } from "../config/firebase";
 import SpinerLoader from "./SpinerLoader";
 import SelectedUserGalary from "./SelectedUserGalary";
-import { Sheet, SheetContent } from "./ui/sheet";
+// Removed Sheet import - using inline layout instead
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { cn } from "../lib/utils";
 
-export default function SelectedUserProfile({ setisProfileShow, isOpen = true }) {
+export default function SelectedUserProfile({ setisProfileShow }) {
   const getSelectedUser = useSelectedUser((state) => state.getSelectedUser);
   const getCurrentUser = useUser((state) => state.getCurrentUser);
 
@@ -108,11 +108,7 @@ export default function SelectedUserProfile({ setisProfileShow, isOpen = true })
 
 
   return (
-    <Sheet open={isOpen} onOpenChange={(open) => !open && setisProfileShow(false)}>
-      <SheetContent 
-        side="left" 
-        className="selected-user-profile p-0 border-0 max-w-none w-full sm:max-w-none"
-      >
+    <div className="w-full h-full bg-gray-100 flex flex-col" dir="rtl">
         {isImageView && getSelectedUser()?.photoURL ? (
           <ViewImage
             title={getSelectedUser().displayName}
@@ -130,22 +126,24 @@ export default function SelectedUserProfile({ setisProfileShow, isOpen = true })
          <SelectedUserGalary closeGalary={handelCloseGalary} displayName={getSelectedUser().displayName} images={images}/>
         ) : (
           <>
-          <header>
-            <div className="header--text">
+          <header className="text-black  bg-whatsapp-bg h-[65px] flex items-center px-4 flex-shrink-0">
+            <div className="flex w-full items-center gap-4">
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-inherit hover:bg-black/10 p-2"
+                className="text-inherit hover:bg-black/10 p-2 text-2xl"
                 onClick={() => setisProfileShow(false)}
               >
-                <BiArrowBack className="r-180" />
+                <BiArrowBack className="rotate-180" />
               </Button>
-              <h4 className="f-ar"> معلومات جهة الاتصال</h4>
+              <h4 className="text-lg font-arabic font-normal text-inherit"> معلومات جهة الاتصال</h4>
             </div>
           </header>
-          {/* image and display Name  */}
-          <section className="image-displayName">
-            <div className="img d-f">
+          {/* Scrollable content area */}
+          <div className="flex-1 overflow-y-auto">
+            {/* image and display Name  */}
+            <section className="pt-7 px-7 pb-5 bg-white shadow-sm mb-2.5">
+            <div className="mb-4 flex justify-center">
               <Avatar 
                 className="w-[200px] h-[200px] cursor-pointer"
                 onClick={() => setIsImageView(true)}
@@ -159,15 +157,16 @@ export default function SelectedUserProfile({ setisProfileShow, isOpen = true })
                 </AvatarFallback>
               </Avatar>
             </div>
-            <div className="selcted-user-info">
+            <div className="text-center">
               <h2
-                className={`${
-                  isArabic(getSelectedUser().displayName) ? "f-ar" : "f-en"
-                }`}
+                className={cn(
+                  "text-gray-700 text-2xl font-medium",
+                  isArabic(getSelectedUser().displayName) ? "font-arabic" : "font-english"
+                )}
               >
                 {getSelectedUser()?.displayName}
               </h2>
-              <p className="f-en dr-en">
+              <p className="mt-1 text-gray-400 text-base font-english">
                 {getSelectedUser()?.email
                   ? getSelectedUser().email
                   : getSelectedUser()?.phoneNumber}
@@ -175,41 +174,46 @@ export default function SelectedUserProfile({ setisProfileShow, isOpen = true })
             </div>
           </section>
           {/* status */}
-          <section className="status">
+          <section className="px-6 py-6 bg-white shadow-sm mb-2.5">
             <p
-              className={`${
+              className={cn(
+                "break-words",
                 isArabic(getSelectedUser().userStatus)
-                  ? "f-ar dr-ar"
-                  : "f-en dr-en"
-              }`}
+                  ? "font-arabic text-right"
+                  : "font-english text-left"
+              )}
             >
               {getSelectedUser().userStatus}
             </p>
           </section>
           {/* media */}
-          <section className="media">
-            <p className="media--header" onClick={() => setIsGalaryShow(true)}>
+          <section className="cursor-pointer flex flex-col p-3 mb-0 relative min-h-[200px] gap-4 bg-white shadow-sm">
+            <p className="cursor-pointer flex items-center gap-2 text-gray-500 text-sm leading-6 mb-2 font-arabic" onClick={() => setIsGalaryShow(true)}>
               صور و الوسائط <span>{images.length}</span>
-              <GraitherThen />
+              <GraitherThen className="rotate-180" />
             </p>
             {isImagesLoading ? (
               <SpinerLoader />
             ) : (
-              <div className="media--images">
+              <div className="h-4/5 grid grid-cols-3 gap-x-2 w-full flex-1">
                 {selecteduserImages.map((image) => (
                   <img
                     src={image.src}
                     key={image.src}
                     alt="media"
+                    className="cursor-pointer rounded-lg bg-gray-100 mb-1.5 w-full h-[90%] max-h-[170px] object-cover border border-white"
+                    style={{
+                      backgroundImage: 'linear-gradient(rgba(0,0,0,0) 70%, rgba(0,0,0,.6) 100%)'
+                    }}
                     onClick={() => handelSelectedImage(image)}
                   />
                 ))}
               </div>
             )}
           </section>
+          </div>
         </>
         )}
-      </SheetContent>
-    </Sheet>
+    </div>
   );
 }

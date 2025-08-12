@@ -34,15 +34,17 @@
 
     --radius: 0.5rem;
 
-    /* WhatsApp Theme Colors */
-    --whatsapp-primary: 142 70% 49%;
-    --whatsapp-primary-100: 142 70% 85%;
-    --whatsapp-primary-dark: 142 64% 40%;  
-    --whatsapp-primary-darker: 142 72% 29%;
-    --whatsapp-bg: 210 11% 94%;
-    --whatsapp-chat-bg: 38 15% 89%;
-    --whatsapp-chat-bg-deeper: 194 16% 82%;
-    
+    /* WhatsApp Theme Colors - Updated to exact brand green */
+    --whatsapp-primary: 167 100% 33%; /* #00a884 - WhatsApp brand green */
+    --whatsapp-primary-100: 167 65% 85%; /* Light tint of brand green */
+    --whatsapp-primary-dark: 169 100% 25%; /* ~#008069 - darker brand green */
+    --whatsapp-primary-darker: 169 100% 21%; /* Deeper dark variant */
+    --whatsapp-bg: 210 11% 96%; /* Light gray background #f0f2f5 */
+    --whatsapp-chat-bg: 38 15% 93%; /* Chat background #efeae2 */
+    --whatsapp-chat-bg-deeper: 210 11% 94%; /* Deeper chat background */
+    --whatsapp-message-out: 120 44% 88%; /* Outgoing message #d9fdd3 */
+    --whatsapp-message-in: 0 0% 100%; /* Incoming message white */
+
     /* Color mappings */
     --color-gray: 200 12% 75%;
     --white-color-light: 242 100% 97%;
@@ -98,7 +100,8 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, 'Lucida Grande', Arial, Ubuntu, Cantarell, 'Fira Sans', sans-serif, 'Amiri';
+    font-family: "Segoe UI", "Helvetica Neue", Helvetica, "Lucida Grande", Arial,
+      Ubuntu, Cantarell, "Fira Sans", sans-serif, "Amiri";
   }
 }
 
@@ -107,50 +110,27 @@
   color: hsl(var(--icon-color-light));
 }
 
-/* Utility Classes */
-.d-f {
-  @apply flex items-center justify-center;
-}
-
+/* Utility Classes - Optimized for WhatsApp Clone */
 .btn {
   @apply transition-all duration-300 ease-in-out cursor-pointer outline-none border-none;
 }
 
-.r-180 {
-  @apply rotate-180;
+.btn:focus-visible {
+  @apply ring-2 ring-whatsapp-primary ring-offset-2;
 }
 
-.hide {
-  @apply hidden;
-}
-
-.invisible {
-  @apply opacity-0;
-}
-
-.visible {
-  @apply opacity-100;
-}
-
-.m-b-sm {
-  @apply mb-2;
-}
-
-.disabel {
+.btn:disabled {
   @apply opacity-50 pointer-events-none cursor-not-allowed;
 }
 
-.disabel-no-opacity {
-  @apply pointer-events-none cursor-not-allowed;
-}
-
 /* Arabic/RTL Support */
-.f-ar, .font-arabic {
-  font-family: "Vazirmatn", 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+.f-ar,
+.font-arabic {
+  font-family: "Vazirmatn", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .f-en {
-  font-family: "Roboto", 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Roboto", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .dr-en {
@@ -183,8 +163,112 @@
   @apply bg-black/20 rounded;
 }
 
-/* Button Disabled States */
-.btn[disabled], 
-button[disabled] {
-  @apply opacity-50 pointer-events-none cursor-not-allowed;
+/* Enhanced Focus States for Accessibility */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  @apply ring-2 ring-whatsapp-primary ring-offset-2 outline-none;
+}
+
+/* Minimal Essential Styles - Prefer Tailwind classes in components */
+@layer components {
+  /* Custom scrollbar - cannot be done with Tailwind utilities */
+  .messages-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  }
+
+  /* Emoji Picker Styling */
+  .chat-page--container .emoji-picker aside.EmojiPickerReact.epr-main {
+    @apply w-full !important;
+    direction: initial;
+  }
+
+  .chat-page--container
+    footer
+    .EmojiPickerReact
+    li.epr-emoji-category
+    > .epr-emoji-category-label,
+  .chat-page--container
+    footer
+    .EmojiPickerReact
+    .epr-search-container
+    input.epr-search {
+    direction: rtl;
+    font-family: "Vazirmatn", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.9rem;
+  }
+}
+
+/* Inline emoji sizing and alignment
+   - Ensure emoji images inserted into messages match surrounding text size
+   - Keep alignment consistent with baseline to avoid jumping line heights
+   - Applied globally because multiple components render <img class="emoji" /> */
+img.emoji {
+  width: 1em; /* scale with current font-size (works in previews and chat) */
+  height: 1em;
+  display: inline-block;
+  vertical-align: -0.15em; /* nudge down slightly to sit on baseline like glyphs */
+}
+
+/* WhatsApp Layout Utilities - Pure Tailwind CSS Helper Classes */
+@layer utilities {
+  .whatsapp-container {
+    @apply w-full max-w-6xl h-[calc(100vh-2rem)] lg:h-[calc(100vh-4rem)] bg-white rounded-none lg:rounded-lg shadow-none lg:shadow-2xl overflow-hidden;
+  }
+
+  .whatsapp-grid {
+    @apply h-full grid grid-cols-1 md:grid-cols-[400px_1fr];
+  }
+
+  .whatsapp-sidebar {
+    @apply bg-white border-r border-gray-200 flex flex-col;
+  }
+
+  .whatsapp-chat {
+    @apply bg-white flex flex-col;
+  }
+
+  .whatsapp-header-bar {
+    @apply hidden lg:block fixed top-0 left-0 w-full h-32 bg-whatsapp-primary z-0;
+  }
+
+  .whatsapp-main-wrapper {
+    @apply relative z-10 flex justify-center items-center min-h-screen p-4 lg:p-8;
+  }
+}
+
+/* Mobile Chat Container Overrides - Only when needed for complex components */
+@media screen and (max-width: 767px) {
+  .chat-page--container {
+    @apply fixed inset-0 w-full h-full z-50 bg-white;
+  }
+
+  .chat-page--container header {
+    @apply px-2 py-2.5 h-14;
+  }
+
+  .chat-page--container .back .icon {
+    @apply block ml-1 text-xl text-[#54656f] cursor-pointer p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors;
+  }
+
+  .chat-page--container .chat-content .message--container .message {
+    @apply max-w-[90%] mx-1;
+  }
+
+  .chat-page--container .chat-content .message--container .container {
+    @apply px-2 py-2 gap-1;
+  }
+
+  .chat-page--container footer {
+    @apply px-2 py-2;
+  }
+
+  .chat-page--container header button {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  .chat-page--container .message--container {
+    @apply px-1;
+  }
 }

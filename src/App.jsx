@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import  { lazy, Suspense } from "react";
 import Loading from "./components/Loading";
+import ErrorBoundary from "./components/ErrorBoundary";
 import useUser from "./store/useUser";
 
 
@@ -32,18 +33,25 @@ function App() {
   
 
   return (
-    <Router>
-      <Suspense fallback={<Loading />}>
-      <Routes>
-        <Route path="/" element={<RequireAuth><Home /></RequireAuth>} />
-        <Route path="/welcoome" element={<Welcoome />} />
-        <Route path="/signUp" element={<SignUp />} />
-        <Route path="/otp" element={<Otp /> }  />
-        <Route path="/userInfo" element={<UserInfo />} />
-        <Route path="*" element={<NotFound /> }  />
-      </Routes>
-      </Suspense>
-  </Router>
+    <ErrorBoundary>
+      <Router
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <Suspense fallback={<Loading />}>
+        <Routes>
+          <Route path="/" element={<RequireAuth><Home /></RequireAuth>} />
+          <Route path="/welcoome" element={<Welcoome />} />
+          <Route path="/signUp" element={<SignUp />} />
+          <Route path="/otp" element={<Otp /> }  />
+          <Route path="/userInfo" element={<UserInfo />} />
+          <Route path="*" element={<NotFound /> }  />
+        </Routes>
+        </Suspense>
+    </Router>
+    </ErrorBoundary>
   );
 }
 

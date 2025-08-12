@@ -49,7 +49,14 @@ export const useChat = () => {
     const currentUserId = getCurrentUser()?.uid;
     const selectedUserId = getSelectedUser()?.uid;
     if (selectedUserId) {
-      fetchImagesInChat(currentUserId, selectedUserId);
+      // Only fetch images if not in cache
+      const chatId = `${currentUserId}_${selectedUserId}`;
+      if (!imageCache.current.has(chatId)) {
+        fetchImagesInChat(currentUserId, selectedUserId);
+      } else {
+        setImages(imageCache.current.get(chatId));
+      }
+      
       const messageRef = collection(db, "users", currentUserId, "messages", selectedUserId, "chat");
       const q = query(messageRef, orderBy("createdAt", "desc"), limit(20));
       setIsMessagesLoaded(true);
@@ -134,7 +141,25 @@ export const useChat = () => {
         } : null,
       };
 
-      if (file?.type?.includes('image')) fetchImagesInChat(currentUserId, selectedUserId);
+      if (file?.type?.includes('image')) {
+        // Update cache instead of fetching all images again
+        const chatId = `${currentUserId}_${selectedUserId}`;
+        const newImage = {
+          src: path,
+          alt: message,
+          time: messageData.createdAt?.seconds || Date.now() / 1000,
+        };
+        
+        if (imageCache.current.has(chatId)) {
+          const cachedImages = imageCache.current.get(chatId);
+          const updatedImages = [newImage, ...cachedImages].slice(0, 10);
+          imageCache.current.set(chatId, updatedImages);
+          setImages(updatedImages);
+        } else {
+          // Only fetch if cache is empty
+          fetchImagesInChat(currentUserId, selectedUserId);
+        }
+      }
 
       const docRef = await addDoc(currentUserCollChat, messageData);
       const selectedUserDoc = doc(db, "users", selectedUserId, "messages", currentUserId, "chat", docRef.id);
@@ -230,24 +255,67 @@ export const useChat = () => {
     }
   };
 
+  // Cache to prevent repeated queries
+  const imageCache = useRef(new Map());
+  const lastImageFetch = useRef(new Map());
+  
   const fetchImagesInChat = (currentUserId, selectedUserId) => {
+    const chatId = `${currentUserId}_${selectedUserId}`;
+    const now = Date.now();
+    
+    // Rate limiting: only fetch images once every 5 seconds per chat
+    if (lastImageFetch.current.has(chatId)) {
+      const lastFetch = lastImageFetch.current.get(chatId);
+      if (now - lastFetch < 5000) {
+        return; // Skip if fetched recently
+      }
+    }
+    
+    // Check cache first
+    if (imageCache.current.has(chatId)) {
+      const cachedImages = imageCache.current.get(chatId);
+      setImages(cachedImages);
+      return;
+    }
+    
+    lastImageFetch.current.set(chatId, now);
+    
     const messageRef = collection(db, "users", currentUserId, "messages", selectedUserId, "chat");
+    // Reduced image formats to most common ones to reduce query size
     const imageFormats = [
-      "image/jpeg", "image/png", "image/gif", "image/bmp", "image/tiff",
-      "image/webp", "image/svg+xml", "image/heic", "image/raw", "image/vnd.microsoft.icon"
+      "image/jpeg", "image/png", "image/gif", "image/webp"
     ];
-    const q = query(messageRef, where("media.type", 'in', imageFormats), limit(20));
+    
+    const q = query(
+      messageRef, 
+      where("media.type", 'in', imageFormats),
+      orderBy("createdAt", "desc"), 
+      limit(10) // Reduced limit to prevent quota exhaustion
+    );
+    
     getDocs(q).then((querySnapshot) => {
       const fetchedImages = [];
       querySnapshot.forEach((doc) => {
-        fetchedImages.push({
-          src: doc.data().media.src,
-          alt: doc.data().content,
-          time: doc.data().createdAt?.seconds ? doc.data().createdAt.seconds : doc.data().createdAt,
-        });
+        const data = doc.data();
+        if (data.media && data.media.src) {
+          fetchedImages.push({
+            src: data.media.src,
+            alt: data.content || '',
+            time: data.createdAt?.seconds ? data.createdAt.seconds : data.createdAt,
+          });
+        }
       });
-      fetchedImages.sort((a, b) => a.time - b.time);
+      
+      fetchedImages.sort((a, b) => b.time - a.time); // Most recent first
+      
+      // Cache the results
+      imageCache.current.set(chatId, fetchedImages);
       setImages(fetchedImages);
+    }).catch((error) => {
+      console.error('Error fetching images:', error);
+      // Clear cache entry on error to allow retry
+      imageCache.current.delete(chatId);
+      lastImageFetch.current.delete(chatId);
     });
   };
 
@@ -267,6 +335,16 @@ export const useChat = () => {
       setTimeAgo(`آخر ظهور أمس عند الساعة ${HourAndMinitFormat} ${AmPm}`);
     } else {
       setTimeAgo(`آخر ظهور بتاريخ ${dateFormat}`);
+    }
+  };
+
+  const clearImageCache = (chatId = null) => {
+    if (chatId) {
+      imageCache.current.delete(chatId);
+      lastImageFetch.current.delete(chatId);
+    } else {
+      imageCache.current.clear();
+      lastImageFetch.current.clear();
     }
   };
 
@@ -418,5 +496,6 @@ const handleBack = async () => {
     setMessage,
     isEmojiPickerShow,
     setIsEmojiPickerShow,
+    clearImageCache,
   };
 };

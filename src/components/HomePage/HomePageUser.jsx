@@ -331,56 +331,56 @@ export default function HomePageUser({
 
   return (
     <div 
-      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors duration-200 border-b border-gray-100"
+      className="w-full py-3 px-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50 border-b border-gray-100 transition-colors duration-200"
       onClick={handelSelectedUser}
     >
-      {/* Modern Avatar with shadcn/ui */}
-      <Avatar className="h-12 w-12 flex-shrink-0">
+      {/* Avatar - Using shadcn/ui for better accessibility */}
+      <Avatar className="w-14 h-14 flex-shrink-0">
         <AvatarImage 
           src={photoURL || defaultAvatar} 
           alt={displayName || "User avatar"}
           className="object-cover"
         />
-        <AvatarFallback className="bg-gray-200 text-gray-600">
-          {displayName?.[0]?.toUpperCase() || "U"}
+        <AvatarFallback className="bg-gray-200 text-gray-600 font-arabic">
+          {displayName?.[0]?.toUpperCase() || "ا"}
         </AvatarFallback>
       </Avatar>
 
-      {/* User Info Section */}
-      <div className="flex-1 min-w-0">
+      {/* User Profile Info */}
+      <div className="flex-1 min-w-0 overflow-hidden">
         {/* Name and Time Row */}
         <div className="flex items-center justify-between mb-1">
           <h3
             className={cn(
-              "font-medium text-gray-900 truncate",
+              "text-base font-normal text-gray-900 truncate max-w-[65%]",
               isArabic(displayName) ? "font-arabic text-right" : "text-left",
-              isMessageNotRead && UnreadMessages > 0 && "font-bold text-gray-900"
+              isMessageNotRead && UnreadMessages > 0 && "font-semibold text-gray-900"
             )}
           >
             {displayName || "Ahmed Abdat"}
           </h3>
           {lastMessage?.createdAt && (
-            <span
+            <p
               className={cn(
-                "text-xs flex-shrink-0 ml-2",
+                "text-sm font-normal flex-shrink-0",
                 isMessageNotRead && UnreadMessages > 0 
-                  ? "text-whatsapp-primary font-medium" 
+                  ? "text-whatsapp-primary font-semibold" 
                   : "text-gray-500"
               )}
             >
               {`${timeAgo} ${lastSeanMessage.format("a") === "am" ? "ص" : "م"}`}
-            </span>
+            </p>
           )}
         </div>
 
-        {/* Message Content and Badge Row */}
+        {/* Message Content Row */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1 flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden">
             {/* Read Status Check Mark */}
             {getCurrentUser()?.uid && lastMessage?.from === getCurrentUser()?.uid && (
               <div className={cn(
                 "flex-shrink-0",
-                lastMessage?.isRead ? "text-blue-500" : "text-gray-400"
+                lastMessage?.isRead ? "text-blue-400" : "text-gray-500"
               )}>
                 <Check />
               </div>
@@ -389,60 +389,63 @@ export default function HomePageUser({
             {/* Message Content */}
             <div className="truncate flex-1">
               {lastMessage?.content && lastMessage?.media ? (
-                <span className="flex items-center gap-1">
+                <div className="flex items-center gap-2 overflow-hidden">
                   <BsImageFill className="text-gray-400 w-4 h-4 flex-shrink-0" />
-                  <span
+                  <p
                     className={cn(
-                      "truncate",
+                      "text-sm font-normal leading-5 truncate",
                       contentClass(),
                       isMessageNotRead && UnreadMessages > 0 
-                        ? "text-gray-900 font-medium" 
+                        ? "font-semibold text-gray-700" 
                         : "text-gray-600"
                     )}
                   >
-                    {newContent.map((content, index) => (
+                    {newContent?.map((content, index) => (
                       <React.Fragment key={index}>{content} </React.Fragment>
                     ))}
-                  </span>
-                </span>
+                  </p>
+                </div>
               ) : lastMessage?.media ? (
                 lastMessage.media?.type?.includes('image') ? (
-                  <span className="flex items-center gap-1 text-gray-600">
-                    <BsImageFill className="text-gray-400 w-4 h-4" />
-                    <span className="font-arabic">صورة</span>
-                  </span>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <BsImageFill className="w-4 h-4 flex-shrink-0" />
+                    <p className="font-arabic text-sm">صورة</p>
+                  </div>
                 ) : (
-                  <span className="flex items-center gap-1 text-gray-600">
-                    <Voice wh={20} />
-                    <span className="font-arabic">مقطع صوتي</span>
-                  </span>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Voice wh={16} />
+                    <p className="font-arabic text-sm">مقطع صوتي</p>
+                  </div>
                 )
               ) : lastMessage?.content ? (
                 <p
                   className={cn(
-                    "truncate",
+                    "text-sm font-normal leading-5 truncate",
                     contentClass(),
                     isMessageNotRead && UnreadMessages > 0 
-                      ? "text-gray-900 font-medium" 
+                      ? "font-semibold text-gray-700" 
                       : "text-gray-600"
                   )}
                 >
-                  {newContent.map((content, index) => (
+                  {newContent?.map((content, index) => (
                     <React.Fragment key={index}>{content} </React.Fragment>
                   ))}
                 </p>
-              ) : (
-                <p className={cn("text-gray-500 italic truncate", useStatusClass())}>
+              ) : userStatus ? (
+                <p className={cn(
+                  "text-gray-500 italic text-sm truncate",
+                  useStatusClass()
+                )}>
                   {userStatus}
                 </p>
-              )}
+              ) : null}
             </div>
           </div>
 
-          {/* Unread Badge */}
+          {/* Unread Badge - Using shadcn/ui Badge */}
           {isMessageNotRead && UnreadMessages > 0 && (
             <Badge 
-              className="bg-whatsapp-primary text-white hover:bg-whatsapp-primary ml-2 min-w-[20px] h-5 flex items-center justify-center"
+              className="bg-whatsapp-primary text-white hover:bg-whatsapp-primary border-0 text-xs min-w-[20px] h-5 flex items-center justify-center rounded-full ml-2"
               variant="default"
             >
               {UnreadMessages}

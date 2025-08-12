@@ -17,34 +17,35 @@ export default function Home() {
   const isMobile = useMediaQuery("(max-width: 767px)");
 
   return (
-    <div className="min-h-screen bg-whatsapp-bg">
-      {/* WhatsApp green header bar for large screens */}
-      <div className="hidden md:block fixed top-0 left-0 w-full h-32 bg-whatsapp-primary z-0"></div>
+    <div className="relative w-full h-screen bg-gray-200 p-0 lg:p-5 overflow-hidden">
+      {/* Green navigation bar - desktop only */}
+      <div className="absolute top-0 left-0 w-full h-32 bg-whatsapp-primary z-0 hidden lg:block"></div>
       
-      {/* Main container with Tailwind Grid */}
-      <div className="relative z-10 md:p-5 h-screen">
-        <div className="h-full bg-white lg:rounded-lg lg:shadow-xl overflow-hidden
-                        grid grid-cols-1 md:grid-cols-[minmax(350px,450px)_1fr]">
-          
-          {/* Left Sidebar - HomePage */}
-          <div className={`home-page border-r border-gray-200 ${isMobile && selectedUser ? 'hidden' : 'block'}`}>
+      {/* Main container - direct Tailwind classes */}
+      <div className="relative w-full h-full lg:h-[calc(100vh-2.5rem)] bg-gray-100 grid grid-cols-1 md:grid-cols-[400px_1fr] lg:grid-cols-[minmax(350px,450px)_1fr] overflow-hidden z-10">
+        
+        {/* Left Sidebar - User List */}
+        <div className={`relative bg-white flex flex-col h-full overflow-hidden border-r border-gray-200 ${
+          isMobile && selectedUser ? 'hidden' : 'flex'
+        }`}>
+          <Suspense fallback={<SpinerLoader />}>
+            <HomePage />
+          </Suspense>
+        </div>
+        
+        {/* Right Chat Area */}
+        <div className={`relative w-full h-full flex flex-col items-center justify-center text-gray-500 font-light bg-white overflow-hidden md:shadow-sm md:border-l border-gray-200 ${
+          isMobile && !selectedUser ? 'hidden' : 'flex'
+        }`}>
+          {selectedUser ? (
             <Suspense fallback={<SpinerLoader />}>
-              <HomePage />
+              <ChatPageUser />
             </Suspense>
-          </div>
-          
-          {/* Right Area - Chat */}
-          <div className={`chat-area ${isMobile && !selectedUser ? 'hidden' : 'block'}`}>
-            {selectedUser ? (
-              <Suspense fallback={<SpinerLoader />}>
-                <ChatPageUser />
-              </Suspense>
-            ) : (
-              <Suspense fallback={<SpinerLoader />}>
-                <ChatPage />
-              </Suspense>
-            )}
-          </div>
+          ) : (
+            <Suspense fallback={<SpinerLoader />}>
+              <ChatPage />
+            </Suspense>
+          )}
         </div>
       </div>
     </div>

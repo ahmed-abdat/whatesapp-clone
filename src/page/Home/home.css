@@ -133,7 +133,7 @@
   position: absolute;
   bottom: 1.5rem;
   left: 1.5rem;
-  background: #00a884;
+  background: var(--whatsapp-color);
   border-radius: 1.5rem;
   box-shadow: 0px 6px 10px 1px #0f121636;
   transition: all 0.3s ease-in;
@@ -167,7 +167,6 @@
   font-size: 1.5rem;
 }
 
-
 .main--container .button button.with-text {
   width: fit-content;
   padding: 0.3rem 0.8rem;
@@ -179,7 +178,8 @@
   gap: 0 1rem;
 }
 
-.main--container .button:focus ,  .main--container .button:hover {
+.main--container .button:focus,
+.main--container .button:hover {
   transform: scale(0.9);
   -webkit-transform: scale(0.9);
   -moz-transform: scale(0.9);
@@ -222,7 +222,7 @@
 }
 
 .unred-bg {
-  background: #00a884;
+  background: var(--whatsapp-color);
   color: #fff !important;
 }
 
@@ -321,16 +321,30 @@
   align-items: center;
 }
 
-.main--container .user-profile--container .user--profile--info .last-message span {
+.main--container
+  .user-profile--container
+  .user--profile--info
+  .last-message
+  span {
   display: flex;
-    align-items: center;
-    gap: 0 0.5rem;
-    overflow: hidden;
+  align-items: center;
+  gap: 0 0.5rem;
+  overflow: hidden;
 }
-.main--container .user-profile--container .user--profile--info .last-message span svg {
+.main--container
+  .user-profile--container
+  .user--profile--info
+  .last-message
+  span
+  svg {
   font-size: 1rem;
 }
-.main--container .user-profile--container .user--profile--info .last-message p img {
+.main--container
+  .user-profile--container
+  .user--profile--info
+  .last-message
+  p
+  img {
   width: 20px;
   height: 20px;
   image-rendering: -webkit-optimize-contrast;
@@ -349,9 +363,6 @@
   gap: 0 0.5rem;
   justify-content: space-between;
 }
-
-
-
 
 .main--container .user-profile--container .last-message > svg {
   font-size: 1.5rem;

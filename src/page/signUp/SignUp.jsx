@@ -209,14 +209,14 @@ useEffect(() => {
 }, [])
 
   return (
-    <div className="signup--container">
-      <div className="info">
-        <h3>أدخل رقم هاتفك</h3>
-        <p>سيحتاج واتساب إلى التحقق من رقم هاتفك.</p>
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center w-full">
+      <div className="mb-4 dr-ar font-vazir">
+        <h3 className="text-xl text-center mb-4 font-medium text-whatsapp-primary-darker">أدخل رقم هاتفك</h3>
+        <p className="text-base text-text-color">سيحتاج واتساب إلى التحقق من رقم هاتفك.</p>
       </div>
-      <form className="signup-form dr-en" onSubmit={handelSumbit}>
+      <form className="px-4 py-2 flex flex-col gap-5 dr-en" onSubmit={handelSumbit}>
         <PhoneInput
-          className={`phoneInput`}
+          className="shadow-sm border border-whatsapp-primary/20 px-2 py-1 rounded-sm focus-within:shadow-whatsapp-primary/40 [&_input]:bg-transparent [&_input]:border-none [&_input]:px-4 [&_input]:py-2 [&_input]:w-full [&_input]:h-full [&_input]:outline-none [&_input]:text-base [&>*:not(input)_*_*]:text-base [&>*:not(input)_*_*]:font-vazir"
           value={phone}
           onChange={setPhone}
           placeholder="رقم هاتفك هنا ..."
@@ -225,28 +225,45 @@ useEffect(() => {
           limitMaxLength
           labels={ar}
         />
-        <button type="submit" className="btn" disabled={isLoading}>
+        <button 
+          type="submit" 
+          className="shadow-whatsapp-primary/40 shadow-lg rounded-sm font-vazir self-center w-25 px-2 py-2 text-sm text-gray-100 bg-whatsapp-primary hover:bg-whatsapp-primary-dark hover:shadow-whatsapp-primary-dark/40 transition-all duration-300 disabled:opacity-50" 
+          disabled={isLoading}
+        >
           التالي
         </button>
       </form>
       <div className="dr-en">
-      <div id="sign-in-recaptcha"></div>
+        <div id="sign-in-recaptcha"></div>
       </div>
-      <div className="or">أو</div>
-      {/* signup from google */}
-      <div className={`signup-google dr-en ${isLoading ? 'disabel-no-opacity' : ''}`} onClick={signInWithGoogle}>
+      
+      {/* OR divider */}
+      <div className="mt-3 text-base font-medium font-vazir relative">
+        <span className="bg-gray-100 px-2">أو</span>
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-32 h-px bg-black/50 mr-5"></div>
+          <div className="w-32 h-px bg-black/50 ml-5"></div>
+        </div>
+      </div>
+      
+      {/* Google sign in */}
+      <div className={`shadow-md flex items-center justify-between bg-white text-black/55 px-1 w-72 mt-6 cursor-pointer overflow-hidden rounded-md transition-all duration-300 hover:bg-gray-50 hover:shadow-lg dr-en ${isLoading ? 'disabel-no-opacity' : ''}`} onClick={signInWithGoogle}>
         <img
-          className="google-icon"
+          className="bg-transparent px-1 w-9"
           src={GoogleIcon}
+          alt="Google icon"
         />
-        <p className="btn google-btn dr-ar"> تسجيل الدخول عن طريق Google</p>
+        <p className="font-vazir font-medium text-base text-inherit mr-4 dr-ar">تسجيل الدخول عن طريق Google</p>
       </div>
-      <div className={`signup-google geust dr-en ${isLoading ? 'disabel-no-opacity' : ''}`} onClick={signUpAnonymous}>
+      
+      {/* Guest sign in */}
+      <div className={`shadow-md flex items-center justify-between bg-white text-black/55 px-1 w-72 mt-3 cursor-pointer overflow-hidden rounded-md transition-all duration-300 hover:bg-gray-50 hover:shadow-lg dr-en ${isLoading ? 'disabel-no-opacity' : ''}`} onClick={signUpAnonymous}>
         <img
-          className="google-icon"
-          src={GestIcon} alt="gest icon"
+          className="bg-transparent px-1 w-9"
+          src={GestIcon} 
+          alt="Guest icon"
         />
-        <p className="btn google-btn dr-ar"> تسجيل الدخول كضيف  </p>
+        <p className="font-vazir font-medium text-base text-inherit mr-4 dr-ar">تسجيل الدخول كضيف</p>
       </div>
     </div>
   );

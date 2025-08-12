@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { BsX } from "react-icons/bs";
-import { HiSearch } from "react-icons/hi";
-import { MdFilterList } from "react-icons/md";
+import { X, Search, Filter } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { cn } from "../../lib/utils";
@@ -31,15 +29,17 @@ export default function HomepageSearch({
   };
 
   return (
-    <div className="search--container">
+    // Ensure the search input and unread filter live inside the parent container
+    // Change: remove absolute positioning so content stays inside the wrapping div in HomePage.jsx
+    <div className="shadow-sm px-2 relative z-100 flex items-center h-15 w-full gap-4 bg-white">
       {/* Modern search input with shadcn/ui */}
       <div className="relative flex-1">
         <div className="relative">
           {/* Search icon */}
           <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-            <HiSearch className="h-4 w-4" />
+            <Search className="h-5 w-5" />
           </div>
-          
+
           {/* Search input */}
           <Input
             type="text"
@@ -51,16 +51,16 @@ export default function HomepageSearch({
               isArabicText(search) ? "font-arabic text-right" : "text-left"
             )}
           />
-          
+
           {/* Clear button */}
           {search.length > 0 && (
             <Button
               variant="ghost"
               size="icon"
-              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full hover:bg-gray-200"
+              className=" m-0 absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full hover:bg-gray-200"
               onClick={handelClear}
             >
-              <BsX className="h-4 w-4" />
+              <X className="h-5 w-5" />
             </Button>
           )}
         </div>
@@ -73,11 +73,12 @@ export default function HomepageSearch({
           size="icon"
           className={cn(
             "ml-2 h-10 w-10 rounded-lg hover:bg-gray-100",
-            isUnreadMessage && "bg-whatsapp-primary text-white hover:bg-whatsapp-primary-dark"
+            isUnreadMessage &&
+              "bg-whatsapp-primary text-white hover:bg-whatsapp-primary-dark"
           )}
           onClick={() => setIsUnreadMessage((prev) => !prev)}
         >
-          <MdFilterList className="h-5 w-5" />
+          <Filter className="h-5 w-5" />
         </Button>
       )}
     </div>

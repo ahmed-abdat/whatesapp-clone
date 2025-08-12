@@ -1,7 +1,7 @@
-import path from "path"
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import dotenv from 'dotenv';
+import path from "path";
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -11,6 +11,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@ui": path.resolve(__dirname, "./src/components/ui"),
     },
   },
-})
+});

@@ -1,37 +1,25 @@
 import { MdClose } from "react-icons/md";
 import { useCallback, useEffect, useState } from "react";
-import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
+import { BiChevronLeft, BiChevronRight, BiArrowBack } from "react-icons/bi";
 import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { FiDownload } from "react-icons/fi";
 import { saveAs } from 'file-saver';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
 import { Button } from "../ui/button";
 import { cn } from "../../lib/utils";
-// import "./styles/ViewFullImage.css"; // Removed - using Tailwind CSS only
-// import "../styles/Swiper.css"; // Removed - using Tailwind CSS only
-
+import useSelectedUser from "../../store/useSelectedUser";
 
 export default function ViewFullImage({ 
   selectedImage, 
   setIsImageSelected, 
-  images, 
-  open = true,
-  onOpenChange 
+  images
 }) {
+  const getSelectedUser = useSelectedUser(state => state.getSelectedUser);
+  const selectedUser = getSelectedUser();
 
-
-  // Handle close with both callbacks
-  const handleOpenChange = (isOpen) => {
-    if (!isOpen) {
-      onOpenChange?.(false);
-      setIsImageSelected?.(false);
-    }
+  // Handle close
+  const handleClose = () => {
+    setIsImageSelected(false);
   };
 
   
@@ -48,14 +36,14 @@ export default function ViewFullImage({
   const [isArrowShow, setIsArrowShow] = useState(true);
   
 
-  // handel next image
-  const handelPrevImage = () => {
+  // handel go to next image (right arrow in RTL)
+  const handelNextImage = () => {
     if (imageIndex === images.length - 1) return;
     setImageIndex((prevImageIndex) => prevImageIndex + 1);
   };
 
-  // handel prev image
-  const handelNextImage = () => {
+  // handel go to previous image (left arrow in RTL)
+  const handelPrevImage = () => {
     if (imageIndex === 0) return;
     setImageIndex((prevImageIndex) => prevImageIndex - 1);
   };
@@ -114,109 +102,93 @@ export default function ViewFullImage({
 
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent 
-        className="max-w-full max-h-full w-screen h-screen p-0 border-0 bg-black/95 flex flex-col"
-        showCloseButton={false}
-      >
-        {/* Modern header with actions */}
-        <DialogHeader className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/60 to-transparent p-4">
-          <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-10 w-10 rounded-full bg-black/20 text-white hover:bg-black/40"
-              onClick={() => handleOpenChange(false)}
-            >
-              <MdClose className="h-5 w-5" />
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-10 w-10 rounded-full bg-black/20 text-white hover:bg-black/40"
-              onClick={downloadImage}
-            >
-              <FiDownload className="h-5 w-5" />
-            </Button>
-          </div>
-        </DialogHeader>
+    <div className="absolute inset-0 z-50 flex flex-col bg-white/90 backdrop-blur-sm">
+      {/* Minimal header */}
+      <div className="flex items-center justify-between p-3 bg-white/95 border-b border-gray-200/50">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-gray-700 hover:bg-gray-100 rounded-full"
+            onClick={handleClose}
+          >
+            <MdClose className="h-4 w-4" />
+          </Button>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-gray-700 hover:bg-gray-100 rounded-full"
+            onClick={downloadImage}
+          >
+            <FiDownload className="h-3 w-3" />
+          </Button>
+        </div>
+      </div>
 
-        {/* Image carousel container */}
-        <div className="flex-1 flex items-center justify-center relative overflow-hidden">
-          <div className="relative w-full h-full flex items-center">
-            {/* Image wrapper with transform for carousel */}
-            <div
-              className="flex transition-transform duration-300 ease-out w-full h-full"
-              style={{ transform: `translateX(-${imageIndex * 100}%)` }}
-            >
-              {images.map((image, idx) => (
-                <div key={image.src} className="w-full h-full flex-shrink-0 flex items-center justify-center relative">
-                  <LazyLoadImage
-                    alt={image.alt || "Image"}
-                    src={image.src}
-                    onClick={() => setIsArrowShow(prev => !prev)}
-                    className="max-w-full max-h-full object-contain cursor-pointer"
-                    effect="blur"
-                  />
+      {/* Image carousel container */}
+      <div className="flex-1 flex items-center justify-center relative overflow-hidden">
+        <div className="relative w-full h-full flex items-center px-16">
+          {/* Image wrapper with transform for carousel */}
+          <div
+            className="flex transition-transform duration-300 ease-out w-full h-full"
+            style={{ transform: `translateX(-${imageIndex * 100}%)` }}
+          >
+            {images.map((image, idx) => (
+              <div key={image.src} className="w-full h-full flex-shrink-0 flex items-center justify-center relative">
+                <LazyLoadImage
+                  alt={image.alt || "Image"}
+                  src={image.src}
+                  onClick={() => setIsArrowShow(prev => !prev)}
+                  className="max-w-full max-h-[85%] object-contain cursor-pointer"
+                  effect="blur"
+                />
 
-                  {/* Navigation arrows with better UX */}
-                  {isArrowShow && imageIndex < images.length - 1 && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={cn(
-                        "absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full",
-                        "bg-black/20 text-white hover:bg-black/40 backdrop-blur-sm",
-                        isFirstIndex && "opacity-50 pointer-events-none"
-                      )}
-                      onClick={handelPrevImage}
-                    >
-                      <BiChevronLeft className="h-6 w-6" />
-                    </Button>
-                  )}
-                  
-                  {isArrowShow && imageIndex > 0 && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={cn(
-                        "absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full",
-                        "bg-black/20 text-white hover:bg-black/40 backdrop-blur-sm",
-                        isLastIndex && "opacity-50 pointer-events-none"
-                      )}
-                      onClick={handelNextImage}
-                    >
-                      <BiChevronRight className="h-6 w-6" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </div>
+                {/* Subtle navigation arrows */}
+                {/* Previous button (right arrow in RTL) */}
+                {!isLastIndex && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-gray-500/20 text-gray-600 hover:bg-gray-500/30 backdrop-blur-sm transition-all duration-200 opacity-70 hover:opacity-100"
+                    onClick={handelPrevImage}
+                  >
+                    <BiChevronRight className="h-5 w-5" />
+                  </Button>
+                )}
+                
+                {/* Next button (left arrow in RTL) */}
+                {!isFirstIndex && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-gray-500/20 text-gray-600 hover:bg-gray-500/30 backdrop-blur-sm transition-all duration-200 opacity-70 hover:opacity-100"
+                    onClick={handelNextImage}
+                  >
+                    <BiChevronLeft className="h-5 w-5" />
+                  </Button>
+                )}
+              </div>
+            ))}
           </div>
         </div>
+      </div>
 
-        {/* Modern caption overlay */}
-        {images[imageIndex]?.alt && (
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-            <div className="max-w-4xl mx-auto">
-              <p className={cn(
-                "text-white text-base leading-relaxed",
-                isArabic(images[imageIndex].alt) ? "font-arabic text-right" : "text-left"
-              )}>
-                {findEmoji(images[imageIndex].alt).map((content, index) => (
-                  <React.Fragment key={index}>{content} </React.Fragment>
-                ))}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Image counter */}
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 bg-black/40 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
-          {imageIndex + 1} / {images.length}
+      {/* Simple caption */}
+      {images[imageIndex]?.alt && (
+        <div className="bg-white/95 border-t border-gray-200/50 p-4 text-center">
+          <p className={cn(
+            "text-gray-700 text-sm leading-relaxed",
+            isArabic(images[imageIndex].alt) ? "font-arabic" : ""
+          )}>
+            {findEmoji(images[imageIndex].alt).map((content, index) => (
+              <React.Fragment key={index}>{content} </React.Fragment>
+            ))}
+          </p>
         </div>
-      </DialogContent>
-    </Dialog>
+      )}
+    </div>
   );
 }
